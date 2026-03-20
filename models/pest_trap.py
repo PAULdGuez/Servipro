@@ -144,6 +144,14 @@ class PestTrap(models.Model):
                 'y_to_pct': new_y_pct,
             })
 
+            # Auto-detect zone for new position
+            if trap.blueprint_id:
+                zone_name = trap.env['pest.blueprint.zone'].find_zone_for_coords(
+                    trap.blueprint_id.id, new_x_pct, new_y_pct
+                )
+                if zone_name:
+                    trap.location = zone_name
+
     def action_view_incidents(self):
         self.ensure_one()
         return {
