@@ -128,6 +128,8 @@
                 <field name="sede_id"/>
                 <field name="blueprint_id"/>
                 <field name="location"/>
+                <filter string="Activos" name="filter_active" domain="[('active', '=', True)]"/>
+                <filter string="Archivados" name="filter_archived" domain="[('active', '=', False)]"/>
                 <group>
                     <filter string="Ubicación" name="group_location"
                             context="{'group_by': 'location'}"/>
@@ -148,6 +150,7 @@
         <field name="res_model">pest.trap</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="pest_trap_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Registrar una nueva trampa
