@@ -87,49 +87,72 @@ class PestBlueprint(models.Model):
     def get_widget_data(self):
         self.ensure_one()
 
-        # Get incident counts per trap in a single query
-        incident_data = self.env['pest.incident'].read_group(
-            domain=[('trap_id', 'in', self.trap_ids.ids)],
-            fields=['trap_id'],
-            groupby=['trap_id'],
-        )
-        incident_counts = {d['trap_id'][0]: d['trap_id_count'] for d in incident_data}
+        # Get incident counts per trap using Odoo 19 _read_group API
+        incident_counts = {}
+        try:
+            trap_incident_data = self.env['pest.incident']._read_group(
+                domain=[('trap_id', 'in', self.trap_ids.ids)],
+                groupby=['trap_id'],
+                aggregates=['__count'],
+            )
+            incident_counts = {trap.id: count for trap, count in trap_incident_data}
+        except Exception:
+            pass
 
         trap_list = []
         for trap in self.trap_ids:
             trap_list.append({
                 'id': trap.id,
-                'name': trap.name,
-                'coord_x_pct': trap.coord_x_pct,
-                'coord_y_pct': trap.coord_y_pct,
-                'current_state': trap.current_state,
-                'trap_type_id': trap.trap_type_id.id,
-                'trap_type_name': trap.trap_type_id.name,
-                'trap_type_icon': trap.trap_type_id.icon or 'fa-crosshairs',
-                'sede_id': trap.sede_id.id,
+                'name': trap.name or '',
+                'coord_x_pct': trap.coord_x_pct or 0.0,
+                'coord_y_pct': trap.coord_y_pct or 0.0,
+                'current_state': trap.current_state or 'sin_registro',
+                'trap_type_id': trap.trap_type_id.id if trap.trap_type_id else False,
+                'trap_type_name': trap.trap_type_id.name if trap.trap_type_id else '',
+                'trap_type_icon': (trap.trap_type_id.icon or 'fa-crosshairs') if trap.trap_type_id else 'fa-crosshairs',
+                'sede_id': trap.sede_id.id if trap.sede_id else False,
                 'incident_count': incident_counts.get(trap.id, 0),
             })
+
+        # Build trap type summary for the legend
         type_counts = {}
         for t in trap_list:
             tid = t['trap_type_id']
-            tname = t['trap_type_name']
-            ticon = t.get('trap_type_icon', 'fa-crosshairs')
+            if not tid:
+                continue
             if tid not in type_counts:
-                type_counts[tid] = {'id': tid, 'name': tname, 'icon': ticon, 'count': 0}
+                type_counts[tid] = {
+                    'id': tid,
+                    'name': t['trap_type_name'],
+                    'icon': t['trap_type_icon'],
+                    'count': 0,
+                }
             type_counts[tid]['count'] += 1
+
+        # Build zone list
+        zones = []
+        for zone in self.zone_ids:
+            try:
+                import json as _json
+                points = _json.loads(zone.points_data)
+            except Exception:
+                points = []
+            zones.append({
+                'id': zone.id,
+                'name': zone.name or '',
+                'points': points,
+                'color': zone.color or '#3498db55',
+            })
+
         return {
             'image_url': f'/web/image/pest.blueprint/{self.id}/image_web',
             'traps': trap_list,
             'trap_types': list(type_counts.values()),
             'can_edit': self.can_user_edit_traps(),
             '__last_update': self.write_date.isoformat() if self.write_date else '',
-            'zones': [{
-                'id': zone.id,
-                'name': zone.name,
-                'points': json.loads(zone.points_data),
-                'color': zone.color or '#3498db55',
-            } for zone in self.zone_ids],
+            'zones': zones,
         }
+
 
     def can_user_edit_traps(self):
         self.ensure_one()
