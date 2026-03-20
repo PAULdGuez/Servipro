@@ -20,6 +20,10 @@ export class BlueprintCanvas extends Component {
             draggedTrapId: null,
             selectedTrapId: null,
             zoomLevel: 1.0,
+            sidePanelOpen: false,
+            filterTrapType: null,
+            searchTerm: '',
+            highlightedTrapId: null,
         });
 
         onWillStart(async () => {
@@ -228,6 +232,52 @@ export class BlueprintCanvas extends Component {
                 this.onZoomOut();
             }
         }
+    }
+
+    toggleSidePanel() {
+        this.state.sidePanelOpen = !this.state.sidePanelOpen;
+    }
+
+    onFilterTrapType(ev) {
+        this.state.filterTrapType = ev.target.value || null;
+    }
+
+    onSearchTrap(ev) {
+        this.state.searchTerm = ev.target.value || '';
+    }
+
+    get filteredTraps() {
+        if (!this.state.data || !this.state.data.traps) return [];
+        let traps = this.state.data.traps;
+        if (this.state.filterTrapType) {
+            traps = traps.filter(t => String(t.trap_type_id) === this.state.filterTrapType);
+        }
+        if (this.state.searchTerm) {
+            const term = this.state.searchTerm.toLowerCase();
+            traps = traps.filter(t => t.name.toLowerCase().includes(term));
+        }
+        return traps;
+    }
+
+    get uniqueTrapTypes() {
+        if (!this.state.data || !this.state.data.traps) return [];
+        const typeMap = new Map();
+        for (const trap of this.state.data.traps) {
+            if (trap.trap_type_id && !typeMap.has(trap.trap_type_id)) {
+                typeMap.set(trap.trap_type_id, trap.trap_type_name);
+            }
+        }
+        return Array.from(typeMap, ([id, name]) => ({ id, name }));
+    }
+
+    onSidePanelTrapClick(trapId) {
+        this.state.highlightedTrapId = trapId;
+        // Auto-clear highlight after 2 seconds
+        setTimeout(() => {
+            if (this.state.highlightedTrapId === trapId) {
+                this.state.highlightedTrapId = null;
+            }
+        }, 2000);
     }
 
     async onDeactivateTrap(trapId) {
