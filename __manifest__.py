@@ -25,6 +25,7 @@
         'security/ir.model.access.csv',
         'data/pest_trap_type_data.xml',
         'data/pest_plague_type_data.xml',
+        'data/pest_cron_data.xml',
         # 2) Simple catalog views (no cross-references)
         'views/pest_trap_type_views.xml',
         'views/pest_plague_type_views.xml',
