@@ -238,6 +238,16 @@
     50% { box-shadow: 0 0 0 12px rgba(13, 110, 253, 0); }
 }
 
+// Heatmap canvas overlay
+.o_heatmap_canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 5;
+}
+
 // Incident count badges on markers
 .o_incident_badge {
     position: absolute;

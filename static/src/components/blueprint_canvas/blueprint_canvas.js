@@ -26,6 +26,8 @@ export class BlueprintCanvas extends Component {
             highlightedTrapId: null,
             hiddenTypes: [],
             showIncidentBadges: true,
+            heatmapActive: false,
+            heatmapLoading: false,
         });
 
         onWillStart(async () => {
@@ -345,6 +347,72 @@ export class BlueprintCanvas extends Component {
 
     isTrapVisible(trap) {
         return !this.state.hiddenTypes.includes(trap.trap_type_id);
+    }
+
+    async toggleHeatmap() {
+        if (this.state.heatmapActive) {
+            this.state.heatmapActive = false;
+            this._removeHeatmapCanvas();
+            return;
+        }
+
+        this.state.heatmapLoading = true;
+        try {
+            const response = await fetch(`/pest_control/blueprint/${this.props.record.resId}/heatmap_data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} }),
+            });
+            const data = await response.json();
+            const heatmapData = data.result || data;
+
+            if (heatmapData.points && heatmapData.points.length > 0) {
+                this._renderHeatmap(heatmapData);
+                this.state.heatmapActive = true;
+            } else {
+                this.notification.add('No hay datos de incidencias para el mapa de calor.', { type: 'info' });
+            }
+        } catch (error) {
+            this.notification.add('Error al cargar datos del mapa de calor.', { type: 'danger' });
+        }
+        this.state.heatmapLoading = false;
+    }
+
+    _renderHeatmap(data) {
+        this._removeHeatmapCanvas();
+
+        const container = this.containerRef.el;
+        if (!container) return;
+
+        const img = container.querySelector('.blueprint-image');
+        if (!img) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.className = 'o_heatmap_canvas';
+        canvas.width = img.offsetWidth;
+        canvas.height = img.offsetHeight;
+        container.appendChild(canvas);
+
+        const heat = window.simpleheat(canvas);
+
+        // Convert percentage coordinates to pixel coordinates
+        const points = data.points.map(p => [
+            (p.x / 100) * canvas.width,
+            (p.y / 100) * canvas.height,
+            p.value,
+        ]);
+
+        heat.data(points);
+        heat.max(data.max_value);
+        heat.radius(30, 20);
+        heat.draw(0.05);
+    }
+
+    _removeHeatmapCanvas() {
+        const container = this.containerRef.el;
+        if (!container) return;
+        const existing = container.querySelector('.o_heatmap_canvas');
+        if (existing) existing.remove();
     }
 }
 
