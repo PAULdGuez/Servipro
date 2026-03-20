@@ -93,11 +93,13 @@ class PestBlueprint(models.Model):
                 'coord_y_pct': trap.coord_y_pct,
                 'current_state': trap.current_state,
                 'trap_type_name': trap.trap_type_id.name,
+                'sede_id': trap.sede_id.id,
             })
         return {
             'image_url': f'/web/image/pest.blueprint/{self.id}/image_web',
             'traps': traps,
             'can_edit': self.can_user_edit_traps(),
+            '__last_update': self.write_date.isoformat() if self.write_date else '',
         }
 
     def can_user_edit_traps(self):

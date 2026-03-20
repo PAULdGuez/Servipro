@@ -32,24 +32,46 @@
                              role="button"
                              tabindex="0"
                              t-att-aria-label="'Trampa ' + trap.name + ' - Estado: ' + trap.current_state"
-                             t-att-class="'state-' + trap.current_state"
+                             t-att-class="'state-' + trap.current_state + (state.selectedTrapId === trap.id ? ' selected' : '')"
                              t-att-style="'left: ' + trap.coord_x_pct + '%; top: ' + trap.coord_y_pct + '%;'"
                              t-att-draggable="state.data.can_edit and !props.readonly ? 'true' : 'false'"
                              t-on-dragstart="(ev) => this.onDragStart(ev, trap)"
                              t-on-dragend="onDragEnd"
-                             t-on-mouseenter="() => this.state.hoveredTrapId = trap.id"
-                             t-on-mouseleave="() => this.state.hoveredTrapId = null">
+                             t-on-click="(ev) => this.onTrapMarkerClick(ev, trap)">
                              
                              <i class="fa fa-crosshairs" aria-hidden="true"/>
                              
-                             <div class="trap-tooltip" t-if="state.hoveredTrapId === trap.id">
-                                <strong><t t-esc="trap.name"/></strong><br/>
-                                <span class="text-white-50"><t t-esc="trap.trap_type_name"/></span><br/>
-                                <span class="badge" t-att-class="
-                                    trap.current_state === 'funciona' ? 'text-bg-success' : 
-                                    trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
-                                    trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
-                                "><t t-esc="trap.current_state"/></span>
+                             <!-- Click-based popover (replaces hover tooltip) -->
+                             <div class="o_blueprint_popover" t-if="state.selectedTrapId === trap.id" t-on-click.stop="">
+                                 <div class="popover-header">
+                                     <t t-esc="trap.name"/>
+                                 </div>
+                                 <div class="popover-info">
+                                     <t t-esc="trap.trap_type_name"/>
+                                 </div>
+                                 <div class="mb-2">
+                                     <span class="badge" t-att-class="
+                                         trap.current_state === 'funciona' ? 'text-bg-success' : 
+                                         trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
+                                         trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
+                                     "><t t-esc="trap.current_state"/></span>
+                                 </div>
+                                 <t t-if="state.data.can_edit">
+                                     <div class="popover-actions">
+                                         <button class="btn btn-sm btn-outline-primary"
+                                                 t-on-click.stop="() => this.onRegisterIncident(trap)">
+                                             📋 Registrar Incidencia
+                                         </button>
+                                         <button class="btn btn-sm btn-outline-secondary"
+                                                 t-on-click.stop="() => this.onViewHistory(trap)">
+                                             📊 Historial
+                                         </button>
+                                         <!-- TODO: Wire up deactivation in a later task -->
+                                         <button class="btn btn-sm btn-outline-danger" disabled="1">
+                                             🗑️ Desactivar
+                                         </button>
+                                     </div>
+                                 </t>
                              </div>
                         </div>
                     </t>
