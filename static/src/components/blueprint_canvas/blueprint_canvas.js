@@ -18,7 +18,7 @@ export class BlueprintCanvas extends Component {
             loading: true,
             error: null,
             draggedTrapId: null,
-            hoveredTrapId: null,
+            selectedTrapId: null,
         });
 
         onWillStart(async () => {
@@ -107,8 +107,17 @@ export class BlueprintCanvas extends Component {
     }
 
     onContainerClick(ev) {
-        if (!this.state.data.can_edit || this.props.readonly) return;
+        // Close popover if clicking outside a marker or popover
+        if (ev.target.closest('.o_blueprint_popover')) return;
         if (ev.target.closest('.blueprint-trap-marker')) return;
+
+        // Close any open popover
+        if (this.state.selectedTrapId !== null) {
+            this.state.selectedTrapId = null;
+            return;
+        }
+
+        if (!this.state.data.can_edit || this.props.readonly) return;
 
         const container = this.containerRef.el;
         if (!container) return;
@@ -133,6 +142,44 @@ export class BlueprintCanvas extends Component {
                 this.loadData();
             }
         });
+    }
+
+    onTrapMarkerClick(ev, trap) {
+        ev.stopPropagation();
+        // Toggle popover: click same marker again to close
+        if (this.state.selectedTrapId === trap.id) {
+            this.state.selectedTrapId = null;
+        } else {
+            this.state.selectedTrapId = trap.id;
+        }
+    }
+
+    async onRegisterIncident(trap) {
+        await this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'pest.incident',
+            views: [[false, 'form']],
+            target: 'new',
+            context: {
+                default_trap_id: trap.id,
+                default_blueprint_id: this.props.record.resId,
+                default_sede_id: trap.sede_id,
+            },
+        }, {
+            onClose: () => this.loadData(),
+        });
+        this.state.selectedTrapId = null;
+    }
+
+    async onViewHistory(trap) {
+        await this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'pest.trap',
+            res_id: trap.id,
+            views: [[false, 'form']],
+            target: 'new',
+        });
+        this.state.selectedTrapId = null;
     }
 
     onKeyDown(ev) {
