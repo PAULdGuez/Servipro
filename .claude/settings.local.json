@@ -6,7 +6,8 @@
       "Bash(cd:*)",
       "Read(//c/Users/Usuario/Documents/**)",
       "Bash(ls -d \"ESTANCIA\"*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Read(//tmp/**)"
     ]
   }
 }
