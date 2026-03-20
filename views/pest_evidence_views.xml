@@ -100,14 +100,14 @@
                             <div class="o_kanban_record_body">
                                 <div><field name="blueprint_id"/></div>
                                 <div>
-                                    <i class="fa fa-calendar"/> <field name="date"/>
+                                    <i class="fa fa-calendar" title="Fecha"/> <field name="date"/>
                                 </div>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
                                     <span t-if="record.supervisor_approval.raw_value"
                                           class="badge text-bg-success">
-                                        <i class="fa fa-check"/> Aprobado
+                                        <i class="fa fa-check" title="Aprobado"/> Aprobado
                                     </span>
                                 </div>
                             </div>

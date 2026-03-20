@@ -16,6 +16,8 @@ class PestIncidentImportWizard(models.TransientModel):
     _name = 'pest.incident.import.wizard'
     _description = 'Wizard para importar incidencias desde Excel'
 
+    MAX_ROWS = 10000
+
     blueprint_id = fields.Many2one('pest.blueprint', string='Plano', required=True)
     excel_file = fields.Binary(string='Archivo Excel')
     excel_filename = fields.Char(string='Nombre del archivo')
@@ -116,6 +118,16 @@ class PestIncidentImportWizard(models.TransientModel):
 
         file_data = base64.b64decode(self.excel_file)
         wb = openpyxl.load_workbook(io.BytesIO(file_data), read_only=True)
+
+        # Count total rows first and raise if exceeds MAX_ROWS
+        total_rows = 0
+        for ws in wb.worksheets:
+            total_rows += ws.max_row - 1  # subtract header row
+        if total_rows > self.MAX_ROWS:
+            raise UserError(
+                f'El archivo excede el máximo de {self.MAX_ROWS} filas ({total_rows} filas encontradas). '
+                f'Por favor divida el archivo. No se importaron datos.'
+            )
 
         # Build lookup maps
         trap_map = {
