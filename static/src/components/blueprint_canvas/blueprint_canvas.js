@@ -20,6 +20,7 @@ export class BlueprintCanvas extends Component {
             draggedTrapId: null,
             selectedTrapId: null,
             zoomLevel: 1.0,
+            showIncidentBadges: true,
         });
 
         onWillStart(async () => {
@@ -228,6 +229,10 @@ export class BlueprintCanvas extends Component {
                 this.onZoomOut();
             }
         }
+    }
+
+    toggleIncidentBadges() {
+        this.state.showIncidentBadges = !this.state.showIncidentBadges;
     }
 
     async onDeactivateTrap(trapId) {

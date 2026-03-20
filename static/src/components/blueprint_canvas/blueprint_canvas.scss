@@ -140,3 +140,28 @@
         }
     }
 }
+
+// Incident count badges on markers
+.o_incident_badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    color: white;
+    padding: 0 4px;
+
+    &.badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    &.badge-danger {
+        background-color: #dc3545;
+    }
+}
