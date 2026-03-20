@@ -7,7 +7,7 @@ class TestPestBlueprintWidget(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.sede = cls.env['pest.sede'].create({'name': 'Test Sede'})
-        cls.trap_type = cls.env['pest.trap.type'].create({'name': 'Test Type'})
+        cls.trap_type = cls.env['pest.trap.type'].create({'name': 'Test Type', 'code': 'test'})
         cls.blueprint = cls.env['pest.blueprint'].create({
             'name': 'Test Blueprint',
             'sede_id': cls.sede.id,
@@ -45,27 +45,26 @@ class TestPestBlueprintWidget(TransactionCase):
         
         movement = self.env['pest.trap.movement'].search([('trap_id', '=', self.trap1.id)], limit=1)
         self.assertTrue(bool(movement))
-        self.assertEqual(movement.to_x_pct, 25.5)
-        self.assertEqual(movement.to_y_pct, 75.0)
+        self.assertEqual(movement.x_to_pct, 25.5)
+        self.assertEqual(movement.y_to_pct, 75.0)
         
-    def test_03_override_blueprint_write(self):
-        """Test that writing to trap_ids via blueprint triggers widget action."""
-        self.trap1.coord_x_pct = 10.0
-        self.trap1.coord_y_pct = 10.0
-        
-        self.blueprint.write({
-            'trap_ids': [(1, self.trap1.id, {'coord_x_pct': 30.0, 'coord_y_pct': 40.0})]
-        })
-        
+    def test_03_action_move_to_creates_movement_record(self):
+        """Test that action_move_to_from_widget moves trap and creates a movement record."""
+        self.trap1.write({'coord_x_pct': 10.0, 'coord_y_pct': 10.0})
+
+        self.trap1.action_move_to_from_widget(30.0, 40.0)
+
         self.assertEqual(self.trap1.coord_x_pct, 30.0)
         self.assertEqual(self.trap1.coord_y_pct, 40.0)
-        
+
         movement = self.env['pest.trap.movement'].search([
             ('trap_id', '=', self.trap1.id),
-            ('to_x_pct', '=', 30.0),
-            ('to_y_pct', '=', 40.0)
+            ('x_to_pct', '=', 30.0),
+            ('y_to_pct', '=', 40.0),
         ], limit=1)
         self.assertTrue(bool(movement))
+        self.assertEqual(movement.x_from_pct, 10.0)
+        self.assertEqual(movement.y_from_pct, 10.0)
         
     def test_04_get_widget_data(self):
         """Test API method returns correct structure."""
