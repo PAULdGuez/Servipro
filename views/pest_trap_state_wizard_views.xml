@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pest_trap_state_wizard_view_form" model="ir.ui.view">
+        <field name="name">pest.trap.state.wizard.form</field>
+        <field name="model">pest.trap.state.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registro Masivo de Estados">
+                <header>
+                    <button name="action_save_all" type="object"
+                            string="Guardar Todo" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </header>
+                <group>
+                    <field name="blueprint_id" readonly="1"/>
+                </group>
+                <field name="line_ids">
+                    <list editable="bottom">
+                        <field name="trap_name" readonly="1"/>
+                        <field name="current_state_display" widget="badge"
+                               decoration-success="current_state_display == 'funciona'"
+                               decoration-warning="current_state_display == 'en_reparacion'"
+                               decoration-danger="current_state_display == 'no_funciona'"
+                               decoration-muted="current_state_display == 'sin_registro'"
+                               readonly="1"/>
+                        <field name="new_state"/>
+                        <field name="observations"/>
+                    </list>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <record id="pest_trap_state_wizard_action" model="ir.actions.act_window">
+        <field name="name">Registro Masivo de Estados</field>
+        <field name="res_model">pest.trap.state.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

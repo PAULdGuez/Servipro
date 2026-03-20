@@ -25,6 +25,12 @@
         <field name="model">pest.blueprint</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="%(pest_trap_state_wizard_action)d" type="action"
+                            string="Registrar Estados" class="btn-secondary"
+                            icon="fa-check-square-o"
+                            context="{'default_blueprint_id': active_id}"/>
+                </header>
                 <sheet>
                     <group>
                         <group string="Datos del Plano">

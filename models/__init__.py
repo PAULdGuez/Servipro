@@ -10,3 +10,4 @@ from . import pest_trap_state
 from . import pest_trap_movement
 from . import pest_complaint
 from . import pest_sale
+from . import pest_trap_state_wizard
