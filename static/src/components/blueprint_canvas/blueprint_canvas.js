@@ -183,6 +183,22 @@ export class BlueprintCanvas extends Component {
         this.state.selectedTrapId = null;
     }
 
+    async onEditTrap(trap) {
+        await this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'pest.trap',
+            res_id: trap.id,
+            views: [[false, 'form']],
+            target: 'new',
+            context: {
+                form_view_initial_mode: 'edit',
+            },
+        }, {
+            onClose: () => this.loadData(),
+        });
+        this.state.selectedTrapId = null;
+    }
+
     onKeyDown(ev) {
         if (!this.state.data.can_edit || this.props.readonly) return;
         // Space or Enter on container to add trap
