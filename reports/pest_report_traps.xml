@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pest_traps" model="ir.actions.report">
+        <field name="name">Reporte de Trampas</field>
+        <field name="model">pest.blueprint</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pest_control.report_pest_traps</field>
+        <field name="report_file">pest_control.report_pest_traps</field>
+        <field name="binding_model_id" ref="model_pest_blueprint"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_pest_traps">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Reporte de Trampas</h2>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>Plano:</strong> <span t-field="doc.name"/><br/>
+                                <strong>Sede:</strong> <span t-field="doc.sede_id.name"/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Fecha:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+                                <br/>
+                                <strong>Total Trampas:</strong> <span t-esc="len(doc.trap_ids)"/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado Actual</th>
+                                    <th>Fecha Instalación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.trap_ids" t-as="trap">
+                                    <tr>
+                                        <td t-esc="trap.name"/>
+                                        <td t-esc="trap.trap_type_id.name"/>
+                                        <td t-esc="trap.location or '-'"/>
+                                        <td>
+                                            <span t-if="trap.current_state == 'funciona'" class="badge text-bg-success">Funciona</span>
+                                            <span t-if="trap.current_state == 'en_reparacion'" class="badge text-bg-warning">En Reparación</span>
+                                            <span t-if="trap.current_state == 'no_funciona'" class="badge text-bg-danger">No Funciona</span>
+                                            <span t-if="trap.current_state == 'sin_registro'" class="badge text-bg-secondary">Sin Registro</span>
+                                        </td>
+                                        <td t-esc="trap.installation_date or '-'"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <h5 class="mt-4">Resumen por Tipo</h5>
+                        <table class="table table-sm" style="width: auto;">
+                            <t t-set="type_counts" t-value="{}"/>
+                            <t t-foreach="doc.trap_ids" t-as="trap">
+                                <t t-set="tname" t-value="trap.trap_type_id.name or 'Sin Tipo'"/>
+                                <t t-set="type_counts" t-value="dict(list(type_counts.items()) + [(tname, type_counts.get(tname, 0) + 1)])"/>
+                            </t>
+                            <t t-foreach="type_counts.items()" t-as="item">
+                                <tr>
+                                    <td t-esc="item[0]"/>
+                                    <td t-esc="item[1]"/>
+                                </tr>
+                            </t>
+                        </table>
+
+                        <h5 class="mt-4">Resumen por Estado</h5>
+                        <table class="table table-sm" style="width: auto;">
+                            <thead>
+                                <tr>
+                                    <th>Estado</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Funciona</td>
+                                    <td t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'funciona'))"/>
+                                </tr>
+                                <tr>
+                                    <td>En Reparación</td>
+                                    <td t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'en_reparacion'))"/>
+                                </tr>
+                                <tr>
+                                    <td>No Funciona</td>
+                                    <td t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'no_funciona'))"/>
+                                </tr>
+                                <tr>
+                                    <td>Sin Registro</td>
+                                    <td t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'sin_registro'))"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

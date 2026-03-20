@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pest_complete" model="ir.actions.report">
+        <field name="name">Reporte Completo</field>
+        <field name="model">pest.blueprint</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pest_control.report_pest_complete</field>
+        <field name="report_file">pest_control.report_pest_complete</field>
+        <field name="binding_model_id" ref="model_pest_blueprint"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_pest_complete">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">Reporte Completo de Control de Plagas</h2>
+                        <hr/>
+
+                        <!-- Section 1: Blueprint Info -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h5>Información del Plano</h5>
+                                <p><strong>Plano:</strong> <span t-field="doc.name"/></p>
+                                <p><strong>Sede:</strong> <span t-field="doc.sede_id.name"/></p>
+                                <p t-if="doc.description"><strong>Descripción:</strong> <span t-field="doc.description"/></p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p><strong>Fecha del reporte:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/></p>
+                                <p><strong>Total trampas:</strong> <span t-esc="len(doc.trap_ids)"/></p>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Traps Table -->
+                        <h4>Trampas</h4>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Instalación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.trap_ids" t-as="trap">
+                                    <tr>
+                                        <td t-esc="trap.name"/>
+                                        <td t-esc="trap.trap_type_id.name"/>
+                                        <td t-esc="trap.location or '-'"/>
+                                        <td t-esc="trap.current_state or '-'"/>
+                                        <td t-esc="trap.installation_date or '-'"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Section 3: Incidents Table -->
+                        <t t-set="all_incidents" t-value="doc.trap_ids.mapped('incident_ids')"/>
+                        <h4 class="mt-4">Incidencias (<t t-esc="len(all_incidents)"/>)</h4>
+                        <table class="table table-sm table-bordered" t-if="all_incidents">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th>Fecha</th>
+                                    <th>Trampa</th>
+                                    <th>Plaga</th>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Inspector</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="all_incidents.sorted(key=lambda i: i.date or '', reverse=True)" t-as="inc">
+                                    <tr>
+                                        <td t-esc="inc.date or '-'"/>
+                                        <td t-esc="inc.trap_id.name"/>
+                                        <td t-esc="inc.plague_type_id.name or inc.plague_type_custom or '-'"/>
+                                        <td t-esc="inc.incident_type or '-'"/>
+                                        <td t-esc="inc.organism_count"/>
+                                        <td t-esc="inc.inspector or '-'"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p t-else="">No hay incidencias registradas.</p>
+
+                        <!-- Section 4: Statistics -->
+                        <h4 class="mt-4">Estadísticas</h4>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6>Total Organismos</h6>
+                                        <h3 t-esc="sum(all_incidents.mapped('organism_count'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6>Capturas</h6>
+                                        <h3 t-esc="len(all_incidents.filtered(lambda i: i.incident_type == 'captura'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6>Hallazgos</h6>
+                                        <h3 t-esc="len(all_incidents.filtered(lambda i: i.incident_type == 'hallazgo'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 5: Trap State Summary -->
+                        <h4 class="mt-4">Resumen de Estado de Trampas</h4>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="card border-success">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-success">Funciona</h6>
+                                        <h3 t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'funciona'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card border-warning">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-warning">En Reparación</h6>
+                                        <h3 t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'en_reparacion'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card border-danger">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-danger">No Funciona</h6>
+                                        <h3 t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'no_funciona'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card border-secondary">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-secondary">Sin Registro</h6>
+                                        <h3 t-esc="len(doc.trap_ids.filtered(lambda t: t.current_state == 'sin_registro'))"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
