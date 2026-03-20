@@ -26,6 +26,9 @@ export class BlueprintCanvas extends Component {
             highlightedTrapId: null,
             hiddenTypes: [],
             showIncidentBadges: true,
+            drawingMode: false,
+            drawingPoints: [],
+            selectedZoneId: null,
         });
 
         onWillStart(async () => {
@@ -114,6 +117,11 @@ export class BlueprintCanvas extends Component {
     }
 
     onContainerClick(ev) {
+        if (this.state.drawingMode) {
+            this.onCanvasClickForZone(ev);
+            return;
+        }
+
         // Close popover if clicking outside a marker or popover
         if (ev.target.closest('.o_blueprint_popover')) return;
         if (ev.target.closest('.blueprint-trap-marker')) return;
@@ -345,6 +353,106 @@ export class BlueprintCanvas extends Component {
 
     isTrapVisible(trap) {
         return !this.state.hiddenTypes.includes(trap.trap_type_id);
+    }
+
+    toggleDrawingMode() {
+        if (this.state.drawingMode) {
+            // Cancel drawing
+            this.state.drawingMode = false;
+            this.state.drawingPoints = [];
+        } else {
+            this.state.drawingMode = true;
+            this.state.drawingPoints = [];
+            this.state.selectedTrapId = null; // close any popover
+        }
+    }
+
+    onCanvasClickForZone(ev) {
+        if (!this.state.drawingMode) return;
+
+        const container = this.containerRef.el;
+        if (!container) return;
+        const img = container.querySelector('.blueprint-image');
+        if (!img) return;
+
+        const rect = img.getBoundingClientRect();
+        const x = ((ev.clientX - rect.left) / rect.width) * 100;
+        const y = ((ev.clientY - rect.top) / rect.height) * 100;
+
+        const pctX = Math.max(0, Math.min(100, x));
+        const pctY = Math.max(0, Math.min(100, y));
+
+        this.state.drawingPoints = [...this.state.drawingPoints, { x: pctX, y: pctY }];
+    }
+
+    async finishDrawingZone() {
+        if (this.state.drawingPoints.length < 3) {
+            this.notification.add('Un polígono necesita al menos 3 puntos.', { type: 'warning' });
+            return;
+        }
+
+        const name = window.prompt('Nombre de la zona:');
+        if (!name) {
+            return; // User cancelled
+        }
+
+        const color = '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0') + '55';
+
+        try {
+            await this.orm.create('pest.blueprint.zone', [{
+                blueprint_id: this.props.record.resId,
+                name: name,
+                points_data: JSON.stringify(this.state.drawingPoints),
+                color: color,
+            }]);
+            this.notification.add(`Zona "${name}" creada.`, { type: 'success' });
+            await this.loadData();
+        } catch (error) {
+            this.notification.add('Error al crear zona: ' + (error.message || ''), { type: 'danger' });
+        }
+
+        this.state.drawingMode = false;
+        this.state.drawingPoints = [];
+    }
+
+    cancelDrawing() {
+        this.state.drawingMode = false;
+        this.state.drawingPoints = [];
+    }
+
+    onZoneClick(ev, zone) {
+        ev.stopPropagation();
+        this.state.selectedZoneId = this.state.selectedZoneId === zone.id ? null : zone.id;
+    }
+
+    async deleteSelectedZone() {
+        if (!this.state.selectedZoneId) return;
+        const zone = this.state.data.zones.find(z => z.id === this.state.selectedZoneId);
+        if (!zone) return;
+
+        const confirmed = window.confirm(`¿Eliminar zona "${zone.name}"?`);
+        if (!confirmed) return;
+
+        try {
+            await this.orm.unlink('pest.blueprint.zone', [this.state.selectedZoneId]);
+            this.state.selectedZoneId = null;
+            await this.loadData();
+            this.notification.add('Zona eliminada.', { type: 'success' });
+        } catch (error) {
+            this.notification.add('Error al eliminar zona.', { type: 'danger' });
+        }
+    }
+
+    getZonePolygonPoints(zone) {
+        // Convert [{x,y}...] to SVG polygon points string "x1,y1 x2,y2 ..."
+        return zone.points.map(p => `${p.x},${p.y}`).join(' ');
+    }
+
+    getZoneCentroid(zone) {
+        const pts = zone.points;
+        const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+        const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+        return { x: cx, y: cy };
     }
 }
 
