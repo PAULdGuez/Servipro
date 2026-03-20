@@ -158,12 +158,12 @@
                             </div>
                             <div class="o_kanban_record_body">
                                 <span t-if="record.city.value">
-                                    <i class="fa fa-map-marker"/> <field name="city"/>
+                                    <i class="fa fa-map-marker" title="Ubicación"/> <field name="city"/>
                                 </span>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
-                                    <span><i class="fa fa-crosshairs"/>
+                                    <span><i class="fa fa-crosshairs" title="Trampas"/>
                                         <field name="trap_count"/> Trampas
                                     </span>
                                 </div>

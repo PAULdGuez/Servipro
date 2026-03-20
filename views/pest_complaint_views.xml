@@ -108,12 +108,12 @@
                             <div class="o_kanban_record_body">
                                 <div><field name="sede_id"/></div>
                                 <div t-if="record.insect.value">
-                                    <i class="fa fa-bug"/> <field name="insect"/>
+                                    <i class="fa fa-bug" title="Insecto"/> <field name="insect"/>
                                 </div>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
-                                    <i class="fa fa-calendar"/>
+                                    <i class="fa fa-calendar" title="Fecha"/>
                                     <field name="date"/>
                                 </div>
                             </div>
