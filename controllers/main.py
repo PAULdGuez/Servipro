@@ -14,7 +14,7 @@ except ImportError:
 
 class PestDocsController(http.Controller):
 
-    @http.route('/pest_control/blueprint/<int:blueprint_id>/heatmap_data', type='json', auth='user')
+    @http.route('/pest_control/blueprint/<int:blueprint_id>/heatmap_data', type='jsonrpc', auth='user')
     def get_heatmap_data(self, blueprint_id, **kwargs):
         """Return heatmap data points for a blueprint's incidents."""
         blueprint = request.env['pest.blueprint'].browse(blueprint_id)
