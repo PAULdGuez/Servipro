@@ -4,7 +4,7 @@ import { Component, useState, onWillStart, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
-import { ErrorBoundary } from "@web/core/errors/error_boundary";
+
 
 export class BlueprintCanvas extends Component {
     setup() {
@@ -100,12 +100,9 @@ export class BlueprintCanvas extends Component {
         }
 
         try {
-            // Push changes to form's in-memory relation 
-            await this.props.record.update({
-                trap_ids: [[1, trapId, { coord_x_pct: pctX, coord_y_pct: pctY }]]
-            });
+            await this.orm.call("pest.trap", "action_move_to_from_widget", [[trapId], pctX, pctY]);
         } catch (error) {
-            this.notification.add("Error al guardar la posición en memoria del formulario.", { type: "danger" });
+            this.notification.add("Error al guardar la posición en el servidor.", { type: "danger" });
         }
     }
 
@@ -137,10 +134,34 @@ export class BlueprintCanvas extends Component {
             }
         });
     }
+
+    onKeyDown(ev) {
+        if (!this.state.data.can_edit || this.props.readonly) return;
+        // Space or Enter on container to add trap
+        if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains('blueprint-container')) {
+            ev.preventDefault();
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                res_model: 'pest.trap',
+                views: [[false, 'form']],
+                target: 'new',
+                context: {
+                    default_blueprint_id: this.props.record.resId,
+                    default_coord_x_pct: 50,
+                    default_coord_y_pct: 50,
+                }
+            }, {
+                onClose: () => {
+                    this.state.loading = true;
+                    this.loadData();
+                }
+            });
+        }
+    }
 }
 
 BlueprintCanvas.template = "pest_control.BlueprintCanvas";
-BlueprintCanvas.components = { ErrorBoundary };
+BlueprintCanvas.components = {};
 BlueprintCanvas.props = {
     ...standardFieldProps,
 };

@@ -43,6 +43,8 @@
         'views/pest_trap_views.xml',
         # 5) Menus last (references all actions)
         'views/pest_menus.xml',
+        # 6) Documentation UI Routes
+        'views/pest_doc_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -55,4 +57,5 @@
     'application': True,
     'auto_install': False,
     'license': 'LGPL-3',
+    'post_init_hook': '_post_init_hook_migrate_coordinates',
 }

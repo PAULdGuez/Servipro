@@ -99,11 +99,24 @@ class PestTrap(models.Model):
         for rec in self:
             rec.incident_count = len(rec.incident_ids)
 
-    @api.depends('state_ids', 'state_ids.date', 'state_ids.state')
+    @api.depends('state_ids.date', 'state_ids.state')
     def _compute_current_state(self):
+        if not self.ids:
+            for rec in self:
+                rec.current_state = 'sin_registro'
+            return
+            
+        self.env.cr.execute("""
+            SELECT DISTINCT ON (trap_id) trap_id, state 
+            FROM pest_trap_state 
+            WHERE trap_id IN %s 
+            ORDER BY trap_id, date DESC, id DESC
+        """, (tuple(self.ids),))
+        
+        state_map = {row[0]: row[1] for row in self.env.cr.fetchall()}
+        
         for rec in self:
-            latest = rec.state_ids.sorted('date', reverse=True)[:1]
-            rec.current_state = latest.state if latest else 'sin_registro'
+            rec.current_state = state_map.get(rec.id, 'sin_registro')
 
     def action_move_to_from_widget(self, new_x_pct, new_y_pct):
         from odoo.exceptions import UserError

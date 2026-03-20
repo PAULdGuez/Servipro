@@ -60,14 +60,27 @@ class PestBlueprint(models.Model):
     @api.depends('trap_ids')
     def _compute_trap_count(self):
         for rec in self:
-            rec.trap_count = len(rec.trap_ids)
+            rec.trap_count = 0
+            
+        if not self.ids:
+            return
+            
+        try:
+            trap_data = self.env['pest.trap']._read_group([('blueprint_id', 'in', self.ids)], ['blueprint_id'], ['__count'])
+            trap_counts = {bp.id: count for bp, count in trap_data}
+        except Exception:
+            trap_counts = {g['blueprint_id'][0]: g['blueprint_id_count'] for g in self.env['pest.trap'].read_group([('blueprint_id', 'in', self.ids)], ['blueprint_id'], ['blueprint_id'])}
+            
+        for rec in self:
+            rec.trap_count = trap_counts.get(rec.id, 0)
 
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('image'):
-                vals['image_web'] = image_process(vals['image'], size=(1920, 1920), quality=85)
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        for rec in records:
+            if rec.image:
+                rec._process_image_background()
+        return records
 
     def get_widget_data(self):
         self.ensure_one()
@@ -92,29 +105,21 @@ class PestBlueprint(models.Model):
         return self.env.user.has_group('pest_control.group_pest_technician')
 
     def write(self, vals):
-        if vals.get('image'):
-            vals['image_web'] = image_process(vals['image'], size=(1920, 1920), quality=85)
-            
-        if 'trap_ids' in vals:
-            trap_commands = vals['trap_ids']
-            new_commands = []
-            for cmd in trap_commands:
-                if cmd[0] == 1:
-                    trap_id = cmd[1]
-                    trap_vals = cmd[2]
-                    if 'coord_x_pct' in trap_vals or 'coord_y_pct' in trap_vals:
-                        trap = self.env['pest.trap'].browse(trap_id)
-                        new_x = trap_vals.pop('coord_x_pct', trap.coord_x_pct)
-                        new_y = trap_vals.pop('coord_y_pct', trap.coord_y_pct)
-                        if new_x != trap.coord_x_pct or new_y != trap.coord_y_pct:
-                            trap.action_move_to_from_widget(new_x, new_y)
-                    if trap_vals:
-                        new_commands.append((1, trap_id, trap_vals))
-                else:
-                    new_commands.append(cmd)
-            vals['trap_ids'] = new_commands
+        res = super().write(vals)
+        if 'image' in vals and 'image_web' not in vals:
+            for rec in self:
+                rec._process_image_background()
+        return res
 
-        return super().write(vals)
+    def _process_image_background(self):
+        self.ensure_one()
+        if self.image:
+            try:
+                processed = image_process(self.image, size=(1920, 1920), quality=85)
+                super(PestBlueprint, self).write({'image_web': processed})
+            except Exception:
+                # If processing fails, use the original image as-is
+                super(PestBlueprint, self).write({'image_web': self.image})
 
     def action_migrate_coordinates(self):
         import base64

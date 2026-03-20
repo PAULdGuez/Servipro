@@ -34,6 +34,7 @@ class PestTrapState(models.Model):
     date = fields.Datetime(
         string='Fecha',
         default=fields.Datetime.now,
+        index=True,
     )
     user_id = fields.Many2one(
         'res.users',

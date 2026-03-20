@@ -51,20 +51,20 @@
             }
 
             &.state-funciona {
-                background-color: #28a745;
+                background-color: var(--bs-success, #28a745);
             }
 
             &.state-en_reparacion {
-                background-color: #ffc107;
+                background-color: var(--bs-warning, #ffc107);
                 color: #333;
             }
 
             &.state-no_funciona {
-                background-color: #dc3545;
+                background-color: var(--bs-danger, #dc3545);
             }
 
             &.state-sin_registro {
-                background-color: #6c757d;
+                background-color: var(--bs-secondary, #6c757d);
             }
 
             .trap-tooltip {

@@ -1,58 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="pest_control.BlueprintCanvas" owl="1">
-        <ErrorBoundary catchError="(error) => this.state.error = error">
-            <div class="o_blueprint_canvas_widget">
-                <t t-if="state.loading">
-                    <div class="d-flex justify-content-center align-items-center h-100 p-5">
-                        <i class="fa fa-spinner fa-spin fa-3x" />
-                    </div>
-                </t>
-                <t t-elif="state.error">
-                    <div class="alert alert-danger m-2">
-                        <i class="fa fa-exclamation-triangle me-2"/>
-                        <span t-esc="state.error.message || state.error" />
-                        <div t-if="props.record.data[props.name]" class="mt-3">
-                            <img t-attf-src="'data:image/jpeg;base64,' + props.record.data[props.name]" class="img-fluid opacity-50"/>
+        <div class="o_blueprint_canvas_widget">
+            <t t-if="state.loading">
+                <div class="d-flex justify-content-center align-items-center h-100 p-5">
+                    <i class="fa fa-spinner fa-spin fa-3x" aria-hidden="true"/>
+                </div>
+            </t>
+            <t t-elif="state.error">
+                <div class="alert alert-danger m-2">
+                    <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"/>
+                    <span t-esc="state.error.message || state.error" />
+                </div>
+            </t>
+            <t t-else="">
+                <div t-ref="container" 
+                     class="blueprint-container" 
+                     t-on-dragover.stop.prevent="onDragOver" 
+                     t-on-drop.stop.prevent="onDrop"
+                     t-on-click="onContainerClick"
+                     tabindex="0"
+                     role="application"
+                     aria-label="Plano Interactivo de Trampas"
+                     t-on-keydown="onKeyDown"
+                     t-att-class="{'can-edit': state.data.can_edit and !props.readonly}">
+                    
+                    <img t-att-src="state.data.image_url" class="blueprint-image" draggable="false" alt="Plano de planta"/>
+                    
+                    <t t-foreach="state.data.traps" t-as="trap" t-key="trap.id">
+                        <div class="blueprint-trap-marker"
+                             role="button"
+                             tabindex="0"
+                             t-att-aria-label="'Trampa ' + trap.name + ' - Estado: ' + trap.current_state"
+                             t-att-class="'state-' + trap.current_state"
+                             t-att-style="'left: ' + trap.coord_x_pct + '%; top: ' + trap.coord_y_pct + '%;'"
+                             t-att-draggable="state.data.can_edit and !props.readonly ? 'true' : 'false'"
+                             t-on-dragstart="(ev) => this.onDragStart(ev, trap)"
+                             t-on-dragend="onDragEnd"
+                             t-on-mouseenter="() => this.state.hoveredTrapId = trap.id"
+                             t-on-mouseleave="() => this.state.hoveredTrapId = null">
+                             
+                             <i class="fa fa-crosshairs" aria-hidden="true"/>
+                             
+                             <div class="trap-tooltip" t-if="state.hoveredTrapId === trap.id">
+                                <strong><t t-esc="trap.name"/></strong><br/>
+                                <span class="text-white-50"><t t-esc="trap.trap_type_name"/></span><br/>
+                                <span class="badge" t-att-class="
+                                    trap.current_state === 'funciona' ? 'text-bg-success' : 
+                                    trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
+                                    trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
+                                "><t t-esc="trap.current_state"/></span>
+                             </div>
                         </div>
-                    </div>
-                </t>
-                <t t-else="">
-                    <div t-ref="container" 
-                         class="blueprint-container" 
-                         t-on-dragover.stop.prevent="onDragOver" 
-                         t-on-drop.stop.prevent="onDrop"
-                         t-on-click="onContainerClick"
-                         t-att-class="{'can-edit': state.data.can_edit and !props.readonly}">
-                        
-                        <img t-att-src="state.data.image_url" class="blueprint-image" draggable="false"/>
-                        
-                        <t t-foreach="state.data.traps" t-as="trap" t-key="trap.id">
-                            <div class="blueprint-trap-marker"
-                                 t-att-class="'state-' + trap.current_state"
-                                 t-att-style="'left: ' + trap.coord_x_pct + '%; top: ' + trap.coord_y_pct + '%;'"
-                                 t-att-draggable="state.data.can_edit and !props.readonly ? 'true' : 'false'"
-                                 t-on-dragstart="(ev) => this.onDragStart(ev, trap)"
-                                 t-on-dragend="onDragEnd"
-                                 t-on-mouseenter="() => this.state.hoveredTrapId = trap.id"
-                                 t-on-mouseleave="() => this.state.hoveredTrapId = null">
-                                 
-                                 <i class="fa fa-crosshairs"/>
-                                 
-                                 <div class="trap-tooltip" t-if="state.hoveredTrapId === trap.id">
-                                    <strong><t t-esc="trap.name"/></strong><br/>
-                                    <span class="text-white-50"><t t-esc="trap.trap_type_name"/></span><br/>
-                                    <span class="badge" t-att-class="
-                                        trap.current_state === 'funciona' ? 'text-bg-success' : 
-                                        trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
-                                        trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
-                                    "><t t-esc="trap.current_state"/></span>
-                                 </div>
-                            </div>
-                        </t>
-                    </div>
-                </t>
-            </div>
-        </ErrorBoundary>
+                    </t>
+                </div>
+            </t>
+        </div>
     </t>
 </templates>

@@ -41,7 +41,6 @@
                     <group string="Plano Interactivo">
                         <field name="image_web" widget="blueprint_canvas" nolabel="1" colspan="2"/>
                     </group>
-                    </group>
 
                     <notebook>
                         <page string="Trampas" name="traps">
@@ -55,7 +54,11 @@
                                     <field name="coord_x" column_invisible="1"/>
                                     <field name="coord_y" column_invisible="1"/>
                                     <field name="installation_date"/>
-                                    <field name="current_state" widget="badge"/>
+                                    <field name="current_state" widget="badge"
+                                           decoration-success="current_state == 'funciona'"
+                                           decoration-warning="current_state == 'en_reparacion'"
+                                           decoration-danger="current_state == 'no_funciona'"
+                                           decoration-muted="current_state == 'sin_registro'"/>
                                 </list>
                             </field>
                         </page>

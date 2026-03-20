@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template web qweb para inyectar el HTML sanitizado -->
+    <template id="doc_template" name="Ayuda ServiPro">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <!-- Bootstrap core de Odoo -->
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/css/bootstrap.css"/>
+                <style>
+                    .doc-container {
+                        max-width: 900px;
+                        margin: 40px auto;
+                        padding: 40px;
+                        background: white;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    }
+                    .doc-content h1 { border-bottom: 2px solid #eaecef; padding-bottom: .3em; }
+                    .doc-content h2 { border-bottom: 1px solid #eaecef; padding-bottom: .3em; margin-top: 1.5em; }
+                    .doc-content pre { background: #f6f8fa; padding: 16px; border-radius: 6px; }
+                    .doc-content code { background: #f6f8fa; padding: 2px 4px; border-radius: 3px; }
+                    .doc-content table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
+                    .doc-content th, .doc-content td { border: 1px solid #dee2e6; padding: .75rem; }
+                    .doc-content th { background-color: #f8f9fa; }
+                    .btn-back-odoo {
+                        background-color: #714B67;
+                        color: white;
+                        border-color: #714B67;
+                    }
+                    .btn-back-odoo:hover {
+                        background-color: #5d3d54;
+                        color: white;
+                    }
+                </style>
+            </t>
+            <div class="doc-container">
+                <a href="/web" class="btn btn-back-odoo mb-4">
+                    <i class="fa fa-arrow-left"/> Volver al Sistema ERP
+                </a>
+                <div class="doc-content">
+                    <t t-out="html_content"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Acciones URL para cargar la documentación sin IFrames -->
+    <record id="action_pest_docs_user" model="ir.actions.act_url">
+        <field name="name">Manual de Usuario</field>
+        <field name="target">self</field>
+        <field name="url">/pest_control/docs/USER_MANUAL.md</field>
+    </record>
+
+    <record id="action_pest_docs_tech" model="ir.actions.act_url">
+        <field name="name">Arquitectura Técnica (Devs)</field>
+        <field name="target">self</field>
+        <field name="url">/pest_control/docs/TECHNICAL_ARCHITECTURE.md</field>
+    </record>
+
+    <!-- Entradas de menú integradas en "Control de Plagas" -->
+    <menuitem id="menu_pest_docs_root"
+              name="Guías y Ayuda"
+              parent="pest_control_menu_root"
+              sequence="100"/>
+
+    <menuitem id="menu_pest_docs_user"
+              name="Manual Operativo"
+              parent="menu_pest_docs_root"
+              action="action_pest_docs_user"
+              sequence="10"/>
+
+    <menuitem id="menu_pest_docs_tech"
+              name="Arquitectura y Sistemas"
+              parent="menu_pest_docs_root"
+              action="action_pest_docs_tech"
+              sequence="20"
+              groups="base.group_system"/>
+
+</odoo>
