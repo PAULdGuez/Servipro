@@ -30,8 +30,10 @@ class PestEvidence(models.Model):
         string='Foto de Resolución',
         attachment=True,
     )
-    coord_x = fields.Integer(string='Coordenada X')
-    coord_y = fields.Integer(string='Coordenada Y')
+    coord_x = fields.Float(string='Coordenada X', digits=(10, 2))
+    coord_y = fields.Float(string='Coordenada Y', digits=(10, 2))
+    coord_x_pct = fields.Float(string='Coordenada X (%)', help='Porcentaje de la posición X (0.0 a 100.0)')
+    coord_y_pct = fields.Float(string='Coordenada Y (%)', help='Porcentaje de la posición Y (0.0 a 100.0)')
     state = fields.Selection(
         selection=[
             ('pendiente', 'Pendiente'),
