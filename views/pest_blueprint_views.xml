@@ -30,6 +30,10 @@
                             string="Registrar Estados" class="btn-secondary"
                             icon="fa-check-square-o"
                             context="{'default_blueprint_id': active_id}"/>
+                    <button name="%(pest_incident_import_wizard_action)d" type="action"
+                            string="Importar Excel" class="btn-secondary"
+                            icon="fa-file-excel-o"
+                            context="{'default_blueprint_id': active_id}"/>
                 </header>
                 <sheet>
                     <group>

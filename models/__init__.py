@@ -12,3 +12,4 @@ from . import pest_complaint
 from . import pest_sale
 from . import pest_trap_state_wizard
 from . import pest_blueprint_zone
+from . import pest_import_wizard
