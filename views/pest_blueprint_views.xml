@@ -35,9 +35,12 @@
                         </group>
                         <group string="Detalle">
                             <field name="description"/>
-                            <field name="image" widget="image"
-                                   options="{'size': [600, 400]}"/>
+                            <field name="image" widget="image" string="Subir Plano Original"/>
                         </group>
+                    </group>
+                    <group string="Plano Interactivo">
+                        <field name="image_web" widget="blueprint_canvas" nolabel="1" colspan="2"/>
+                    </group>
                     </group>
 
                     <notebook>
@@ -47,8 +50,10 @@
                                     <field name="name"/>
                                     <field name="trap_type_id"/>
                                     <field name="location"/>
-                                    <field name="coord_x"/>
-                                    <field name="coord_y"/>
+                                    <field name="coord_x_pct" string="X (%)"/>
+                                    <field name="coord_y_pct" string="Y (%)"/>
+                                    <field name="coord_x" column_invisible="1"/>
+                                    <field name="coord_y" column_invisible="1"/>
                                     <field name="installation_date"/>
                                     <field name="current_state" widget="badge"/>
                                 </list>

@@ -1,0 +1,151 @@
+/** @odoo-module */
+
+import { Component, useState, onWillStart, useRef } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { useService } from "@web/core/utils/hooks";
+import { ErrorBoundary } from "@web/core/errors/error_boundary";
+
+export class BlueprintCanvas extends Component {
+    setup() {
+        this.orm = useService("orm");
+        this.action = useService("action");
+        this.notification = useService("notification");
+        this.containerRef = useRef("container");
+
+        this.state = useState({
+            data: null, // { image_url, traps: [], can_edit }
+            loading: true,
+            error: null,
+            draggedTrapId: null,
+            hoveredTrapId: null,
+        });
+
+        onWillStart(async () => {
+            await this.loadData();
+        });
+    }
+
+    async loadData() {
+        try {
+            if (this.props.record.isNew) {
+                this.state.loading = false;
+                this.state.error = new Error("El plano de sede debe guardarse antes de usar el mapa interactivo.");
+                return;
+            }
+            const data = await this.orm.call(this.props.record.resModel, "get_widget_data", [[this.props.record.resId]]);
+            this.state.data = data;
+            this.state.error = null;
+            this.state.loading = false;
+        } catch (error) {
+            this.state.error = error;
+            this.state.loading = false;
+            this.notification.add("Sucedió un error cargando el mapa de trampas. " + (error.message || ""), { type: "danger" });
+        }
+    }
+
+    onDragStart(ev, trap) {
+        if (!this.state.data.can_edit || this.props.readonly) {
+            ev.preventDefault();
+            return;
+        }
+        this.state.draggedTrapId = trap.id;
+
+        if (ev.dataTransfer) {
+            const dragImage = new Image();
+            dragImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // transparent pixel
+            ev.dataTransfer.setDragImage(dragImage, 0, 0);
+            ev.dataTransfer.effectAllowed = "move";
+        }
+    }
+
+    onDragOver(ev) {
+        if (!this.state.data.can_edit || this.props.readonly || !this.state.draggedTrapId) return;
+        ev.preventDefault();
+        if (ev.dataTransfer) {
+            ev.dataTransfer.dropEffect = "move";
+        }
+    }
+
+    async onDrop(ev) {
+        if (!this.state.data.can_edit || this.props.readonly || !this.state.draggedTrapId) return;
+        ev.preventDefault();
+
+        const container = this.containerRef.el;
+        if (!container) return;
+
+        const rect = container.getBoundingClientRect();
+
+        const x = ev.clientX - rect.left;
+        const y = ev.clientY - rect.top;
+
+        const pctX = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        const pctY = Math.max(0, Math.min(100, (y / rect.height) * 100));
+
+        const trapId = this.state.draggedTrapId;
+        this.state.draggedTrapId = null;
+
+        await this.updateTrapPosition(trapId, pctX, pctY);
+    }
+
+    onDragEnd() {
+        this.state.draggedTrapId = null;
+    }
+
+    async updateTrapPosition(trapId, pctX, pctY) {
+        const trap = this.state.data.traps.find(t => t.id === trapId);
+        if (trap) {
+            trap.coord_x_pct = pctX;
+            trap.coord_y_pct = pctY;
+        }
+
+        try {
+            // Push changes to form's in-memory relation 
+            await this.props.record.update({
+                trap_ids: [[1, trapId, { coord_x_pct: pctX, coord_y_pct: pctY }]]
+            });
+        } catch (error) {
+            this.notification.add("Error al guardar la posición en memoria del formulario.", { type: "danger" });
+        }
+    }
+
+    onContainerClick(ev) {
+        if (!this.state.data.can_edit || this.props.readonly) return;
+        if (ev.target.closest('.blueprint-trap-marker')) return;
+
+        const container = this.containerRef.el;
+        if (!container) return;
+
+        const rect = container.getBoundingClientRect();
+        const pctX = Math.max(0, Math.min(100, ((ev.clientX - rect.left) / rect.width) * 100));
+        const pctY = Math.max(0, Math.min(100, ((ev.clientY - rect.top) / rect.height) * 100));
+
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'pest.trap',
+            views: [[false, 'form']],
+            target: 'new',
+            context: {
+                default_blueprint_id: this.props.record.resId,
+                default_coord_x_pct: pctX,
+                default_coord_y_pct: pctY,
+            }
+        }, {
+            onClose: () => {
+                this.state.loading = true;
+                this.loadData();
+            }
+        });
+    }
+}
+
+BlueprintCanvas.template = "pest_control.BlueprintCanvas";
+BlueprintCanvas.components = { ErrorBoundary };
+BlueprintCanvas.props = {
+    ...standardFieldProps,
+};
+BlueprintCanvas.supportedTypes = ["binary"];
+
+registry.category("fields").add("blueprint_canvas", {
+    component: BlueprintCanvas,
+});

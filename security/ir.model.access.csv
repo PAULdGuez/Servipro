@@ -4,6 +4,7 @@ access_pest_sede_supervisor,pest.sede.supervisor,model_pest_sede,group_pest_supe
 access_pest_sede_client,pest.sede.client,model_pest_sede,group_pest_client,1,0,0,0
 access_pest_blueprint_technician,pest.blueprint.technician,model_pest_blueprint,group_pest_technician,1,1,1,0
 access_pest_blueprint_supervisor,pest.blueprint.supervisor,model_pest_blueprint,group_pest_supervisor,1,1,1,1
+access_pest_trap_client,pest.trap.client,model_pest_trap,group_pest_client,1,0,0,0
 access_pest_trap_technician,pest.trap.technician,model_pest_trap,group_pest_technician,1,1,1,0
 access_pest_trap_supervisor,pest.trap.supervisor,model_pest_trap,group_pest_supervisor,1,1,1,1
 access_pest_trap_type_technician,pest.trap.type.technician,model_pest_trap_type,group_pest_technician,1,0,0,0

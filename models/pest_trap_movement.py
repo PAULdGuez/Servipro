@@ -35,6 +35,10 @@ class PestTrapMovement(models.Model):
         string='Y Nueva',
         digits=(10, 2),
     )
+    x_from_pct = fields.Float(string='X Anterior (%)')
+    y_from_pct = fields.Float(string='Y Anterior (%)')
+    x_to_pct = fields.Float(string='X Nueva (%)')
+    y_to_pct = fields.Float(string='Y Nueva (%)')
     date = fields.Datetime(
         string='Fecha',
         default=fields.Datetime.now,

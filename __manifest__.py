@@ -44,6 +44,13 @@
         # 5) Menus last (references all actions)
         'views/pest_menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.js',
+            'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.xml',
+            'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.scss',
+        ],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,

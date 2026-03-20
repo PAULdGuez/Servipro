@@ -1,0 +1,98 @@
+.o_blueprint_canvas_widget {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    overflow: hidden;
+
+    .blueprint-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        display: inline-block;
+
+        &.can-edit {
+            cursor: crosshair;
+        }
+
+        .blueprint-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .blueprint-trap-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            /* Centra en la coordenada XY exacta */
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s ease;
+
+            &[draggable="true"] {
+                cursor: grab;
+
+                &:active {
+                    cursor: grabbing;
+                    transform: translate(-50%, -50%) scale(1.2);
+                    z-index: 50;
+                }
+            }
+
+            &.state-funciona {
+                background-color: #28a745;
+            }
+
+            &.state-en_reparacion {
+                background-color: #ffc107;
+                color: #333;
+            }
+
+            &.state-no_funciona {
+                background-color: #dc3545;
+            }
+
+            &.state-sin_registro {
+                background-color: #6c757d;
+            }
+
+            .trap-tooltip {
+                position: absolute;
+                bottom: 120%;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.85);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                line-height: 1.4;
+                white-space: nowrap;
+                z-index: 20;
+                pointer-events: none;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+                }
+            }
+        }
+    }
+}
