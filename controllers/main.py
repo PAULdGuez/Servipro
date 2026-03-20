@@ -14,6 +14,39 @@ except ImportError:
 
 class PestDocsController(http.Controller):
 
+    @http.route('/pest_control/blueprint/<int:blueprint_id>/heatmap_data', type='json', auth='user')
+    def get_heatmap_data(self, blueprint_id, **kwargs):
+        """Return heatmap data points for a blueprint's incidents."""
+        blueprint = request.env['pest.blueprint'].browse(blueprint_id)
+        if not blueprint.exists():
+            return {'error': 'Blueprint not found'}
+
+        traps = request.env['pest.trap'].search([
+            ('blueprint_id', '=', blueprint_id),
+            ('active', '=', True),
+        ])
+
+        # Build heatmap points: each trap's position weighted by organism count
+        points = []
+        for trap in traps:
+            incidents = request.env['pest.incident'].search([
+                ('trap_id', '=', trap.id),
+            ])
+            total_organisms = sum(incidents.mapped('organism_count'))
+            if total_organisms > 0:
+                points.append({
+                    'x': trap.coord_x_pct,
+                    'y': trap.coord_y_pct,
+                    'value': total_organisms,
+                })
+
+        max_value = max((p['value'] for p in points), default=1)
+
+        return {
+            'points': points,
+            'max_value': max_value,
+        }
+
     @http.route('/pest_control/docs/<string:filename>', type='http', auth='user', website=True)
     def render_doc(self, filename, **kw):
         # Security: only allow rendering from the explicit doc directory
