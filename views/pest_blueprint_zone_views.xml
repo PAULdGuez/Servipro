@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pest_blueprint_zone_view_list" model="ir.ui.view">
+        <field name="name">pest.blueprint.zone.list</field>
+        <field name="model">pest.blueprint.zone</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="blueprint_id"/>
+                <field name="color"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pest_blueprint_zone_view_form" model="ir.ui.view">
+        <field name="name">pest.blueprint.zone.form</field>
+        <field name="model">pest.blueprint.zone</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="blueprint_id"/>
+                            <field name="color" widget="color"/>
+                        </group>
+                        <group>
+                            <field name="points_data"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pest_blueprint_zone_action" model="ir.actions.act_window">
+        <field name="name">Zonas de Planos</field>
+        <field name="res_model">pest.blueprint.zone</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

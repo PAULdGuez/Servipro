@@ -1,3 +1,4 @@
+import json
 from odoo import api, fields, models
 from odoo.tools.image import image_process
 
@@ -36,6 +37,7 @@ class PestBlueprint(models.Model):
         'blueprint_id',
         string='Trampas',
     )
+    zone_ids = fields.One2many('pest.blueprint.zone', 'blueprint_id', string='Zonas')
     evidence_ids = fields.One2many(
         'pest.evidence',
         'blueprint_id',
@@ -121,6 +123,12 @@ class PestBlueprint(models.Model):
             'trap_types': list(type_counts.values()),
             'can_edit': self.can_user_edit_traps(),
             '__last_update': self.write_date.isoformat() if self.write_date else '',
+            'zones': [{
+                'id': zone.id,
+                'name': zone.name,
+                'points': json.loads(zone.points_data),
+                'color': zone.color or '#3498db55',
+            } for zone in self.zone_ids],
         }
 
     def can_user_edit_traps(self):
