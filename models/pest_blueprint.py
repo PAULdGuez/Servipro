@@ -84,20 +84,31 @@ class PestBlueprint(models.Model):
 
     def get_widget_data(self):
         self.ensure_one()
-        traps = []
+        trap_list = []
         for trap in self.trap_ids:
-            traps.append({
+            trap_list.append({
                 'id': trap.id,
                 'name': trap.name,
                 'coord_x_pct': trap.coord_x_pct,
                 'coord_y_pct': trap.coord_y_pct,
                 'current_state': trap.current_state,
+                'trap_type_id': trap.trap_type_id.id,
                 'trap_type_name': trap.trap_type_id.name,
+                'trap_type_icon': trap.trap_type_id.icon or 'fa-crosshairs',
                 'sede_id': trap.sede_id.id,
             })
+        type_counts = {}
+        for t in trap_list:
+            tid = t['trap_type_id']
+            tname = t['trap_type_name']
+            ticon = t.get('trap_type_icon', 'fa-crosshairs')
+            if tid not in type_counts:
+                type_counts[tid] = {'id': tid, 'name': tname, 'icon': ticon, 'count': 0}
+            type_counts[tid]['count'] += 1
         return {
             'image_url': f'/web/image/pest.blueprint/{self.id}/image_web',
-            'traps': traps,
+            'traps': trap_list,
+            'trap_types': list(type_counts.values()),
             'can_edit': self.can_user_edit_traps(),
             '__last_update': self.write_date.isoformat() if self.write_date else '',
         }

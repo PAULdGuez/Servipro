@@ -139,4 +139,41 @@
             }
         }
     }
+
+    // Legend bar
+    .o_blueprint_legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 12px;
+        border-top: 1px solid #dee2e6;
+        background: #f8f9fa;
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: opacity 0.2s;
+
+            &:hover {
+                background: #e9ecef;
+            }
+
+            &.legend-hidden {
+                opacity: 0.4;
+                text-decoration: line-through;
+            }
+
+            .legend-name {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
 }

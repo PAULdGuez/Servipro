@@ -43,6 +43,7 @@
                             
                             <t t-foreach="state.data.traps" t-as="trap" t-key="trap.id">
                                 <div class="blueprint-trap-marker"
+                                     t-if="isTrapVisible(trap)"
                                      role="button"
                                      tabindex="0"
                                      t-att-aria-label="'Trampa ' + trap.name + ' - Estado: ' + trap.current_state"
@@ -91,6 +92,17 @@
                             </t>
                         </div>
                     </div>
+                </div>
+                <div class="o_blueprint_legend" t-if="state.data.trap_types and state.data.trap_types.length">
+                    <t t-foreach="state.data.trap_types" t-as="tt" t-key="tt.id">
+                        <div class="legend-item" 
+                             t-on-click="() => this.toggleTypeVisibility(tt.id)"
+                             t-att-class="{'legend-hidden': state.hiddenTypes.includes(tt.id)}">
+                            <i t-att-class="'fa ' + (tt.icon || 'fa-crosshairs')"/>
+                            <span class="legend-name" t-esc="tt.name"/>
+                            <span class="badge text-bg-secondary" t-esc="tt.count"/>
+                        </div>
+                    </t>
                 </div>
             </t>
         </div>

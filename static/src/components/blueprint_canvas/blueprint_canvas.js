@@ -20,6 +20,7 @@ export class BlueprintCanvas extends Component {
             draggedTrapId: null,
             selectedTrapId: null,
             zoomLevel: 1.0,
+            hiddenTypes: [],
         });
 
         onWillStart(async () => {
@@ -260,6 +261,19 @@ export class BlueprintCanvas extends Component {
                 { type: 'danger' }
             );
         }
+    }
+
+    toggleTypeVisibility(typeId) {
+        const idx = this.state.hiddenTypes.indexOf(typeId);
+        if (idx >= 0) {
+            this.state.hiddenTypes.splice(idx, 1);
+        } else {
+            this.state.hiddenTypes.push(typeId);
+        }
+    }
+
+    isTrapVisible(trap) {
+        return !this.state.hiddenTypes.includes(trap.trap_type_id);
     }
 }
 
