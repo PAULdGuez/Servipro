@@ -80,9 +80,9 @@
                                                          t-on-click.stop="() => this.onViewHistory(trap)">
                                                      Historial
                                                  </button>
-                                                 <!-- TODO: Wire up deactivation in a later task -->
-                                                 <button class="btn btn-sm btn-outline-danger" disabled="1">
-                                                     Desactivar
+                                                 <button class="btn btn-sm btn-outline-danger"
+                                                         t-on-click.stop="() => this.onDeactivateTrap(trap.id)">
+                                                     <i class="fa fa-archive"/> Desactivar
                                                  </button>
                                              </div>
                                          </t>
