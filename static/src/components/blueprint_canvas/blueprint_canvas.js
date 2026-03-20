@@ -19,6 +19,7 @@ export class BlueprintCanvas extends Component {
             error: null,
             draggedTrapId: null,
             hoveredTrapId: null,
+            zoomLevel: 1.0,
         });
 
         onWillStart(async () => {
@@ -156,6 +157,29 @@ export class BlueprintCanvas extends Component {
                     this.loadData();
                 }
             });
+        }
+    }
+
+    onZoomIn() {
+        this.state.zoomLevel = Math.min(3.0, this.state.zoomLevel + 0.25);
+    }
+
+    onZoomOut() {
+        this.state.zoomLevel = Math.max(0.5, this.state.zoomLevel - 0.25);
+    }
+
+    onZoomReset() {
+        this.state.zoomLevel = 1.0;
+    }
+
+    onWheel(ev) {
+        if (ev.ctrlKey) {
+            ev.preventDefault();
+            if (ev.deltaY < 0) {
+                this.onZoomIn();
+            } else {
+                this.onZoomOut();
+            }
         }
     }
 }
