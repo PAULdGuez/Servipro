@@ -48,6 +48,11 @@
         'views/pest_menus.xml',
         # 6) Documentation UI Routes
         'views/pest_doc_templates.xml',
+        # 7) PDF Reports (QWeb)
+        'reports/pest_report_traps.xml',
+        'reports/pest_report_incidents.xml',
+        'reports/pest_report_complete.xml',
+        'reports/pest_report_visit.xml',
     ],
     'assets': {
         'web.assets_backend': [

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pest_visit" model="ir.actions.report">
+        <field name="name">Reporte de Visita Técnica</field>
+        <field name="model">pest.inspection</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pest_control.report_pest_visit</field>
+        <field name="report_file">pest_control.report_pest_visit</field>
+        <field name="binding_model_id" ref="model_pest_inspection"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_pest_visit">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">Reporte de Visita Técnica</h2>
+                        <hr/>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <p><strong>Inspección:</strong> <span t-field="doc.name"/></p>
+                                <p><strong>Sede:</strong> <span t-field="doc.sede_id.name"/></p>
+                                <p><strong>Inspector:</strong> <span t-field="doc.inspector_id.name"/></p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p><strong>Fecha:</strong> <span t-field="doc.date"/></p>
+                                <p><strong>Estado:</strong>
+                                    <span t-if="doc.state == 'borrador'" class="badge text-bg-secondary">Borrador</span>
+                                    <span t-if="doc.state == 'en_progreso'" class="badge text-bg-warning">En Progreso</span>
+                                    <span t-if="doc.state == 'completada'" class="badge text-bg-success">Completada</span>
+                                </p>
+                                <p><strong>Fecha del reporte:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/></p>
+                            </div>
+                        </div>
+
+                        <h4>Incidencias Registradas (<t t-esc="len(doc.incident_ids)"/>)</h4>
+                        <table class="table table-sm table-bordered" t-if="doc.incident_ids">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th>Trampa</th>
+                                    <th>Tipo Plaga</th>
+                                    <th>Tipo Incidencia</th>
+                                    <th>Cantidad</th>
+                                    <th>Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.incident_ids" t-as="inc">
+                                    <tr>
+                                        <td t-esc="inc.trap_id.name or '-'"/>
+                                        <td t-esc="inc.plague_type_id.name or inc.plague_type_custom or '-'"/>
+                                        <td t-esc="inc.incident_type or '-'"/>
+                                        <td t-esc="inc.organism_count"/>
+                                        <td t-esc="inc.notes or '-'"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p t-else="">No se registraron incidencias en esta visita.</p>
+
+                        <!-- Summary -->
+                        <div class="row mt-3" t-if="doc.incident_ids">
+                            <div class="col-4">
+                                <strong>Total incidencias:</strong> <t t-esc="len(doc.incident_ids)"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>Total organismos:</strong> <t t-esc="sum(doc.incident_ids.mapped('organism_count'))"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>Capturas:</strong> <t t-esc="len(doc.incident_ids.filtered(lambda i: i.incident_type == 'captura'))"/>
+                            </div>
+                        </div>
+
+                        <div t-if="doc.notes" class="mt-4">
+                            <h4>Observaciones</h4>
+                            <p t-field="doc.notes"/>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #000; width: 200px; margin: 0 auto; padding-top: 5px;">
+                                    Firma del Inspector
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #000; width: 200px; margin: 0 auto; padding-top: 5px;">
+                                    Firma del Cliente
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

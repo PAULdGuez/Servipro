@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pest_incidents" model="ir.actions.report">
+        <field name="name">Reporte de Incidencias</field>
+        <field name="model">pest.blueprint</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pest_control.report_pest_incidents</field>
+        <field name="report_file">pest_control.report_pest_incidents</field>
+        <field name="binding_model_id" ref="model_pest_blueprint"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_pest_incidents">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Reporte de Incidencias</h2>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>Plano:</strong> <span t-field="doc.name"/><br/>
+                                <strong>Sede:</strong> <span t-field="doc.sede_id.name"/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Fecha:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+                            </div>
+                        </div>
+
+                        <t t-set="all_incidents" t-value="doc.trap_ids.mapped('incident_ids')"/>
+
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th>Fecha</th>
+                                    <th>Trampa</th>
+                                    <th>Tipo Plaga</th>
+                                    <th>Tipo Incidencia</th>
+                                    <th>Cantidad</th>
+                                    <th>Inspector</th>
+                                    <th>Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="all_incidents.sorted(key=lambda i: i.date or '', reverse=True)" t-as="inc">
+                                    <tr>
+                                        <td t-esc="inc.date or '-'"/>
+                                        <td t-esc="inc.trap_id.name"/>
+                                        <td t-esc="inc.plague_type_id.name or inc.plague_type_custom or '-'"/>
+                                        <td t-esc="inc.incident_type or '-'"/>
+                                        <td t-esc="inc.organism_count"/>
+                                        <td t-esc="inc.inspector or '-'"/>
+                                        <td t-esc="inc.notes or '-'"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <h5>Resumen</h5>
+                                <p><strong>Total incidencias:</strong> <t t-esc="len(all_incidents)"/></p>
+                                <p><strong>Total organismos:</strong> <t t-esc="sum(all_incidents.mapped('organism_count'))"/></p>
+                                <p><strong>Capturas:</strong> <t t-esc="len(all_incidents.filtered(lambda i: i.incident_type == 'captura'))"/></p>
+                                <p><strong>Hallazgos:</strong> <t t-esc="len(all_incidents.filtered(lambda i: i.incident_type == 'hallazgo'))"/></p>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4">Resumen por Tipo de Plaga</h5>
+                        <table class="table table-sm" style="width: auto;">
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Plaga</th>
+                                    <th>Incidencias</th>
+                                    <th>Organismos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="plague_counts" t-value="{}"/>
+                                <t t-foreach="all_incidents" t-as="inc">
+                                    <t t-set="pname" t-value="inc.plague_type_id.name or inc.plague_type_custom or 'Sin Especificar'"/>
+                                    <t t-set="plague_counts" t-value="dict(list(plague_counts.items()) + [(pname, {'count': plague_counts.get(pname, {}).get('count', 0) + 1, 'organisms': plague_counts.get(pname, {}).get('organisms', 0) + inc.organism_count})])"/>
+                                </t>
+                                <t t-foreach="plague_counts.items()" t-as="item">
+                                    <tr>
+                                        <td t-esc="item[0]"/>
+                                        <td t-esc="item[1]['count']"/>
+                                        <td t-esc="item[1]['organisms']"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
