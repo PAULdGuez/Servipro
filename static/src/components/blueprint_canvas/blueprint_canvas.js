@@ -25,6 +25,7 @@ export class BlueprintCanvas extends Component {
             searchTerm: '',
             highlightedTrapId: null,
             hiddenTypes: [],
+            showIncidentBadges: true,
         });
 
         onWillStart(async () => {
@@ -295,6 +296,10 @@ export class BlueprintCanvas extends Component {
                 this.state.highlightedTrapId = null;
             }
         }, 2000);
+    }
+
+    toggleIncidentBadges() {
+        this.state.showIncidentBadges = !this.state.showIncidentBadges;
     }
 
     async onDeactivateTrap(trapId) {

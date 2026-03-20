@@ -84,6 +84,15 @@ class PestBlueprint(models.Model):
 
     def get_widget_data(self):
         self.ensure_one()
+
+        # Get incident counts per trap in a single query
+        incident_data = self.env['pest.incident'].read_group(
+            domain=[('trap_id', 'in', self.trap_ids.ids)],
+            fields=['trap_id'],
+            groupby=['trap_id'],
+        )
+        incident_counts = {d['trap_id'][0]: d['trap_id_count'] for d in incident_data}
+
         trap_list = []
         for trap in self.trap_ids:
             trap_list.append({
@@ -96,6 +105,7 @@ class PestBlueprint(models.Model):
                 'trap_type_name': trap.trap_type_id.name,
                 'trap_type_icon': trap.trap_type_id.icon or 'fa-crosshairs',
                 'sede_id': trap.sede_id.id,
+                'incident_count': incident_counts.get(trap.id, 0),
             })
         type_counts = {}
         for t in trap_list:
