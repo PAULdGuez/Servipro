@@ -76,6 +76,10 @@
                                          </div>
                                          <t t-if="state.data.can_edit">
                                              <div class="popover-actions">
+                                                 <button class="btn btn-sm btn-outline-info"
+                                                         t-on-click.stop="() => this.onEditTrap(trap)">
+                                                     <i class="fa fa-pencil"/> Editar
+                                                 </button>
                                                  <button class="btn btn-sm btn-outline-primary"
                                                          t-on-click.stop="() => this.onRegisterIncident(trap)">
                                                      Registrar Incidencia
