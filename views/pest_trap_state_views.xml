@@ -13,7 +13,8 @@
                 <field name="state" widget="badge"
                        decoration-success="state == 'funciona'"
                        decoration-warning="state == 'en_reparacion'"
-                       decoration-danger="state == 'no_funciona'"/>
+                       decoration-danger="state == 'no_funciona'"
+                       decoration-info="state == 'sin_registro'"/>
                 <field name="date"/>
                 <field name="user_id"/>
                 <field name="observations"/>

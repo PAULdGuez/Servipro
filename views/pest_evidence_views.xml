@@ -13,7 +13,7 @@
                 <field name="blueprint_id"/>
                 <field name="location"/>
                 <field name="state" widget="badge"
-                       decoration-warning="state == 'pendiente'"
+                       decoration-info="state == 'pendiente'"
                        decoration-success="state == 'resuelta'"/>
                 <field name="supervisor_approval"/>
             </list>

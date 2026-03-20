@@ -65,7 +65,8 @@
                             <field name="current_state" widget="badge"
                                    decoration-success="current_state == 'funciona'"
                                    decoration-warning="current_state == 'en_reparacion'"
-                                   decoration-danger="current_state == 'no_funciona'"/>
+                                   decoration-danger="current_state == 'no_funciona'"
+                                   decoration-info="current_state == 'sin_registro'"/>
                             <field name="active"/>
                         </group>
                     </group>
@@ -87,10 +88,11 @@
                         <page string="Estados" name="states">
                             <field name="state_ids">
                                 <list>
-                                    <field name="state" widget="badge"
-                                           decoration-success="state == 'funciona'"
-                                           decoration-warning="state == 'en_reparacion'"
-                                           decoration-danger="state == 'no_funciona'"/>
+                                     <field name="state" widget="badge"
+                                            decoration-success="state == 'funciona'"
+                                            decoration-warning="state == 'en_reparacion'"
+                                            decoration-danger="state == 'no_funciona'"
+                                            decoration-info="state == 'sin_registro'"/>
                                     <field name="date"/>
                                     <field name="user_id"/>
                                     <field name="observations"/>
