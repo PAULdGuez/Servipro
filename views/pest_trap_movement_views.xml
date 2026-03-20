@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap.movement – Tree View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_movement_view_list" model="ir.ui.view">
+        <field name="name">pest.trap.movement.list</field>
+        <field name="model">pest.trap.movement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="trap_id"/>
+                <field name="date"/>
+                <field name="zone_from"/>
+                <field name="zone_to"/>
+                <field name="comment"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap.movement – Form View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_movement_view_form" model="ir.ui.view">
+        <field name="name">pest.trap.movement.form</field>
+        <field name="model">pest.trap.movement</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="trap_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="zone_from"/>
+                            <field name="zone_to"/>
+                        </group>
+                    </group>
+                    <separator string="Comentario"/>
+                    <field name="comment" placeholder="Comentario..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap.movement – Action
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_movement_action" model="ir.actions.act_window">
+        <field name="name">Historial de Movimientos</field>
+        <field name="res_model">pest.trap.movement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

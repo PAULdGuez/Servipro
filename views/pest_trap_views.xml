@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap – Tree View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_view_list" model="ir.ui.view">
+        <field name="name">pest.trap.list</field>
+        <field name="model">pest.trap</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="trap_type_id"/>
+                <field name="sede_id"/>
+                <field name="blueprint_id"/>
+                <field name="location"/>
+                <field name="installation_date"/>
+                <field name="current_state" widget="badge"
+                       decoration-success="current_state == 'funciona'"
+                       decoration-warning="current_state == 'en_reparacion'"
+                       decoration-danger="current_state == 'no_funciona'"
+                       decoration-info="current_state == 'sin_registro'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap – Form View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_view_form" model="ir.ui.view">
+        <field name="name">pest.trap.form</field>
+        <field name="model">pest.trap</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_incidents"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-bug">
+                            <field name="incident_count"
+                                   string="Incidencias"
+                                   widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group string="Identificación">
+                            <field name="name"/>
+                            <field name="trap_type_id"/>
+                            <field name="sede_id"/>
+                            <field name="blueprint_id"
+                                   domain="[('sede_id', '=', sede_id)]"/>
+                        </group>
+                        <group string="Ubicación">
+                            <field name="location"/>
+                            <field name="coord_x"/>
+                            <field name="coord_y"/>
+                            <field name="installation_date"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="current_state" widget="badge"
+                                   decoration-success="current_state == 'funciona'"
+                                   decoration-warning="current_state == 'en_reparacion'"
+                                   decoration-danger="current_state == 'no_funciona'"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Incidencias" name="incidents">
+                            <field name="incident_ids">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="plague_type_id"/>
+                                    <field name="incident_type" widget="badge"
+                                           decoration-success="incident_type == 'captura'"
+                                           decoration-warning="incident_type == 'hallazgo'"/>
+                                    <field name="organism_count"/>
+                                    <field name="inspector"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Estados" name="states">
+                            <field name="state_ids">
+                                <list>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'funciona'"
+                                           decoration-warning="state == 'en_reparacion'"
+                                           decoration-danger="state == 'no_funciona'"/>
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                    <field name="observations"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Movimientos" name="movements">
+                            <field name="movement_ids">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="zone_from"/>
+                                    <field name="zone_to"/>
+                                    <field name="comment"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- Chatter -->
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap – Search View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_view_search" model="ir.ui.view">
+        <field name="name">pest.trap.search</field>
+        <field name="model">pest.trap</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="trap_type_id"/>
+                <field name="sede_id"/>
+                <field name="blueprint_id"/>
+                <field name="location"/>
+                <group>
+                    <filter string="Ubicación" name="group_location"
+                            context="{'group_by': 'location'}"/>
+                    <filter string="Sede" name="group_sede"
+                            context="{'group_by': 'sede_id'}"/>
+                    <filter string="Tipo de Trampa" name="group_trap_type"
+                            context="{'group_by': 'trap_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap – Action
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_action" model="ir.actions.act_window">
+        <field name="name">Trampas</field>
+        <field name="res_model">pest.trap</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="pest_trap_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registrar una nueva trampa
+            </p>
+            <p>Gestione las trampas instaladas en cada sede.</p>
+        </field>
+    </record>
+
+</odoo>

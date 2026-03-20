@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_pest_complaint" model="ir.sequence">
+            <field name="name">Queja de Control de Plagas</field>
+            <field name="code">pest.complaint</field>
+            <field name="prefix">QJ-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_pest_inspection" model="ir.sequence">
+            <field name="name">Inspección Técnica</field>
+            <field name="code">pest.inspection</field>
+            <field name="prefix">INS-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

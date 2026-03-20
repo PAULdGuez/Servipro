@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(tree:*)",
+      "Bash(cd:*)",
+      "Read(//c/Users/Usuario/Documents/**)",
+      "Bash(ls -d \"ESTANCIA\"*)",
+      "Bash(find:*)"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 1. EDC Quimicas -->
+        <record id="trap_type_edc_quimicas" model="pest.trap.type">
+            <field name="name">EDC Quimicas</field>
+            <field name="code">edc_quimicas</field>
+            <field name="icon">fa-flask</field>
+            <field name="description">Estacion de cebo con quimico para roedores</field>
+        </record>
+
+        <!-- 2. EDC Adhesivas -->
+        <record id="trap_type_edc_adhesivas" model="pest.trap.type">
+            <field name="name">EDC Adhesivas</field>
+            <field name="code">edc_adhesivas</field>
+            <field name="icon">fa-sticky-note</field>
+            <field name="description">Estacion de cebo con trampa adhesiva para roedores</field>
+        </record>
+
+        <!-- 3. Luz UV -->
+        <record id="trap_type_luz_uv" model="pest.trap.type">
+            <field name="name">Luz UV</field>
+            <field name="code">luz_uv</field>
+            <field name="icon">fa-lightbulb-o</field>
+            <field name="description">Trampa de luz ultravioleta para insectos voladores</field>
+        </record>
+
+        <!-- 4. Feromona Gorgojo -->
+        <record id="trap_type_feromona_gorgojo" model="pest.trap.type">
+            <field name="name">Feromona Gorgojo</field>
+            <field name="code">feromona_gorgojo</field>
+            <field name="icon">fa-bug</field>
+            <field name="description">Trampa de feromona para monitoreo de gorgojos en granos almacenados</field>
+        </record>
+
+        <!-- 5. Feromona Palomilla -->
+        <record id="trap_type_feromona_palomilla" model="pest.trap.type">
+            <field name="name">Feromona Palomilla</field>
+            <field name="code">feromona_palomilla</field>
+            <field name="icon">fa-diamond</field>
+            <field name="description">Trampa de feromona para monitoreo de palomillas de almacen</field>
+        </record>
+
+        <!-- 6. Equipo Sonico -->
+        <record id="trap_type_equipo_sonico" model="pest.trap.type">
+            <field name="name">Equipo Sonico</field>
+            <field name="code">equipo_sonico</field>
+            <field name="icon">fa-volume-up</field>
+            <field name="description">Dispositivo sonico repelente de aves y roedores</field>
+        </record>
+
+        <!-- 7. Globo Terror -->
+        <record id="trap_type_globo_terror" model="pest.trap.type">
+            <field name="name">Globo Terror</field>
+            <field name="code">globo_terror</field>
+            <field name="icon">fa-circle</field>
+            <field name="description">Globo disuasorio visual para aves</field>
+        </record>
+
+        <!-- 8. Atrayente Chinches -->
+        <record id="trap_type_atrayente_chinches" model="pest.trap.type">
+            <field name="name">Atrayente Chinches</field>
+            <field name="code">atrayente_chinches</field>
+            <field name="icon">fa-bed</field>
+            <field name="description">Monitor con atrayente para deteccion de chinches de cama</field>
+        </record>
+
+        <!-- 9. Atrayente Pulgas -->
+        <record id="trap_type_atrayente_pulgas" model="pest.trap.type">
+            <field name="name">Atrayente Pulgas</field>
+            <field name="code">atrayente_pulgas</field>
+            <field name="icon">fa-dot-circle-o</field>
+            <field name="description">Monitor con atrayente luminoso para deteccion de pulgas</field>
+        </record>
+
+        <!-- 10. Feromona Picudo -->
+        <record id="trap_type_feromona_picudo" model="pest.trap.type">
+            <field name="name">Feromona Picudo</field>
+            <field name="code">feromona_picudo</field>
+            <field name="icon">fa-tree</field>
+            <field name="description">Trampa de feromona para monitoreo de picudo rojo de palmeras</field>
+        </record>
+    </data>
+</odoo>

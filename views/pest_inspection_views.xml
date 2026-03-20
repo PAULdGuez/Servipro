@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.inspection – Tree View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_inspection_view_list" model="ir.ui.view">
+        <field name="name">pest.inspection.list</field>
+        <field name="model">pest.inspection</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="sede_id"/>
+                <field name="inspector_id"/>
+                <field name="date"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'borrador'"
+                       decoration-warning="state == 'en_progreso'"
+                       decoration-success="state == 'completada'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.inspection – Form View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_inspection_view_form" model="ir.ui.view">
+        <field name="name">pest.inspection.form</field>
+        <field name="model">pest.inspection</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start"
+                            type="object"
+                            string="Iniciar"
+                            class="btn-primary"
+                            invisible="state != 'borrador'"/>
+                    <button name="action_complete"
+                            type="object"
+                            string="Completar"
+                            class="btn-primary"
+                            invisible="state != 'en_progreso'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="borrador,en_progreso,completada"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Información General">
+                            <field name="name"/>
+                            <field name="sede_id"/>
+                            <field name="inspector_id"/>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <separator string="Notas"/>
+                    <field name="notes" widget="html" placeholder="Notas..."/>
+
+                    <notebook>
+                        <page string="Incidencias" name="incidents">
+                            <field name="incident_ids">
+                                <list editable="bottom">
+                                    <field name="sede_id" column_invisible="True"/>
+                                    <field name="trap_id"
+                                           domain="[('sede_id', '=', parent.sede_id)]"/>
+                                    <field name="plague_type_id"/>
+                                    <field name="incident_type"/>
+                                    <field name="insect_type"/>
+                                    <field name="organism_count"/>
+                                    <field name="date"/>
+                                    <field name="inspector"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- Chatter -->
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.inspection – Action
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_inspection_action" model="ir.actions.act_window">
+        <field name="name">Inspecciones</field>
+        <field name="res_model">pest.inspection</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva inspección
+            </p>
+            <p>Registre las inspecciones técnicas realizadas en cada sede.</p>
+        </field>
+    </record>
+
+</odoo>

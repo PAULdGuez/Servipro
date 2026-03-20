@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Module Category -->
+        <record id="module_category_pest_control" model="ir.module.category">
+            <field name="name">ServiPro - Control de Plagas</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- Privilege (replaces category_id on groups in Odoo 19) -->
+        <record id="privilege_pest_control" model="res.groups.privilege">
+            <field name="name">Control de Plagas</field>
+            <field name="description">Niveles de acceso para el módulo de control de plagas</field>
+            <field name="category_id" ref="module_category_pest_control"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- User Groups -->
+        <record id="group_pest_client" model="res.groups">
+            <field name="name">Cliente</field>
+            <field name="privilege_id" ref="privilege_pest_control"/>
+            <field name="sequence">5</field>
+            <field name="comment">Solo lectura: puede ver estadisticas y reportes de su sede</field>
+        </record>
+
+        <record id="group_pest_technician" model="res.groups">
+            <field name="name">Tecnico</field>
+            <field name="privilege_id" ref="privilege_pest_control"/>
+            <field name="sequence">10</field>
+            <field name="implied_ids" eval="[(4, ref('group_pest_client'))]"/>
+            <field name="comment">Puede registrar incidencias, evidencias e inspecciones</field>
+        </record>
+
+        <record id="group_pest_supervisor" model="res.groups">
+            <field name="name">Supervisor</field>
+            <field name="privilege_id" ref="privilege_pest_control"/>
+            <field name="sequence">15</field>
+            <field name="implied_ids" eval="[(4, ref('group_pest_technician'))]"/>
+            <field name="comment">Acceso completo: gestion de sedes, planos, trampas, reportes y aprobaciones</field>
+        </record>
+    </data>
+</odoo>

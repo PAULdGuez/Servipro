@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap.state – Tree View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_state_view_list" model="ir.ui.view">
+        <field name="name">pest.trap.state.list</field>
+        <field name="model">pest.trap.state</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="trap_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'funciona'"
+                       decoration-warning="state == 'en_reparacion'"
+                       decoration-danger="state == 'no_funciona'"/>
+                <field name="date"/>
+                <field name="user_id"/>
+                <field name="observations"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap.state – Form View
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_state_view_form" model="ir.ui.view">
+        <field name="name">pest.trap.state.form</field>
+        <field name="model">pest.trap.state</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="trap_id"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <separator string="Observaciones"/>
+                    <field name="observations" placeholder="Observaciones..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         pest.trap.state – Action
+         ════════════════════════════════════════════════════════════════ -->
+    <record id="pest_trap_state_action" model="ir.actions.act_window">
+        <field name="name">Historial de Estado</field>
+        <field name="res_model">pest.trap.state</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

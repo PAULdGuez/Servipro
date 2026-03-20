@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ==================== VOLADORES ==================== -->
+
+        <!-- 1. Mosca (generica) -->
+        <record id="plague_type_mosca" model="pest.plague.type">
+            <field name="name">Mosca</field>
+            <field name="code">mosca</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 2. Mosca Domestica -->
+        <record id="plague_type_mosca_domestica" model="pest.plague.type">
+            <field name="name">Mosca Domestica</field>
+            <field name="code">mosca_domestica</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 3. Mosca de la Fruta -->
+        <record id="plague_type_mosca_fruta" model="pest.plague.type">
+            <field name="name">Mosca de la Fruta</field>
+            <field name="code">mosca_fruta</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 4. Mosca de Drenaje -->
+        <record id="plague_type_mosca_drenaje" model="pest.plague.type">
+            <field name="name">Mosca de Drenaje</field>
+            <field name="code">mosca_drenaje</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 5. Mosca Metalica -->
+        <record id="plague_type_mosca_metalica" model="pest.plague.type">
+            <field name="name">Mosca Metalica</field>
+            <field name="code">mosca_metalica</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 6. Mosca Forida -->
+        <record id="plague_type_mosca_forida" model="pest.plague.type">
+            <field name="name">Mosca Forida</field>
+            <field name="code">mosca_forida</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 7. Palomilla de Almacen -->
+        <record id="plague_type_palomilla_almacen" model="pest.plague.type">
+            <field name="name">Palomilla de Almacen</field>
+            <field name="code">palomilla_almacen</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 8. Otras Palomillas -->
+        <record id="plague_type_otras_palomillas" model="pest.plague.type">
+            <field name="name">Otras Palomillas</field>
+            <field name="code">otras_palomillas</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 9. Abeja -->
+        <record id="plague_type_abeja" model="pest.plague.type">
+            <field name="name">Abeja</field>
+            <field name="code">abeja</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 10. Avispa -->
+        <record id="plague_type_avispa" model="pest.plague.type">
+            <field name="name">Avispa</field>
+            <field name="code">avispa</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- 11. Mosquito -->
+        <record id="plague_type_mosquito" model="pest.plague.type">
+            <field name="name">Mosquito</field>
+            <field name="code">mosquito</field>
+            <field name="category">volador</field>
+        </record>
+
+        <!-- ==================== RASTREROS ==================== -->
+
+        <!-- 12. Gorgojo -->
+        <record id="plague_type_gorgojo" model="pest.plague.type">
+            <field name="name">Gorgojo</field>
+            <field name="code">gorgojo</field>
+            <field name="category">rastrero</field>
+        </record>
+
+        <!-- 13. Otros Escarabajos -->
+        <record id="plague_type_otros_escarabajos" model="pest.plague.type">
+            <field name="name">Otros Escarabajos</field>
+            <field name="code">otros_escarabajos</field>
+            <field name="category">rastrero</field>
+        </record>
+
+        <!-- 14. Cucaracha -->
+        <record id="plague_type_cucaracha" model="pest.plague.type">
+            <field name="name">Cucaracha</field>
+            <field name="code">cucaracha</field>
+            <field name="category">rastrero</field>
+        </record>
+
+        <!-- 15. Hormiga -->
+        <record id="plague_type_hormiga" model="pest.plague.type">
+            <field name="name">Hormiga</field>
+            <field name="code">hormiga</field>
+            <field name="category">rastrero</field>
+        </record>
+
+        <!-- 16. Roedor -->
+        <record id="plague_type_roedor" model="pest.plague.type">
+            <field name="name">Roedor</field>
+            <field name="code">roedor</field>
+            <field name="category">rastrero</field>
+        </record>
+
+        <!-- 17. Aranas -->
+        <record id="plague_type_aranas" model="pest.plague.type">
+            <field name="name">Aranas</field>
+            <field name="code">aranas</field>
+            <field name="category">rastrero</field>
+        </record>
+
+        <!-- ==================== OTROS ==================== -->
+
+        <!-- 18. Lagartija -->
+        <record id="plague_type_lagartija" model="pest.plague.type">
+            <field name="name">Lagartija</field>
+            <field name="code">lagartija</field>
+            <field name="category">otro</field>
+        </record>
+    </data>
+</odoo>

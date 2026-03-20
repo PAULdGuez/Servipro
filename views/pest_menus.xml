@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         ROOT MENU
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_root"
+              name="ServiPro"
+              sequence="10"
+              web_icon="pest_control,static/description/icon.png"/>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         DASHBOARD
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_dashboard"
+              name="Dashboard"
+              parent="pest_control_menu_root"
+              action="pest_sede_action_kanban"
+              sequence="5"/>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         OPERACIONES
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_operations"
+              name="Operaciones"
+              parent="pest_control_menu_root"
+              sequence="10"/>
+
+    <menuitem id="pest_control_menu_sedes"
+              name="Sedes / Plantas"
+              parent="pest_control_menu_operations"
+              action="pest_sede_action"
+              sequence="10"/>
+
+    <menuitem id="pest_control_menu_blueprints"
+              name="Planos"
+              parent="pest_control_menu_operations"
+              action="pest_blueprint_action"
+              sequence="20"/>
+
+    <menuitem id="pest_control_menu_traps"
+              name="Trampas"
+              parent="pest_control_menu_operations"
+              action="pest_trap_action"
+              sequence="30"/>
+
+    <menuitem id="pest_control_menu_inspections"
+              name="Inspecciones (Registro Técnico)"
+              parent="pest_control_menu_operations"
+              action="pest_inspection_action"
+              sequence="40"/>
+
+    <menuitem id="pest_control_menu_evidences"
+              name="Evidencias"
+              parent="pest_control_menu_operations"
+              action="pest_evidence_action"
+              sequence="50"/>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         INCIDENCIAS
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_incidents"
+              name="Incidencias"
+              parent="pest_control_menu_root"
+              sequence="20"/>
+
+    <menuitem id="pest_control_menu_incidents_all"
+              name="Todas las Incidencias"
+              parent="pest_control_menu_incidents"
+              action="pest_incident_action"
+              sequence="10"/>
+
+    <menuitem id="pest_control_menu_incidents_analysis"
+              name="Análisis"
+              parent="pest_control_menu_incidents"
+              action="pest_incident_action_analysis"
+              sequence="20"/>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         QUEJAS
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_complaints"
+              name="Quejas"
+              parent="pest_control_menu_root"
+              sequence="30"/>
+
+    <menuitem id="pest_control_menu_complaints_all"
+              name="Quejas"
+              parent="pest_control_menu_complaints"
+              action="pest_complaint_action"
+              sequence="10"/>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         CONFIGURACIÓN
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_config"
+              name="Configuración"
+              parent="pest_control_menu_root"
+              sequence="90"/>
+
+    <menuitem id="pest_control_menu_trap_types"
+              name="Tipos de Trampa"
+              parent="pest_control_menu_config"
+              action="pest_trap_type_action"
+              sequence="10"/>
+
+    <menuitem id="pest_control_menu_plague_types"
+              name="Tipos de Plaga"
+              parent="pest_control_menu_config"
+              action="pest_plague_type_action"
+              sequence="20"/>
+
+</odoo>
