@@ -158,6 +158,38 @@ export class BlueprintCanvas extends Component {
             });
         }
     }
+
+    async onDeactivateTrap(trapId) {
+        const trap = this.state.data.traps.find(t => t.id === trapId);
+        if (!trap) return;
+
+        const confirmed = window.confirm(
+            `¿Desactivar trampa "${trap.name}"? La trampa no se eliminará, solo se archivará.`
+        );
+        if (!confirmed) return;
+
+        // Close tooltip immediately
+        this.state.hoveredTrapId = null;
+
+        // Optimistic UI update — remove from array immediately
+        const trapIndex = this.state.data.traps.findIndex(t => t.id === trapId);
+        const removedTrap = this.state.data.traps.splice(trapIndex, 1)[0];
+
+        try {
+            await this.orm.call('pest.trap', 'write', [[trapId], { active: false }]);
+            this.notification.add(
+                `Trampa "${trap.name}" archivada correctamente.`,
+                { type: 'success' }
+            );
+        } catch (error) {
+            // Revert optimistic update on failure
+            this.state.data.traps.splice(trapIndex, 0, removedTrap);
+            this.notification.add(
+                `Error al archivar trampa: ${error.message || 'Error desconocido'}`,
+                { type: 'danger' }
+            );
+        }
+    }
 }
 
 BlueprintCanvas.template = "pest_control.BlueprintCanvas";

@@ -50,6 +50,14 @@
                                     trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
                                     trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
                                 "><t t-esc="trap.current_state"/></span>
+                                <t t-if="state.data.can_edit and !props.readonly">
+                                    <br/>
+                                    <button class="btn btn-sm btn-outline-danger o_blueprint_deactivate_btn mt-1"
+                                            t-on-click.stop="() => this.onDeactivateTrap(trap.id)"
+                                            title="Archivar trampa">
+                                        <i class="fa fa-archive" aria-hidden="true"/> Archivar
+                                    </button>
+                                </t>
                              </div>
                         </div>
                     </t>
