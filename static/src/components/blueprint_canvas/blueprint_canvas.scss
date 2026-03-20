@@ -248,6 +248,27 @@
     z-index: 5;
 }
 
+// SVG Zone Overlay
+.o_zone_svg_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+
+    polygon {
+        pointer-events: all;
+        transition: stroke-width 0.2s;
+    }
+}
+
+// Drawing mode cursor
+.blueprint-container.drawing-mode {
+    cursor: crosshair;
+}
+
 // Incident count badges on markers
 .o_incident_badge {
     position: absolute;
