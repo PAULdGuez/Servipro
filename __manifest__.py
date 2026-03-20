@@ -30,13 +30,15 @@
         'views/pest_plague_type_views.xml',
         # 3) Views that define actions but don't reference others
         'views/pest_sede_views.xml',
-        'views/pest_blueprint_views.xml',
         'views/pest_incident_views.xml',
         'views/pest_evidence_views.xml',
         'views/pest_inspection_views.xml',
         'views/pest_complaint_views.xml',
         'views/pest_trap_state_views.xml',
         'views/pest_trap_movement_views.xml',
+        # wizard action must be loaded before blueprint_views (which references it)
+        'views/pest_trap_state_wizard_views.xml',
+        'views/pest_blueprint_views.xml',
         # 4) Views that reference other actions
         #    pest_trap_views.xml uses %(pest_control.pest_incident_action)d
         #    so pest_incident_views.xml MUST load before this file

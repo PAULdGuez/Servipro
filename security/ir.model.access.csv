@@ -25,3 +25,7 @@ access_pest_trap_movement_supervisor,pest.trap.movement.supervisor,model_pest_tr
 access_pest_complaint_technician,pest.complaint.technician,model_pest_complaint,group_pest_technician,1,1,1,0
 access_pest_complaint_supervisor,pest.complaint.supervisor,model_pest_complaint,group_pest_supervisor,1,1,1,1
 access_pest_complaint_client,pest.complaint.client,model_pest_complaint,group_pest_client,1,0,0,0
+access_pest_trap_state_wizard_technician,pest.trap.state.wizard.technician,model_pest_trap_state_wizard,pest_control.group_pest_technician,1,1,1,0
+access_pest_trap_state_wizard_supervisor,pest.trap.state.wizard.supervisor,model_pest_trap_state_wizard,pest_control.group_pest_supervisor,1,1,1,1
+access_pest_trap_state_wizard_line_technician,pest.trap.state.wizard.line.technician,model_pest_trap_state_wizard_line,pest_control.group_pest_technician,1,1,1,0
+access_pest_trap_state_wizard_line_supervisor,pest.trap.state.wizard.line.supervisor,model_pest_trap_state_wizard_line,pest_control.group_pest_supervisor,1,1,1,1
