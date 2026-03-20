@@ -69,30 +69,27 @@ class PestSede(models.Model):
         store=True,
     )
 
-    @api.depends('trap_ids', 'blueprint_ids', 'incident_ids')
+    @api.depends('blueprint_ids', 'trap_ids', 'incident_ids')
     def _compute_counts(self):
         for rec in self:
             rec.trap_count = 0
             rec.blueprint_count = 0
             rec.incident_count = 0
-            
+
         if not self.ids:
             return
-            
-        try:
-            trap_data = self.env['pest.trap']._read_group([('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
-            trap_counts = {sede.id: count for sede, count in trap_data}
-            
-            bp_data = self.env['pest.blueprint']._read_group([('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
-            bp_counts = {sede.id: count for sede, count in bp_data}
-            
-            inc_data = self.env['pest.incident']._read_group([('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
-            inc_counts = {sede.id: count for sede, count in inc_data}
-        except Exception:
-            trap_counts = {g['sede_id'][0]: g['sede_id_count'] for g in self.env['pest.trap'].read_group([('sede_id', 'in', self.ids)], ['sede_id'], ['sede_id'])}
-            bp_counts = {g['sede_id'][0]: g['sede_id_count'] for g in self.env['pest.blueprint'].read_group([('sede_id', 'in', self.ids)], ['sede_id'], ['sede_id'])}
-            inc_counts = {g['sede_id'][0]: g['sede_id_count'] for g in self.env['pest.incident'].read_group([('sede_id', 'in', self.ids)], ['sede_id'], ['sede_id'])}
-            
+
+        trap_data = self.env['pest.trap']._read_group(
+            [('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
+        bp_data = self.env['pest.blueprint']._read_group(
+            [('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
+        inc_data = self.env['pest.incident']._read_group(
+            [('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
+
+        trap_counts = {sede.id: count for sede, count in trap_data}
+        bp_counts = {sede.id: count for sede, count in bp_data}
+        inc_counts = {sede.id: count for sede, count in inc_data}
+
         for rec in self:
             rec.trap_count = trap_counts.get(rec.id, 0)
             rec.blueprint_count = bp_counts.get(rec.id, 0)
