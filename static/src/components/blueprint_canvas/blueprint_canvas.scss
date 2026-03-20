@@ -2,9 +2,9 @@
     position: relative;
     width: 100%;
     min-height: 400px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--bs-border-color);
     border-radius: 4px;
-    background-color: #f8f9fa;
+    background-color: var(--bs-light);
     overflow: hidden;
     display: flex;
 
@@ -64,7 +64,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--bs-white);
             z-index: 10;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             transition: transform 0.1s ease;
@@ -80,20 +80,20 @@
             }
 
             &.state-funciona {
-                background-color: var(--bs-success, #28a745);
+                background-color: var(--bs-success);
             }
 
             &.state-en_reparacion {
-                background-color: var(--bs-warning, #ffc107);
-                color: #333;
+                background-color: var(--bs-warning);
+                color: var(--bs-dark);
             }
 
             &.state-no_funciona {
-                background-color: var(--bs-danger, #dc3545);
+                background-color: var(--bs-danger);
             }
 
             &.state-sin_registro {
-                background-color: var(--bs-secondary, #6c757d);
+                background-color: var(--bs-secondary);
             }
 
             &.selected {
@@ -105,15 +105,15 @@
             .o_blueprint_popover {
                 position: absolute;
                 z-index: 1050;
-                background: white;
-                border: 1px solid #dee2e6;
+                background-color: var(--bs-white);
+                border: 1px solid var(--bs-border-color);
                 border-radius: 8px;
                 padding: 12px;
                 min-width: 220px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                 transform: translate(-50%, -110%);
                 cursor: default;
-                color: #212529;
+                color: var(--bs-dark);
 
                 .popover-header {
                     font-weight: 600;
@@ -123,7 +123,7 @@
 
                 .popover-info {
                     font-size: 12px;
-                    color: #6c757d;
+                    color: var(--bs-secondary);
                     margin-bottom: 8px;
                 }
 
@@ -148,8 +148,8 @@
         flex-wrap: wrap;
         gap: 8px;
         padding: 8px 12px;
-        border-top: 1px solid #dee2e6;
-        background: #f8f9fa;
+        border-top: 1px solid var(--bs-border-color);
+        background: var(--bs-light);
 
         .legend-item {
             display: flex;
@@ -162,7 +162,7 @@
             transition: opacity 0.2s;
 
             &:hover {
-                background: #e9ecef;
+                background: var(--bs-gray-200);
             }
 
             &.legend-hidden {
@@ -187,8 +187,8 @@
     right: 0;
     width: 280px;
     height: 100%;
-    background: white;
-    border-left: 1px solid #dee2e6;
+    background-color: var(--bs-white);
+    border-left: 1px solid var(--bs-border-color);
     z-index: 90;
     display: flex;
     flex-direction: column;
@@ -196,7 +196,7 @@
 
     .side-panel-header {
         padding: 12px;
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid var(--bs-border-color);
         
         h6 {
             margin-bottom: 8px;
@@ -216,12 +216,12 @@
         transition: background-color 0.15s;
 
         &:hover {
-            background-color: #f8f9fa;
+            background-color: var(--bs-light);
         }
 
         &.active {
-            background-color: #e7f1ff;
-            border-left: 3px solid #0d6efd;
+            background-color: var(--bs-primary-bg-subtle);
+            border-left: 3px solid var(--bs-primary);
         }
     }
 }
@@ -281,15 +281,15 @@
     font-weight: 700;
     line-height: 18px;
     text-align: center;
-    color: white;
+    color: var(--bs-white);
     padding: 0 4px;
 
     &.badge-warning {
-        background-color: #ffc107;
-        color: #212529;
+        background-color: var(--bs-warning);
+        color: var(--bs-dark);
     }
 
     &.badge-danger {
-        background-color: #dc3545;
+        background-color: var(--bs-danger);
     }
 }

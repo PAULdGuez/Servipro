@@ -12,6 +12,8 @@ except ImportError:
     markdown = None
     _logger.warning("Markdown library not found. Falling back to plain text rendering for docs.")
 
+ALLOWED_DOCS = {'CONTRIBUTING.md', 'TECHNICAL_ARCHITECTURE.md', 'USER_MANUAL.md'}
+
 class PestDocsController(http.Controller):
 
     @http.route('/pest_control/blueprint/<int:blueprint_id>/heatmap_data', type='jsonrpc', auth='user')
@@ -49,15 +51,18 @@ class PestDocsController(http.Controller):
 
     @http.route('/pest_control/docs/<string:filename>', type='http', auth='user', website=True)
     def render_doc(self, filename, **kw):
-        # Security: only allow rendering from the explicit doc directory
-        if '..' in filename or filename.startswith('/'):
+        if filename not in ALLOWED_DOCS:
             return request.not_found()
-            
-        file_path = os.path.join(os.path.dirname(__file__), '../doc', filename)
-        
+
+        doc_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'doc'))
+        file_path = os.path.abspath(os.path.join(doc_dir, filename))
+
+        if not file_path.startswith(doc_dir):
+            return request.not_found()
+
         if not os.path.exists(file_path):
             return request.not_found()
-            
+
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             
