@@ -1,6 +1,9 @@
 import json
+import logging
 from odoo import api, fields, models
 from odoo.tools.image import image_process
+
+_logger = logging.getLogger(__name__)
 
 
 class PestBlueprint(models.Model):
@@ -30,6 +33,11 @@ class PestBlueprint(models.Model):
         attachment=True,
     )
     active = fields.Boolean(default=True)
+    image_processing_state = fields.Selection([
+        ('done', 'Completado'),
+        ('pending', 'Pendiente'),
+        ('failed', 'Fallido'),
+    ], string='Estado Procesamiento', default='done')
 
     # ── Relations ───────────────────────────────────────────────────
     trap_ids = fields.One2many(
@@ -80,8 +88,8 @@ class PestBlueprint(models.Model):
     def create(self, vals_list):
         records = super().create(vals_list)
         for rec in records:
-            if rec.image:
-                rec._process_image_background()
+            if rec.image and not rec.image_web:
+                rec.image_processing_state = 'pending'
         return records
 
     def get_widget_data(self):
@@ -162,7 +170,8 @@ class PestBlueprint(models.Model):
         res = super().write(vals)
         if 'image' in vals and 'image_web' not in vals:
             for rec in self:
-                rec._process_image_background()
+                if rec.image:
+                    rec.image_processing_state = 'pending'
         return res
 
     def _process_image_background(self):
@@ -174,6 +183,18 @@ class PestBlueprint(models.Model):
             except Exception:
                 # If processing fails, use the original image as-is
                 super(PestBlueprint, self).write({'image_web': self.image})
+
+    @api.model
+    def _process_pending_images(self):
+        """Cron job: process pending blueprint images in batch."""
+        records = self.search([('image_processing_state', '=', 'pending')], limit=50)
+        for rec in records:
+            try:
+                rec._process_image_background()
+                rec.image_processing_state = 'done'
+            except Exception:
+                _logger.exception('Error processing image for blueprint %s', rec.id)
+                rec.image_processing_state = 'failed'
 
     def action_migrate_coordinates(self):
         import base64
