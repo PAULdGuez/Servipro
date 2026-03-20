@@ -18,7 +18,6 @@ class PestDocsController(http.Controller):
 
     @http.route('/pest_control/blueprint/<int:blueprint_id>/heatmap_data', type='jsonrpc', auth='user')
     def get_heatmap_data(self, blueprint_id, **kwargs):
-        """Return heatmap data points for a blueprint's incidents."""
         blueprint = request.env['pest.blueprint'].browse(blueprint_id)
         if not blueprint.exists():
             return {'error': 'Blueprint not found'}
@@ -28,26 +27,32 @@ class PestDocsController(http.Controller):
             ('active', '=', True),
         ])
 
-        # Build heatmap points: each trap's position weighted by organism count
+        if not traps:
+            return {'points': [], 'max_value': 1}
+
+        # Single query: aggregate organism_count by trap_id
+        incident_data = request.env['pest.incident']._read_group(
+            domain=[('trap_id', 'in', traps.ids)],
+            groupby=['trap_id'],
+            aggregates=['organism_count:sum'],
+        )
+
+        # Build trap coordinate map
+        trap_coords = {t.id: (t.coord_x_pct, t.coord_y_pct) for t in traps}
+
         points = []
-        for trap in traps:
-            incidents = request.env['pest.incident'].search([
-                ('trap_id', '=', trap.id),
-            ])
-            total_organisms = sum(incidents.mapped('organism_count'))
-            if total_organisms > 0:
-                points.append({
-                    'x': trap.coord_x_pct,
-                    'y': trap.coord_y_pct,
-                    'value': total_organisms,
-                })
+        for trap, total_organisms in incident_data:
+            if total_organisms and total_organisms > 0:
+                coords = trap_coords.get(trap.id)
+                if coords:
+                    points.append({
+                        'x': coords[0] or 0,
+                        'y': coords[1] or 0,
+                        'value': total_organisms,
+                    })
 
         max_value = max((p['value'] for p in points), default=1)
-
-        return {
-            'points': points,
-            'max_value': max_value,
-        }
+        return {'points': points, 'max_value': max_value}
 
     @http.route('/pest_control/docs/<string:filename>', type='http', auth='user', website=True)
     def render_doc(self, filename, **kw):

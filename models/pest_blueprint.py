@@ -95,31 +95,46 @@ class PestBlueprint(models.Model):
     def get_widget_data(self):
         self.ensure_one()
 
-        # Get incident counts per trap using Odoo 19 _read_group API
+        # Batch incident counts (already using _read_group from previous fix)
         incident_counts = {}
         try:
-            trap_incident_data = self.env['pest.incident']._read_group(
-                domain=[('trap_id', 'in', self.trap_ids.ids)],
-                groupby=['trap_id'],
-                aggregates=['__count'],
-            )
-            incident_counts = {trap.id: count for trap, count in trap_incident_data}
+            data = self.env['pest.incident']._read_group(
+                [('trap_id', 'in', self.trap_ids.ids)],
+                ['trap_id'], ['__count'])
+            incident_counts = {trap.id: count for trap, count in data}
         except Exception:
             pass
 
+        # Batch read all trap data in one query
+        traps_data = self.trap_ids.read([
+            'name', 'coord_x_pct', 'coord_y_pct', 'current_state',
+            'trap_type_id', 'sede_id',
+        ])
+
+        # Batch read trap types
+        type_ids = list(set(
+            t['trap_type_id'][0] for t in traps_data if t.get('trap_type_id')
+        ))
+        types_map = {}
+        if type_ids:
+            types_data = self.env['pest.trap.type'].search_read(
+                [('id', 'in', type_ids)], ['name', 'icon'])
+            types_map = {t['id']: t for t in types_data}
+
         trap_list = []
-        for trap in self.trap_ids:
+        for t in traps_data:
+            tt = types_map.get(t['trap_type_id'][0]) if t.get('trap_type_id') else {}
             trap_list.append({
-                'id': trap.id,
-                'name': trap.name or '',
-                'coord_x_pct': trap.coord_x_pct or 0.0,
-                'coord_y_pct': trap.coord_y_pct or 0.0,
-                'current_state': trap.current_state or 'sin_registro',
-                'trap_type_id': trap.trap_type_id.id if trap.trap_type_id else False,
-                'trap_type_name': trap.trap_type_id.name if trap.trap_type_id else '',
-                'trap_type_icon': (trap.trap_type_id.icon or 'fa-crosshairs') if trap.trap_type_id else 'fa-crosshairs',
-                'sede_id': trap.sede_id.id if trap.sede_id else False,
-                'incident_count': incident_counts.get(trap.id, 0),
+                'id': t['id'],
+                'name': t.get('name') or '',
+                'coord_x_pct': t.get('coord_x_pct') or 0.0,
+                'coord_y_pct': t.get('coord_y_pct') or 0.0,
+                'current_state': t.get('current_state') or 'sin_registro',
+                'trap_type_id': t['trap_type_id'][0] if t.get('trap_type_id') else False,
+                'trap_type_name': tt.get('name', ''),
+                'trap_type_icon': tt.get('icon', 'fa-crosshairs') or 'fa-crosshairs',
+                'sede_id': t['sede_id'][0] if t.get('sede_id') else False,
+                'incident_count': incident_counts.get(t['id'], 0),
             })
 
         # Build trap type summary for the legend
