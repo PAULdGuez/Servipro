@@ -129,7 +129,7 @@ class PestTrap(models.Model):
         for rec in self:
             rec.current_state = state_map.get(rec.id, 'sin_registro')
 
-    def action_move_to_from_widget(self, new_x_pct, new_y_pct):
+    def action_move_to_from_widget(self, new_x_pct, new_y_pct, comment=''):
         from odoo.exceptions import UserError
         for trap in self:
             if not isinstance(new_x_pct, (int, float)) or not isinstance(new_y_pct, (int, float)):
@@ -153,6 +153,7 @@ class PestTrap(models.Model):
                 'y_from_pct': old_y,
                 'x_to_pct': new_x_pct,
                 'y_to_pct': new_y_pct,
+                'comment': comment or '',
             })
 
             # Auto-detect zone for new position
