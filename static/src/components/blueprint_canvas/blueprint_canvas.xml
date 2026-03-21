@@ -169,6 +169,56 @@
                         </div>
                     </div>
                 </div>
+                <div class="o_trap_detail_panel" t-if="state.trapDetail">
+                    <div class="detail-header d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong t-esc="state.trapDetail.trap_name"/> 
+                            <span class="text-muted">— <t t-esc="state.trapDetail.trap_type"/></span>
+                            <span class="badge text-bg-secondary ms-2" t-esc="state.trapDetail.current_state"/>
+                            <small class="text-muted ms-2" t-if="state.trapDetail.location" t-esc="'📍 ' + state.trapDetail.location"/>
+                        </div>
+                        <button class="btn-close btn-sm" t-on-click="closeDetailPanel"/>
+                    </div>
+                    <div class="detail-tables">
+                        <div class="detail-table-section">
+                            <h6>Últimas Incidencias</h6>
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead><tr><th>Fecha</th><th>Plaga</th><th>Tipo</th><th>Cant.</th></tr></thead>
+                                <tbody>
+                                    <t t-foreach="state.trapDetail.incidents" t-as="inc" t-key="inc_index">
+                                        <tr>
+                                            <td t-esc="inc.date"/>
+                                            <td t-esc="inc.plague"/>
+                                            <td t-esc="inc.type"/>
+                                            <td t-esc="inc.count"/>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="!state.trapDetail.incidents.length">
+                                        <td colspan="4" class="text-muted text-center">Sin incidencias</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-table-section">
+                            <h6>Historial de Estado</h6>
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead><tr><th>Fecha</th><th>Estado</th><th>Usuario</th></tr></thead>
+                                <tbody>
+                                    <t t-foreach="state.trapDetail.states" t-as="st" t-key="st_index">
+                                        <tr>
+                                            <td t-esc="st.date"/>
+                                            <td t-esc="st.state"/>
+                                            <td t-esc="st.user"/>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="!state.trapDetail.states.length">
+                                        <td colspan="3" class="text-muted text-center">Sin registros</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <div class="o_blueprint_legend" t-if="state.data.trap_types and state.data.trap_types.length">
                     <div class="legend-header">Tipos de Trampa</div>
                     <div class="legend-list">
