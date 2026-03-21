@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class PestTrapState(models.Model):
@@ -41,3 +41,28 @@ class PestTrapState(models.Model):
         string='Registrado por',
         default=lambda self: self.env.user,
     )
+
+    # ── ORM overrides to keep current_state in sync ──────────────────
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        traps = records.mapped('trap_id')
+        if traps:
+            traps._compute_current_state()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'state' in vals or 'trap_id' in vals or 'date' in vals:
+            traps = self.mapped('trap_id')
+            if traps:
+                traps._compute_current_state()
+        return res
+
+    def unlink(self):
+        traps = self.mapped('trap_id')
+        res = super().unlink()
+        if traps:
+            traps._compute_current_state()
+        return res
