@@ -54,6 +54,7 @@
                         </group>
                         <group string="Ubicación">
                             <field name="location"/>
+                            <field name="zone_id"/>
                             <field name="coord_x"/>
                             <field name="coord_y"/>
                             <field name="installation_date"/>

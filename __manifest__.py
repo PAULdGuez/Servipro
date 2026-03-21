@@ -29,6 +29,7 @@
         # 2) Simple catalog views (no cross-references)
         'views/pest_trap_type_views.xml',
         'views/pest_plague_type_views.xml',
+        'views/pest_zone_views.xml',
         # 3) Views that define actions but don't reference others
         'views/pest_sede_views.xml',
         'views/pest_incident_views.xml',
