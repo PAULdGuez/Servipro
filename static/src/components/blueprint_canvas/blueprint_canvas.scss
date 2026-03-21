@@ -72,6 +72,7 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
             transition: transform 0.1s ease;
             font-size: 13px;
+            background-color: #6c757d; // Default gray fallback
 
             &[draggable="true"] {
                 cursor: grab;
@@ -84,20 +85,20 @@
             }
 
             &.state-funciona {
-                background-color: var(--bs-success);
+                background-color: #198754 !important; // Green
             }
 
             &.state-en_reparacion {
-                background-color: var(--bs-warning);
-                color: var(--bs-dark);
+                background-color: #ffc107 !important; // Yellow
+                color: #212529;
             }
 
             &.state-no_funciona {
-                background-color: var(--bs-danger);
+                background-color: #dc3545 !important; // Red
             }
 
             &.state-sin_registro {
-                background-color: var(--bs-secondary);
+                background-color: #6c757d !important; // Gray
             }
 
             &.selected {

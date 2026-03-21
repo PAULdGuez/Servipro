@@ -41,6 +41,7 @@
         # wizard action must be loaded before blueprint_views (which references it)
         'views/pest_trap_state_wizard_views.xml',
         'views/pest_import_wizard_views.xml',
+        'views/pest_trap_movement_wizard_views.xml',
         'views/pest_blueprint_zone_views.xml',
         'views/pest_blueprint_views.xml',
         # 4) Views that reference other actions

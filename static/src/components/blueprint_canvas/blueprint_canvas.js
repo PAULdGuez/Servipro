@@ -111,24 +111,25 @@ export class BlueprintCanvas extends Component {
     }
 
     async updateTrapPosition(trapId, pctX, pctY) {
-        const reason = window.prompt('Motivo del movimiento (opcional):');
-        if (reason === null) {
-            await this.loadData();
-            return;
-        }
-
+        // Get current trap data for zone_from
         const trap = this.state.data.traps.find(t => t.id === trapId);
-        if (trap) {
-            trap.coord_x_pct = pctX;
-            trap.coord_y_pct = pctY;
-        }
-
-        try {
-            await this.orm.call("pest.trap", "action_move_to_from_widget", [[trapId], pctX, pctY, reason || '']);
-        } catch (error) {
-            this.notification.add("Error al mover trampa.", { type: "danger" });
-        }
-        await this.loadData();
+        
+        // Open the movement wizard instead of window.prompt
+        await this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'pest.trap.movement.wizard',
+            views: [[false, 'form']],
+            target: 'new',
+            context: {
+                default_trap_id: trapId,
+                default_blueprint_id: this.props.record.resId,
+                default_new_x_pct: pctX,
+                default_new_y_pct: pctY,
+                default_zone_from_id: trap && trap.zone_id ? trap.zone_id : false,
+            },
+        }, {
+            onClose: () => this.loadData(),
+        });
     }
 
     onContainerClick(ev) {

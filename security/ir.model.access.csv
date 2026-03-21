@@ -39,3 +39,5 @@ access_pest_incident_import_preview_super,pest.incident.import.preview.super,mod
 access_pest_zone_client,pest.zone.client,model_pest_zone,pest_control.group_pest_client,1,0,0,0
 access_pest_zone_technician,pest.zone.technician,model_pest_zone,pest_control.group_pest_technician,1,1,1,0
 access_pest_zone_supervisor,pest.zone.supervisor,model_pest_zone,pest_control.group_pest_supervisor,1,1,1,1
+access_pest_trap_movement_wizard_tech,pest.trap.movement.wizard.tech,model_pest_trap_movement_wizard,pest_control.group_pest_technician,1,1,1,0
+access_pest_trap_movement_wizard_super,pest.trap.movement.wizard.super,model_pest_trap_movement_wizard,pest_control.group_pest_supervisor,1,1,1,1
