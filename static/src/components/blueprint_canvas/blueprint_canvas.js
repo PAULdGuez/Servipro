@@ -153,6 +153,7 @@ export class BlueprintCanvas extends Component {
                 default_blueprint_id: this.props.record.resId,
                 default_coord_x_pct: pctX,
                 default_coord_y_pct: pctY,
+                default_sede_id: this.state.data && this.state.data.sede_id ? this.state.data.sede_id : false,
             }
         }, {
             onClose: () => {
@@ -230,6 +231,7 @@ export class BlueprintCanvas extends Component {
                     default_blueprint_id: this.props.record.resId,
                     default_coord_x_pct: 50,
                     default_coord_y_pct: 50,
+                    default_sede_id: this.state.data && this.state.data.sede_id ? this.state.data.sede_id : false,
                 }
             }, {
                 onClose: () => {

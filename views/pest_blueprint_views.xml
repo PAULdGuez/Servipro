@@ -36,6 +36,11 @@
                             context="{'default_blueprint_id': id}"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_traps" icon="fa-crosshairs">
+                            <field name="trap_count" string="Trampas" widget="statinfo"/>
+                        </button>
+                    </div>
                     <group>
                         <group string="Datos del Plano">
                             <field name="name"/>
