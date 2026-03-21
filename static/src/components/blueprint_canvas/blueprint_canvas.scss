@@ -413,24 +413,3 @@
         background-color: rgba(40, 167, 69, 0.08);
     }
 }
-
-// When the blueprint canvas widget is present, ensure it gets full width
-// These rules target the form that CONTAINS the blueprint widget
-// without needing a custom class on the form tag
-.o_field_widget[name="image_web"] {
-    width: 100% !important;
-    max-width: 100% !important;
-}
-
-// Force chatter to bottom in any form that has the blueprint widget
-// Odoo 19 Community puts chatter at bottom by default,
-// but this ensures it stays there even on wide screens
-.o_form_view:has(.o_blueprint_canvas_widget) {
-    .o-mail-Form-chatter {
-        width: 100% !important;
-        flex-basis: 100% !important;
-    }
-    .o_form_sheet_bg {
-        flex: 1 1 100% !important;
-    }
-}
