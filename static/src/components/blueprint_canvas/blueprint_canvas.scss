@@ -413,3 +413,31 @@
         background-color: rgba(40, 167, 69, 0.08);
     }
 }
+
+// Force chatter below form (not on the right) for blueprint views
+// and make the blueprint canvas use full available width
+.o_form_view.o_pest_blueprint_form {
+    // Force chatter to bottom layout
+    .o-mail-Form-chatter {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    // Prevent the form from splitting into two columns (form + chatter side)
+    .o_form_sheet_bg {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    // Make the interactive blueprint section full width
+    .o_group.o_inner_group {
+        max-width: 100%;
+    }
+}
+
+// Force the blueprint widget to use all available width
+.o_field_widget.o_field_blueprint_canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+}
