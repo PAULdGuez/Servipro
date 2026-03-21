@@ -142,7 +142,7 @@
                                            t-esc="trap.incident_count"/>
                                      
                                      <!-- Click-based popover -->
-                                     <div class="o_blueprint_popover" t-if="state.selectedTrapId === trap.id" t-on-click.stop="">
+                                     <div t-att-class="'o_blueprint_popover popover-' + this.getPopoverPosition(trap)" t-if="state.selectedTrapId === trap.id" t-on-click.stop="">
                                          <div class="popover-header">
                                              <t t-esc="trap.name"/>
                                          </div>

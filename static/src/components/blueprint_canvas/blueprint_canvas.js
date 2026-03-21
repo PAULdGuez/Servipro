@@ -583,6 +583,16 @@ export class BlueprintCanvas extends Component {
         }
         return inside;
     }
+
+    getPopoverPosition(trap) {
+        const x = trap.coord_x_pct;
+        const y = trap.coord_y_pct;
+        if (y < 25) return 'bottom';
+        if (y > 85) return 'top';
+        if (x < 15) return 'right';
+        if (x > 85) return 'left';
+        return 'top';
+    }
 }
 
 BlueprintCanvas.template = "pest_control.BlueprintCanvas";

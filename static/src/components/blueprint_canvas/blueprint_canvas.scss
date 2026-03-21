@@ -114,9 +114,33 @@
                 padding: 12px;
                 min-width: 220px;
                 box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-                transform: translate(-50%, -110%);
                 cursor: default;
                 color: #212529;
+
+                &.popover-top {
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    margin-bottom: 8px;
+                }
+                &.popover-bottom {
+                    top: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    margin-top: 8px;
+                }
+                &.popover-left {
+                    right: 100%;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    margin-right: 8px;
+                }
+                &.popover-right {
+                    left: 100%;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    margin-left: 8px;
+                }
 
                 .popover-header {
                     font-weight: 600;
