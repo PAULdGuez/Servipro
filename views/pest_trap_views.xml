@@ -53,10 +53,10 @@
                                    domain="[('sede_id', '=', sede_id)]"/>
                         </group>
                         <group string="Ubicación">
-                            <field name="location"/>
-                            <field name="zone_id"/>
-                            <field name="coord_x"/>
-                            <field name="coord_y"/>
+                            <field name="zone_id" placeholder="Seleccione una zona..."/>
+                            <field name="location" string="Ubicación (texto libre)" placeholder="Solo si no hay zona configurada"/>
+                            <field name="coord_x" invisible="1"/>
+                            <field name="coord_y" invisible="1"/>
                             <field name="installation_date"/>
                         </group>
                     </group>
