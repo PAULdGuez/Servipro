@@ -122,7 +122,7 @@
                                      t-on-dragend="onDragEnd"
                                      t-on-click="(ev) => this.onTrapMarkerClick(ev, trap)">
                                      
-                                     <i class="fa fa-crosshairs" aria-hidden="true"/>
+                                     <i t-att-class="'fa ' + (trap.trap_type_icon || 'fa-crosshairs')" aria-hidden="true"/>
                                      <span class="o_incident_badge" 
                                            t-if="state.showIncidentBadges and trap.incident_count > 0"
                                            t-att-class="trap.incident_count > 5 ? 'badge-danger' : 'badge-warning'"
