@@ -19,6 +19,7 @@ export class BlueprintCanvas extends Component {
             error: null,
             draggedTrapId: null,
             selectedTrapId: null,
+            trapDetail: null,
             zoomLevel: 1.0,
             sidePanelOpen: false,
             filterTrapType: null,
@@ -145,6 +146,7 @@ export class BlueprintCanvas extends Component {
         // Close any open popover
         if (this.state.selectedTrapId !== null) {
             this.state.selectedTrapId = null;
+            this.state.trapDetail = null;
             return;
         }
 
@@ -176,14 +178,25 @@ export class BlueprintCanvas extends Component {
         });
     }
 
-    onTrapMarkerClick(ev, trap) {
+    async onTrapMarkerClick(ev, trap) {
         ev.stopPropagation();
-        // Toggle popover: click same marker again to close
         if (this.state.selectedTrapId === trap.id) {
             this.state.selectedTrapId = null;
-        } else {
-            this.state.selectedTrapId = trap.id;
+            this.state.trapDetail = null;
+            return;
         }
+        this.state.selectedTrapId = trap.id;
+        try {
+            const detail = await this.orm.call('pest.trap', 'get_detail_data', [[trap.id]]);
+            this.state.trapDetail = detail;
+        } catch (e) {
+            this.state.trapDetail = null;
+        }
+    }
+
+    closeDetailPanel() {
+        this.state.trapDetail = null;
+        this.state.selectedTrapId = null;
     }
 
     async onRegisterIncident(trap) {

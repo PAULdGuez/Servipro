@@ -184,6 +184,36 @@ class PestTrap(models.Model):
                 if zone_name:
                     trap.location = zone_name
 
+    def get_detail_data(self):
+        self.ensure_one()
+        incidents = self.env['pest.incident'].search_read(
+            [('trap_id', '=', self.id)],
+            ['date', 'plague_type_id', 'incident_type', 'organism_count', 'notes'],
+            limit=10, order='date desc')
+        states = self.env['pest.trap.state'].search_read(
+            [('trap_id', '=', self.id)],
+            ['date', 'state', 'observations', 'user_id'],
+            limit=5, order='date desc')
+        return {
+            'trap_name': self.name or '',
+            'trap_type': self.trap_type_id.name if self.trap_type_id else '',
+            'location': self.location or '',
+            'current_state': self.current_state or 'sin_registro',
+            'incidents': [{
+                'date': str(i.get('date') or ''),
+                'plague': i['plague_type_id'][1] if i.get('plague_type_id') else '',
+                'type': i.get('incident_type', ''),
+                'count': i.get('organism_count', 0),
+                'notes': i.get('notes', ''),
+            } for i in incidents],
+            'states': [{
+                'date': str(s.get('date') or ''),
+                'state': s.get('state', ''),
+                'observations': s.get('observations', ''),
+                'user': s['user_id'][1] if s.get('user_id') else '',
+            } for s in states],
+        }
+
     def action_view_incidents(self):
         self.ensure_one()
         return {
