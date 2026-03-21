@@ -119,9 +119,10 @@
         <field name="name">pest.incident.graph</field>
         <field name="model">pest.incident</field>
         <field name="arch" type="xml">
-            <graph type="bar">
-                <field name="plague_type_id"/>
+            <graph string="Incidencias" type="bar">
+                <field name="date" interval="month" type="col"/>
                 <field name="organism_count" type="measure"/>
+                <field name="plague_type_id" type="row"/>
             </graph>
         </field>
     </record>
