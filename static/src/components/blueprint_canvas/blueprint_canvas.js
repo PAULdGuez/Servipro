@@ -31,6 +31,7 @@ export class BlueprintCanvas extends Component {
             drawingMode: false,
             drawingPoints: [],
             selectedZoneId: null,
+            isEditMode: false,
         });
 
         onWillStart(async () => {
@@ -104,7 +105,17 @@ export class BlueprintCanvas extends Component {
         this.state.draggedTrapId = null;
     }
 
+    toggleEditMode() {
+        this.state.isEditMode = !this.state.isEditMode;
+    }
+
     async updateTrapPosition(trapId, pctX, pctY) {
+        const reason = window.prompt('Motivo del movimiento (opcional):');
+        if (reason === null) {
+            await this.loadData();
+            return;
+        }
+
         const trap = this.state.data.traps.find(t => t.id === trapId);
         if (trap) {
             trap.coord_x_pct = pctX;
@@ -112,9 +123,9 @@ export class BlueprintCanvas extends Component {
         }
 
         try {
-            await this.orm.call("pest.trap", "action_move_to_from_widget", [[trapId], pctX, pctY]);
+            await this.orm.call("pest.trap", "action_move_to_from_widget", [[trapId], pctX, pctY, reason || '']);
         } catch (error) {
-            this.notification.add("Error al guardar la posición en el servidor.", { type: "danger" });
+            this.notification.add("Error al mover trampa.", { type: "danger" });
         }
         await this.loadData();
     }
@@ -124,6 +135,8 @@ export class BlueprintCanvas extends Component {
             this.onCanvasClickForZone(ev);
             return;
         }
+
+        if (!this.state.isEditMode) return;
 
         // Close popover if clicking outside a marker or popover
         if (ev.target.closest('.o_blueprint_popover')) return;

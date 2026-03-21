@@ -43,6 +43,13 @@
                     </button>
                     <span class="mx-1 border-start" style="height: 20px;"/>
                     <button class="btn btn-sm" 
+                            t-att-class="state.isEditMode ? 'btn-success' : 'btn-light'"
+                            t-on-click="toggleEditMode" 
+                            title="Modo Edición"
+                            t-if="state.data.can_edit">
+                        <i t-att-class="state.isEditMode ? 'fa fa-unlock' : 'fa fa-lock'"/>
+                    </button>
+                    <button class="btn btn-sm" 
                             t-att-class="state.drawingMode ? 'btn-primary' : 'btn-light'"
                             t-on-click="toggleDrawingMode" 
                             title="Dibujar Zona"
@@ -77,7 +84,7 @@
                              role="application"
                              aria-label="Plano Interactivo de Trampas"
                              t-on-keydown="onKeyDown"
-                             t-att-class="{'can-edit': state.data.can_edit and !props.readonly, 'drawing-mode': state.drawingMode}">
+                             t-att-class="{'can-edit': state.isEditMode and state.data.can_edit and !props.readonly, 'drawing-mode': state.drawingMode}">
                             
                             <img t-att-src="state.data.image_url" class="blueprint-image" draggable="false" alt="Plano de planta"/>
 
@@ -117,7 +124,7 @@
                                      t-att-aria-label="'Trampa ' + trap.name + ' - Estado: ' + trap.current_state"
                                      t-att-class="'state-' + trap.current_state + (state.selectedTrapId === trap.id ? ' selected' : '') + (state.highlightedTrapId === trap.id ? ' highlighted' : '')"
                                      t-att-style="'left: ' + trap.coord_x_pct + '%; top: ' + trap.coord_y_pct + '%;'"
-                                     t-att-draggable="state.data.can_edit and !props.readonly ? 'true' : 'false'"
+                                     t-att-draggable="state.isEditMode and state.data.can_edit and !props.readonly ? 'true' : 'false'"
                                      t-on-dragstart="(ev) => this.onDragStart(ev, trap)"
                                      t-on-dragend="onDragEnd"
                                      t-on-click="(ev) => this.onTrapMarkerClick(ev, trap)">
