@@ -185,10 +185,14 @@ export class BlueprintCanvas extends Component {
                 default_location: defaultLocation,
             }
         }, {
-            onClose: () => {
-                this.state.loading = true;
-                this.loadData();
-            }
+            onClose: async () => {
+                await this.loadData();
+                const registerIncident = window.confirm('¿Trampa creada exitosamente! ¿Desea registrar una incidencia para esta trampa?');
+                if (registerIncident && this.state.data && this.state.data.traps && this.state.data.traps.length > 0) {
+                    const newestTrap = this.state.data.traps[this.state.data.traps.length - 1];
+                    await this.onRegisterIncident(newestTrap);
+                }
+            },
         });
     }
 
@@ -222,7 +226,7 @@ export class BlueprintCanvas extends Component {
             context: {
                 default_trap_id: trap.id,
                 default_blueprint_id: this.props.record.resId,
-                default_sede_id: trap.sede_id,
+                default_sede_id: trap.sede_id || (this.state.data && this.state.data.sede_id) || false,
             },
         }, {
             onClose: () => this.loadData(),
