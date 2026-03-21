@@ -116,6 +116,7 @@ export class BlueprintCanvas extends Component {
         } catch (error) {
             this.notification.add("Error al guardar la posición en el servidor.", { type: "danger" });
         }
+        await this.loadData();
     }
 
     onContainerClick(ev) {
