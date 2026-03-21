@@ -3,7 +3,7 @@ from odoo import models, fields
 
 class PestZone(models.Model):
     _name = 'pest.zone'
-    _description = 'Zona / Ubicación'
+    _description = 'Ubicación'
     _order = 'name'
 
     name = fields.Char(string='Nombre', required=True)

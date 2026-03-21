@@ -29,7 +29,7 @@ class PestTrap(models.Model):
         required=True,
     )
     location = fields.Char(string='Ubicación / Zona')
-    zone_id = fields.Many2one('pest.zone', string='Zona')
+    zone_id = fields.Many2one('pest.zone', string='Ubicación')
     coord_x = fields.Float(
         string='Coordenada X',
         digits=(10, 2),

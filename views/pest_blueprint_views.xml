@@ -66,8 +66,7 @@
                                 <list editable="bottom">
                                     <field name="name"/>
                                      <field name="trap_type_id"/>
-                                    <field name="location"/>
-                                    <field name="zone_id"/>
+                                    <field name="zone_id" string="Ubicación"/>
                                     <field name="coord_x_pct" string="X (%)"/>
                                     <field name="coord_y_pct" string="Y (%)"/>
                                     <field name="coord_x" column_invisible="1"/>

@@ -13,7 +13,7 @@
                 <field name="trap_type_id"/>
                 <field name="sede_id"/>
                 <field name="blueprint_id"/>
-                <field name="location"/>
+                <field name="zone_id" string="Ubicación"/>
                 <field name="installation_date"/>
                 <field name="current_state" widget="badge"
                        decoration-success="current_state == 'funciona'"
@@ -53,8 +53,7 @@
                                    domain="[('sede_id', '=', sede_id)]"/>
                         </group>
                         <group string="Ubicación">
-                            <field name="zone_id" placeholder="Seleccione una zona..."/>
-                            <field name="location" string="Ubicación (texto libre)" placeholder="Solo si no hay zona configurada"/>
+                            <field name="zone_id" string="Ubicación" placeholder="Seleccione una ubicación..."/>
                             <field name="coord_x" invisible="1"/>
                             <field name="coord_y" invisible="1"/>
                             <field name="installation_date"/>
@@ -130,12 +129,12 @@
                 <field name="trap_type_id"/>
                 <field name="sede_id"/>
                 <field name="blueprint_id"/>
-                <field name="location"/>
+                <field name="zone_id" string="Ubicación"/>
                 <filter string="Activos" name="filter_active" domain="[('active', '=', True)]"/>
                 <filter string="Archivados" name="filter_archived" domain="[('active', '=', False)]"/>
                 <group>
                     <filter string="Ubicación" name="group_location"
-                            context="{'group_by': 'location'}"/>
+                            context="{'group_by': 'zone_id'}"/>
                     <filter string="Sede" name="group_sede"
                             context="{'group_by': 'sede_id'}"/>
                     <filter string="Tipo de Trampa" name="group_trap_type"

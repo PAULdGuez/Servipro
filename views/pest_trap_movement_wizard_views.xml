@@ -8,10 +8,10 @@
                 <group>
                     <group string="Trampa">
                         <field name="trap_name"/>
-                        <field name="zone_from_id"/>
+                        <field name="zone_from_id" string="Ubicación Anterior"/>
                     </group>
                     <group string="Destino">
-                        <field name="zone_to_id"/>
+                        <field name="zone_to_id" string="Ubicación Nueva"/>
                         <field name="new_x_pct" invisible="1"/>
                         <field name="new_y_pct" invisible="1"/>
                     </group>

@@ -110,7 +110,7 @@
               action="pest_plague_type_action"
               sequence="20"/>
 
-    <menuitem id="pest_menu_zone" name="Zonas / Ubicaciones"
+    <menuitem id="pest_menu_zone" name="Ubicaciones"
               parent="pest_control_menu_config"
               action="pest_zone_action" sequence="30"/>
 
