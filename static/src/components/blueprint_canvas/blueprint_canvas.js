@@ -59,7 +59,7 @@ export class BlueprintCanvas extends Component {
     }
 
     onDragStart(ev, trap) {
-        if (!this.state.data.can_edit || this.props.readonly) {
+        if (!this.state.data.can_edit || this.props.readonly || !this.state.isEditMode) {
             ev.preventDefault();
             return;
         }
@@ -82,7 +82,7 @@ export class BlueprintCanvas extends Component {
     }
 
     async onDrop(ev) {
-        if (!this.state.data.can_edit || this.props.readonly || !this.state.draggedTrapId) return;
+        if (!this.state.data.can_edit || this.props.readonly || !this.state.isEditMode || !this.state.draggedTrapId) return;
         ev.preventDefault();
 
         const container = this.containerRef.el;
@@ -137,9 +137,8 @@ export class BlueprintCanvas extends Component {
             return;
         }
 
-        if (!this.state.isEditMode) return;
-
         // Close popover if clicking outside a marker or popover
+        // (these checks must happen before isEditMode guard so drag events don't get blocked)
         if (ev.target.closest('.o_blueprint_popover')) return;
         if (ev.target.closest('.blueprint-trap-marker')) return;
 
@@ -149,6 +148,9 @@ export class BlueprintCanvas extends Component {
             this.state.trapDetail = null;
             return;
         }
+
+        // Only allow creating new traps in edit mode
+        if (!this.state.isEditMode) return;
 
         if (!this.state.data.can_edit || this.props.readonly) return;
 
@@ -509,9 +511,7 @@ export class BlueprintCanvas extends Component {
         }
 
         const name = window.prompt('Nombre de la zona:');
-        if (!name) {
-            return; // User cancelled
-        }
+        if (!name) return;
 
         const color = '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0') + '55';
 
@@ -522,14 +522,14 @@ export class BlueprintCanvas extends Component {
                 points_data: JSON.stringify(this.state.drawingPoints),
                 color: color,
             }]);
-            this.notification.add(`Zona "${name}" creada.`, { type: 'success' });
+            this.notification.add('Zona "' + name + '" creada.', { type: 'success' });
+            this.state.drawingMode = false;
+            this.state.drawingPoints = [];
             await this.loadData();
         } catch (error) {
-            this.notification.add('Error al crear zona: ' + (error.message || ''), { type: 'danger' });
+            this.notification.add('Error al crear zona: ' + (error.message || String(error)), { type: 'danger' });
+            console.error('Zone creation error:', error);
         }
-
-        this.state.drawingMode = false;
-        this.state.drawingPoints = [];
     }
 
     cancelDrawing() {
