@@ -368,3 +368,14 @@
         background-color: var(--bs-danger);
     }
 }
+
+// Green stat button values
+.oe_button_box .oe_stat_button {
+    .o_stat_info .o_stat_value {
+        color: #28a745 !important;
+        font-weight: 700;
+    }
+    &:hover {
+        background-color: rgba(40, 167, 69, 0.08);
+    }
+}
