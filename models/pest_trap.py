@@ -9,9 +9,8 @@ class PestTrap(models.Model):
 
     name = fields.Char(
         string='ID Trampa',
-        required=True,
         tracking=True,
-        help='Código visible de la trampa, e.g. EDC-001',
+        help='Se genera automáticamente si se deja vacío. Ej: EDC-001',
     )
     sede_id = fields.Many2one(
         'pest.sede',
@@ -93,6 +92,27 @@ class PestTrap(models.Model):
             'El nombre de la trampa debe ser único por plano.',
         ),
     ]
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('name') and vals.get('trap_type_id') and vals.get('blueprint_id'):
+                trap_type = self.env['pest.trap.type'].browse(vals['trap_type_id'])
+                prefix = trap_type.code or 'TRP'
+                seq_code = 'pest.trap.%s.%s' % (vals['blueprint_id'], vals['trap_type_id'])
+                sequence = self.env['ir.sequence'].sudo().search([('code', '=', seq_code)], limit=1)
+                if not sequence:
+                    sequence = self.env['ir.sequence'].sudo().create({
+                        'name': 'Trampa %s - Plano %s' % (prefix, vals['blueprint_id']),
+                        'code': seq_code,
+                        'prefix': '%s-' % prefix,
+                        'padding': 3,
+                        'number_increment': 1,
+                    })
+                vals['name'] = sequence.next_by_code(seq_code)
+            elif not vals.get('name'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('pest.trap.generic') or 'TRP-NEW'
+        return super().create(vals_list)
 
     @api.depends('incident_ids')
     def _compute_incident_count(self):
