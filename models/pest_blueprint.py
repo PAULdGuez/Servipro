@@ -178,8 +178,20 @@ class PestBlueprint(models.Model):
             'can_edit': self.can_user_edit_traps(),
             '__last_update': self.write_date.isoformat() if self.write_date else '',
             'zones': zones,
+            'sede_id': self.sede_id.id if self.sede_id else False,
         }
 
+
+    def action_view_traps(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Trampas',
+            'res_model': 'pest.trap',
+            'view_mode': 'list,form',
+            'domain': [('blueprint_id', '=', self.id)],
+            'context': {'default_blueprint_id': self.id, 'default_sede_id': self.sede_id.id},
+        }
 
     def can_user_edit_traps(self):
         self.ensure_one()
