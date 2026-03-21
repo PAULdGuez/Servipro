@@ -40,6 +40,9 @@
                         <button class="oe_stat_button" type="object" name="action_view_traps" icon="fa-crosshairs">
                             <field name="trap_count" string="Trampas" widget="statinfo"/>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_view_incidents" icon="fa-bug">
+                            <field name="incident_count" string="Incidencias" widget="statinfo"/>
+                        </button>
                     </div>
                     <group>
                         <group string="Datos del Plano">

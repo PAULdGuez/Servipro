@@ -63,6 +63,14 @@ class PestBlueprint(models.Model):
         compute='_compute_trap_count',
         store=True,
     )
+    incident_count = fields.Integer(
+        compute='_compute_incident_count',
+        string='Nº Incidencias',
+    )
+
+    def _compute_incident_count(self):
+        for rec in self:
+            rec.incident_count = sum(rec.trap_ids.mapped('incident_count'))
 
     # JSON payload for frontend rendering (zones, renderedWidth, etc.)
     state_data = fields.Text(string='Datos del Estado JSON')
@@ -190,6 +198,17 @@ class PestBlueprint(models.Model):
             'res_model': 'pest.trap',
             'view_mode': 'list,form',
             'domain': [('blueprint_id', '=', self.id)],
+            'context': {'default_blueprint_id': self.id, 'default_sede_id': self.sede_id.id},
+        }
+
+    def action_view_incidents(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Incidencias',
+            'res_model': 'pest.incident',
+            'view_mode': 'list,form,graph,pivot',
+            'domain': [('trap_id', 'in', self.trap_ids.ids)],
             'context': {'default_blueprint_id': self.id, 'default_sede_id': self.sede_id.id},
         }
 

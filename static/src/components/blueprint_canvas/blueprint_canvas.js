@@ -159,6 +159,17 @@ export class BlueprintCanvas extends Component {
         const pctX = Math.max(0, Math.min(100, ((ev.clientX - rect.left) / rect.width) * 100));
         const pctY = Math.max(0, Math.min(100, ((ev.clientY - rect.top) / rect.height) * 100));
 
+        // Auto-detect zone name for the clicked position
+        let defaultLocation = '';
+        if (this.state.data.zones) {
+            for (const zone of this.state.data.zones) {
+                if (this._pointInPolygon(pctX, pctY, zone.points)) {
+                    defaultLocation = zone.name;
+                    break;
+                }
+            }
+        }
+
         this.action.doAction({
             type: 'ir.actions.act_window',
             res_model: 'pest.trap',
@@ -169,6 +180,7 @@ export class BlueprintCanvas extends Component {
                 default_coord_x_pct: pctX,
                 default_coord_y_pct: pctY,
                 default_sede_id: this.state.data && this.state.data.sede_id ? this.state.data.sede_id : false,
+                default_location: defaultLocation,
             }
         }, {
             onClose: () => {
@@ -439,9 +451,17 @@ export class BlueprintCanvas extends Component {
             p.value,
         ]);
 
-        heat.data(points);
+        // Filter by visible trap types
+        const visibleTraps = this.state.data.traps.filter(t => this.isTrapVisible(t));
+        const visibleCoords = new Set(visibleTraps.map(t => `${t.coord_x_pct.toFixed(1)},${t.coord_y_pct.toFixed(1)}`));
+        const filteredPoints = points.filter(p => {
+            const key = `${(p[0] / canvas.width * 100).toFixed(1)},${(p[1] / canvas.height * 100).toFixed(1)}`;
+            return visibleCoords.has(key);
+        });
+
+        heat.data(filteredPoints);
         heat.max(data.max_value);
-        heat.radius(30, 20);
+        heat.radius(45, 35);
         heat.draw(0.05);
     }
 
@@ -550,6 +570,18 @@ export class BlueprintCanvas extends Component {
         const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
         const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
         return { x: cx, y: cy };
+    }
+
+    _pointInPolygon(x, y, polygon) {
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i].x, yi = polygon[i].y;
+            const xj = polygon[j].x, yj = polygon[j].y;
+            if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+                inside = !inside;
+            }
+        }
+        return inside;
     }
 }
 

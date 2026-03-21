@@ -88,6 +88,12 @@
                             
                             <img t-att-src="state.data.image_url" class="blueprint-image" draggable="false" alt="Plano de planta"/>
 
+                            <div class="text-muted text-center p-2 small position-absolute" 
+                                 style="bottom: 4px; left: 50%; transform: translateX(-50%); z-index: 2; pointer-events: none;"
+                                 t-if="state.data and (!state.data.zones || !state.data.zones.length) and state.data.can_edit">
+                                <i class="fa fa-info-circle"/> Sin zonas definidas. Use ✏️ para dibujar zonas.
+                            </div>
+
                             <!-- SVG Zone Overlay -->
                             <svg class="o_zone_svg_overlay" viewBox="0 0 100 100" preserveAspectRatio="none"
                                  xmlns="http://www.w3.org/2000/svg">
