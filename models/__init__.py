@@ -1,3 +1,4 @@
+from . import pest_zone
 from . import pest_sede
 from . import pest_blueprint
 from . import pest_trap

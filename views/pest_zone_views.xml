@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pest_zone_view_list" model="ir.ui.view">
+        <field name="name">pest.zone.list</field>
+        <field name="model">pest.zone</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pest_zone_view_form" model="ir.ui.view">
+        <field name="name">pest.zone.form</field>
+        <field name="model">pest.zone</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pest_zone_action" model="ir.actions.act_window">
+        <field name="name">Zonas / Ubicaciones</field>
+        <field name="res_model">pest.zone</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva zona
+            </p>
+            <p>Las zonas se usan para clasificar la ubicación de las trampas.</p>
+        </field>
+    </record>
+</odoo>
