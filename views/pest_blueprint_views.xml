@@ -24,7 +24,7 @@
         <field name="name">pest.blueprint.form</field>
         <field name="model">pest.blueprint</field>
         <field name="arch" type="xml">
-            <form class="o_pest_blueprint_form">
+            <form>
                 <header>
                     <button name="%(pest_trap_state_wizard_action)d" type="action"
                             string="Registrar Estados" class="btn-secondary"
