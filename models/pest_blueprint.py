@@ -89,7 +89,11 @@ class PestBlueprint(models.Model):
         records = super().create(vals_list)
         for rec in records:
             if rec.image and not rec.image_web:
-                rec.image_processing_state = 'pending'
+                try:
+                    rec._process_image_background()
+                    rec.image_processing_state = 'done'
+                except Exception:
+                    rec.image_processing_state = 'pending'
         return records
 
     def get_widget_data(self):
@@ -186,7 +190,11 @@ class PestBlueprint(models.Model):
         if 'image' in vals and 'image_web' not in vals:
             for rec in self:
                 if rec.image:
-                    rec.image_processing_state = 'pending'
+                    try:
+                        rec._process_image_background()
+                        rec.image_processing_state = 'done'
+                    except Exception:
+                        rec.image_processing_state = 'pending'
         return res
 
     def _process_image_background(self):
