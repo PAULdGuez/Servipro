@@ -188,6 +188,11 @@ class PestBlueprint(models.Model):
             '__last_update': self.write_date.isoformat() if self.write_date else '',
             'zones': zones,
             'sede_id': self.sede_id.id if self.sede_id else False,
+            'heatmap_config': {
+                'umbral_bajo': self.sede_id.heatmap_umbral_bajo or 5,
+                'umbral_medio': self.sede_id.heatmap_umbral_medio or 20,
+                'umbral_alto': self.sede_id.heatmap_umbral_alto or 50,
+            },
         }
 
 

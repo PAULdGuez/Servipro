@@ -26,6 +26,7 @@ export class PestDashboard extends Component {
             activeTab: "sede",
             sedes: [],
             chartsData: {},
+            hiddenCharts: [],
         });
         onMounted(async () => await this.loadSedes());
     }
@@ -116,6 +117,49 @@ export class PestDashboard extends Component {
         this.state.activeTab = tab;
         this.state.chartsData = {};
         await this.loadChartsData();
+    }
+
+    toggleChartVisibility(chartKey) {
+        const idx = this.state.hiddenCharts.indexOf(chartKey);
+        if (idx >= 0) {
+            this.state.hiddenCharts.splice(idx, 1);
+        } else {
+            this.state.hiddenCharts.push(chartKey);
+        }
+    }
+
+    isChartVisible(chartKey) {
+        return !this.state.hiddenCharts.includes(chartKey);
+    }
+
+    get sedeChartKeys() {
+        return [
+            {key: 'plagas_por_mes', title: 'Comparación de Plagas por Mes'},
+            {key: 'tipo_incidencia_pie', title: 'Distribución por Tipo de Incidencia'},
+            {key: 'areas_mayor_incidencia', title: 'Áreas con Mayor Incidencia'},
+            {key: 'trampas_mayor_captura', title: 'Trampas con Mayor Captura'},
+            {key: 'areas_capturas_por_plaga', title: 'Áreas que Presentaron Capturas'},
+            {key: 'incidencias_tipo_mes', title: 'Incidencias por Tipo y Mes'},
+            {key: 'trampas_por_ubicacion', title: 'Distribución de Trampas'},
+            {key: 'plagas_voladores', title: 'Plagas Voladores'},
+            {key: 'trampas_captura_voladores', title: 'Trampas Captura Voladores'},
+            {key: 'areas_captura_voladores', title: 'Áreas Capturas Voladores'},
+            {key: 'plagas_rastreros', title: 'Plagas Rastreros'},
+            {key: 'trampas_captura_rastreros', title: 'Trampas Captura Rastreros'},
+            {key: 'areas_captura_rastreros', title: 'Áreas Capturas Rastreros'},
+        ];
+    }
+
+    get quejasChartKeys() {
+        return [
+            {key: 'quejas_por_semana', title: 'Quejas por Semana'},
+            {key: 'lineas_afectadas', title: 'Líneas Afectadas'},
+            {key: 'quejas_por_ano', title: 'Quejas por Año'},
+            {key: 'tipo_insecto', title: 'Tipo de Insecto'},
+            {key: 'quejas_clasificacion', title: 'Clasificación'},
+            {key: 'estado_organismo', title: 'Estado Organismo'},
+            {key: 'estado_quejas', title: 'Estado Quejas'},
+        ];
     }
 
     async exportPowerPoint() {

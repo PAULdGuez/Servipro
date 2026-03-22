@@ -475,7 +475,9 @@ export class BlueprintCanvas extends Component {
         });
 
         heat.data(filteredPoints);
-        heat.max(data.max_value);
+        const config = this.state.data && this.state.data.heatmap_config || {};
+        const maxVal = config.umbral_alto || data.max_value || 50;
+        heat.max(maxVal);
         heat.radius(45, 35);
         heat.draw(0.05);
     }
