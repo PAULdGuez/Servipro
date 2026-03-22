@@ -30,6 +30,8 @@
         'views/pest_trap_type_views.xml',
         'views/pest_plague_type_views.xml',
         'views/pest_zone_views.xml',
+        # Dashboard action must load before sede_views (which references it)
+        'views/pest_dashboard_views.xml',
         # 3) Views that define actions but don't reference others
         'views/pest_sede_views.xml',
         'views/pest_incident_views.xml',
@@ -49,7 +51,6 @@
         #    so pest_incident_views.xml MUST load before this file
         'views/pest_trap_views.xml',
         # 5) Menus last (references all actions)
-        'views/pest_dashboard_views.xml',
         'views/pest_menus.xml',
         # 6) Documentation UI Routes
         'views/pest_doc_templates.xml',
