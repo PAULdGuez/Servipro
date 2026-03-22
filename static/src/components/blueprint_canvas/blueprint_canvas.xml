@@ -127,7 +127,7 @@
                                      role="button"
                                      tabindex="0"
                                      t-att-aria-label="'Trampa ' + trap.name + ' - Estado: ' + trap.current_state"
-                                     t-att-class="'blueprint-trap-marker state-' + trap.current_state + (state.selectedTrapId === trap.id ? ' selected' : '') + (state.highlightedTrapId === trap.id || (state.filterTrapState and trap.current_state === state.filterTrapState) ? ' highlighted' : '')"
+                                     t-att-class="'blueprint-trap-marker state-' + trap.current_state + (state.selectedTrapId === trap.id ? ' selected' : '') + (state.highlightedTrapId === trap.id || (state.filterTrapState and trap.current_state === state.filterTrapState) or (state.filterTrapType and '' + trap.trap_type_id === state.filterTrapType) ? ' highlighted' : '')"
                                      t-att-style="'left: ' + trap.coord_x_pct + '%; top: ' + trap.coord_y_pct + '%;'"
                                      t-att-draggable="state.isEditMode and state.data.can_edit and !props.readonly ? 'true' : 'false'"
                                      t-on-dragstart="(ev) => this.onDragStart(ev, trap)"
