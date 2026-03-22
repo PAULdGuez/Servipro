@@ -91,6 +91,20 @@
               sequence="10"/>
 
     <!-- ════════════════════════════════════════════════════════════════
+         ANÁLISIS
+         ════════════════════════════════════════════════════════════════ -->
+    <menuitem id="pest_control_menu_analysis"
+              name="Análisis"
+              parent="pest_control_menu_root"
+              sequence="40"/>
+
+    <menuitem id="pest_control_menu_analysis_dashboard"
+              name="Dashboard de Gráficas"
+              parent="pest_control_menu_analysis"
+              action="pest_dashboard_action"
+              sequence="10"/>
+
+    <!-- ════════════════════════════════════════════════════════════════
          CONFIGURACIÓN
          ════════════════════════════════════════════════════════════════ -->
     <menuitem id="pest_control_menu_config"

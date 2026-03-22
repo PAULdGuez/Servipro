@@ -49,6 +49,7 @@
         #    so pest_incident_views.xml MUST load before this file
         'views/pest_trap_views.xml',
         # 5) Menus last (references all actions)
+        'views/pest_dashboard_views.xml',
         'views/pest_menus.xml',
         # 6) Documentation UI Routes
         'views/pest_doc_templates.xml',

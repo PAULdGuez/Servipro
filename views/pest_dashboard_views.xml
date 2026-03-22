@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pest_dashboard_action" model="ir.actions.client">
+        <field name="name">Dashboard de Análisis</field>
+        <field name="tag">pest_control.dashboard</field>
+    </record>
+</odoo>
