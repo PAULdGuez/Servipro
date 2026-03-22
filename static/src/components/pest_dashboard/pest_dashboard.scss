@@ -1,7 +1,11 @@
 .pest-dashboard {
     padding: 16px;
     background: #f8f9fa;
-    min-height: 100vh;
+    
+    overflow-y: auto;
+    height: calc(100vh - 50px);
+    padding-bottom: 40px;
+    
 
     .dashboard-filters {
         background: white;
