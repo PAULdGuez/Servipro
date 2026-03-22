@@ -331,6 +331,23 @@ export class BlueprintCanvas extends Component {
         this.state.filterTrapState = ev.target.value || null;
     }
 
+    isTrapHighlighted(trap) {
+        // Individual trap highlight from side panel click
+        if (this.state.highlightedTrapId === trap.id) return true;
+        
+        const hasTypeFilter = !!this.state.filterTrapType;
+        const hasStateFilter = !!this.state.filterTrapState;
+        
+        // No filters active — no highlight
+        if (!hasTypeFilter && !hasStateFilter) return false;
+        
+        const matchesType = !hasTypeFilter || ('' + trap.trap_type_id === this.state.filterTrapType);
+        const matchesState = !hasStateFilter || (trap.current_state === this.state.filterTrapState);
+        
+        // Highlight only if ALL active filters match
+        return matchesType && matchesState;
+    }
+
     onSearchTrap(ev) {
         this.state.searchTerm = ev.target.value || '';
     }
