@@ -30,6 +30,13 @@ class PestSede(models.Model):
         tracking=True,
     )
 
+    heatmap_umbral_bajo = fields.Integer(string='Umbral Bajo (Heatmap)', default=5,
+        help='Cantidad de organismos considerada nivel bajo')
+    heatmap_umbral_medio = fields.Integer(string='Umbral Medio (Heatmap)', default=20,
+        help='Cantidad de organismos considerada nivel medio')
+    heatmap_umbral_alto = fields.Integer(string='Umbral Alto (Heatmap)', default=50,
+        help='Cantidad de organismos considerada nivel alto/crítico')
+
     # ── One2many relations ──────────────────────────────────────────
     blueprint_ids = fields.One2many(
         'pest.blueprint',

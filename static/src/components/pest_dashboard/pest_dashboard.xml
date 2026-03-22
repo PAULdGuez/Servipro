@@ -58,6 +58,27 @@
                 </li>
             </ul>
 
+            <!-- Chart Filter -->
+            <div class="d-flex align-items-center gap-2 mt-2 mb-2" t-if="!state.loading and state.activeTab !== 'ventas'">
+                <label class="fw-bold small">Gráficas:</label>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Mostrar/Ocultar
+                    </button>
+                    <ul class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                        <t t-foreach="state.activeTab === 'sede' ? sedeChartKeys : quejasChartKeys" t-as="ck" t-key="ck.key">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
+                                   t-on-click.prevent="() => this.toggleChartVisibility(ck.key)">
+                                    <i t-att-class="isChartVisible(ck.key) ? 'fa fa-check-square-o' : 'fa fa-square-o'"/>
+                                    <span t-esc="ck.title"/>
+                                </a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Loading -->
             <div t-if="state.loading" class="text-center p-5">
                 <i class="fa fa-spinner fa-spin fa-3x"/>
@@ -73,45 +94,87 @@
             <div t-if="!state.loading and !state.error and state.activeTab === 'sede'" class="dashboard-grid">
                 <h5 class="section-title">General</h5>
                 <div class="charts-row">
-                    <DashboardChart title="'Comparación de Plagas por Mes'" chartType="'bar'" chartData="state.chartsData.plagas_por_mes" height="350"/>
-                    <DashboardChart title="'Distribución por Tipo de Incidencia'" chartType="'doughnut'" chartData="state.chartsData.tipo_incidencia_pie" height="300"/>
-                    <DashboardChart title="'Incidencias por Tipo (Barras)'" chartType="'bar'" chartData="state.chartsData.tipo_incidencia_pie" height="300"/>
-                    <DashboardChart title="'Áreas con Mayor Incidencia'" chartType="'doughnut'" chartData="state.chartsData.areas_mayor_incidencia" height="300"/>
-                    <DashboardChart title="'Trampas con Mayor Captura'" chartType="'bar'" chartData="state.chartsData.trampas_mayor_captura" height="350"/>
-                    <DashboardChart title="'Áreas que Presentaron Capturas'" chartType="'bar'"
-                        chartData="state.chartsData.areas_capturas_por_plaga" height="350"
-                        chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
-                    <DashboardChart title="'Incidencias por Tipo y Mes'" chartType="'bar'" chartData="state.chartsData.incidencias_tipo_mes" height="350"/>
-                    <DashboardChart title="'Distribución de Trampas por Ubicación'" chartType="'bar'" chartData="state.chartsData.trampas_por_ubicacion" height="300"/>
+                    <t t-if="isChartVisible('plagas_por_mes')">
+                        <DashboardChart title="'Comparación de Plagas por Mes'" chartType="'bar'" chartData="state.chartsData.plagas_por_mes" height="350"/>
+                    </t>
+                    <t t-if="isChartVisible('tipo_incidencia_pie')">
+                        <DashboardChart title="'Distribución por Tipo de Incidencia'" chartType="'doughnut'" chartData="state.chartsData.tipo_incidencia_pie" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('tipo_incidencia_pie')">
+                        <DashboardChart title="'Incidencias por Tipo (Barras)'" chartType="'bar'" chartData="state.chartsData.tipo_incidencia_pie" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('areas_mayor_incidencia')">
+                        <DashboardChart title="'Áreas con Mayor Incidencia'" chartType="'doughnut'" chartData="state.chartsData.areas_mayor_incidencia" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('trampas_mayor_captura')">
+                        <DashboardChart title="'Trampas con Mayor Captura'" chartType="'bar'" chartData="state.chartsData.trampas_mayor_captura" height="350"/>
+                    </t>
+                    <t t-if="isChartVisible('areas_capturas_por_plaga')">
+                        <DashboardChart title="'Áreas que Presentaron Capturas'" chartType="'bar'"
+                            chartData="state.chartsData.areas_capturas_por_plaga" height="350"
+                            chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
+                    </t>
+                    <t t-if="isChartVisible('incidencias_tipo_mes')">
+                        <DashboardChart title="'Incidencias por Tipo y Mes'" chartType="'bar'" chartData="state.chartsData.incidencias_tipo_mes" height="350"/>
+                    </t>
+                    <t t-if="isChartVisible('trampas_por_ubicacion')">
+                        <DashboardChart title="'Distribución de Trampas por Ubicación'" chartType="'bar'" chartData="state.chartsData.trampas_por_ubicacion" height="300"/>
+                    </t>
                 </div>
                 <h5 class="section-title mt-4">Voladores</h5>
                 <div class="charts-row">
-                    <DashboardChart title="'Distribución Plagas — Voladores'" chartType="'doughnut'" chartData="state.chartsData.plagas_voladores" height="300"/>
-                    <DashboardChart title="'Trampas Mayor Captura — Voladores'" chartType="'bar'" chartData="state.chartsData.trampas_captura_voladores" height="300"/>
-                    <DashboardChart title="'Áreas Capturas — Voladores'" chartType="'bar'"
-                        chartData="state.chartsData.areas_captura_voladores" height="300"
-                        chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
+                    <t t-if="isChartVisible('plagas_voladores')">
+                        <DashboardChart title="'Distribución Plagas — Voladores'" chartType="'doughnut'" chartData="state.chartsData.plagas_voladores" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('trampas_captura_voladores')">
+                        <DashboardChart title="'Trampas Mayor Captura — Voladores'" chartType="'bar'" chartData="state.chartsData.trampas_captura_voladores" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('areas_captura_voladores')">
+                        <DashboardChart title="'Áreas Capturas — Voladores'" chartType="'bar'"
+                            chartData="state.chartsData.areas_captura_voladores" height="300"
+                            chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
+                    </t>
                 </div>
                 <h5 class="section-title mt-4">Rastreros</h5>
                 <div class="charts-row">
-                    <DashboardChart title="'Distribución Plagas — Rastreros'" chartType="'doughnut'" chartData="state.chartsData.plagas_rastreros" height="300"/>
-                    <DashboardChart title="'Trampas Mayor Captura — Rastreros'" chartType="'bar'" chartData="state.chartsData.trampas_captura_rastreros" height="300"/>
-                    <DashboardChart title="'Áreas Capturas — Rastreros'" chartType="'bar'"
-                        chartData="state.chartsData.areas_captura_rastreros" height="300"
-                        chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
+                    <t t-if="isChartVisible('plagas_rastreros')">
+                        <DashboardChart title="'Distribución Plagas — Rastreros'" chartType="'doughnut'" chartData="state.chartsData.plagas_rastreros" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('trampas_captura_rastreros')">
+                        <DashboardChart title="'Trampas Mayor Captura — Rastreros'" chartType="'bar'" chartData="state.chartsData.trampas_captura_rastreros" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('areas_captura_rastreros')">
+                        <DashboardChart title="'Áreas Capturas — Rastreros'" chartType="'bar'"
+                            chartData="state.chartsData.areas_captura_rastreros" height="300"
+                            chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
+                    </t>
                 </div>
             </div>
 
             <!-- Quejas Tab -->
             <div t-if="!state.loading and !state.error and state.activeTab === 'quejas'" class="dashboard-grid">
                 <div class="charts-row">
-                    <DashboardChart title="'Quejas por Semana'" chartType="'line'" chartData="state.chartsData.quejas_por_semana" height="350"/>
-                    <DashboardChart title="'Frecuencia Líneas Afectadas'" chartType="'pie'" chartData="state.chartsData.lineas_afectadas" height="300"/>
-                    <DashboardChart title="'Quejas por Año'" chartType="'bar'" chartData="state.chartsData.quejas_por_ano" height="300"/>
-                    <DashboardChart title="'Distribución por Tipo de Insecto'" chartType="'pie'" chartData="state.chartsData.tipo_insecto" height="300"/>
-                    <DashboardChart title="'Quejas por Clasificación'" chartType="'bar'" chartData="state.chartsData.quejas_clasificacion" height="300"/>
-                    <DashboardChart title="'Distribución por Estado'" chartType="'doughnut'" chartData="state.chartsData.estado_organismo" height="300"/>
-                    <DashboardChart title="'Estado de las Quejas'" chartType="'doughnut'" chartData="state.chartsData.estado_quejas" height="300"/>
+                    <t t-if="isChartVisible('quejas_por_semana')">
+                        <DashboardChart title="'Quejas por Semana'" chartType="'line'" chartData="state.chartsData.quejas_por_semana" height="350"/>
+                    </t>
+                    <t t-if="isChartVisible('lineas_afectadas')">
+                        <DashboardChart title="'Frecuencia Líneas Afectadas'" chartType="'pie'" chartData="state.chartsData.lineas_afectadas" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('quejas_por_ano')">
+                        <DashboardChart title="'Quejas por Año'" chartType="'bar'" chartData="state.chartsData.quejas_por_ano" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('tipo_insecto')">
+                        <DashboardChart title="'Distribución por Tipo de Insecto'" chartType="'pie'" chartData="state.chartsData.tipo_insecto" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('quejas_clasificacion')">
+                        <DashboardChart title="'Quejas por Clasificación'" chartType="'bar'" chartData="state.chartsData.quejas_clasificacion" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('estado_organismo')">
+                        <DashboardChart title="'Distribución por Estado'" chartType="'doughnut'" chartData="state.chartsData.estado_organismo" height="300"/>
+                    </t>
+                    <t t-if="isChartVisible('estado_quejas')">
+                        <DashboardChart title="'Estado de las Quejas'" chartType="'doughnut'" chartData="state.chartsData.estado_quejas" height="300"/>
+                    </t>
                 </div>
             </div>
 
