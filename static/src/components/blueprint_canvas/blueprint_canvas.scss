@@ -338,7 +338,7 @@
 
 // Highlighted trap marker (from side panel click)
 .blueprint-trap-marker.highlighted {
-    animation: pulse-highlight 1s ease-in-out 3;
+    animation: pulse-highlight 1.5s ease-in-out infinite;
     z-index: 50 !important;
     transform: translate(-50%, -50%) scale(1.5);
 }
