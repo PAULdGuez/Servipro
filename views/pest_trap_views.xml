@@ -72,8 +72,8 @@
                     </group>
 
                     <notebook>
-                        <page string="Incidencias" name="incidents">
-                            <field name="incident_ids">
+                        <page string="Incidencias" name="incidents" invisible="not id">
+                            <field name="incident_ids" context="{'default_sede_id': sede_id, 'default_blueprint_id': blueprint_id}">
                                 <list>
                                     <field name="date"/>
                                     <field name="plague_type_id"/>
@@ -85,7 +85,7 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Estados" name="states">
+                        <page string="Estados" name="states" invisible="not id">
                             <field name="state_ids">
                                 <list>
                                      <field name="state" widget="badge"
@@ -99,7 +99,7 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Movimientos" name="movements">
+                        <page string="Movimientos" name="movements" invisible="not id">
                             <field name="movement_ids">
                                 <list>
                                     <field name="date"/>

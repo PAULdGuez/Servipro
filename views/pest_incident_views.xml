@@ -8,7 +8,7 @@
         <field name="name">pest.incident.list</field>
         <field name="model">pest.incident</field>
         <field name="arch" type="xml">
-            <list>
+            <list editable="bottom">
                 <field name="date"/>
                 <field name="trap_id"/>
                 <field name="sede_id"/>
@@ -41,17 +41,17 @@
                                    domain="[('sede_id', '=', sede_id)]"/>
                         </group>
                         <group string="Clasificación">
-                            <field name="incident_type"/>
-                            <field name="plague_type_id"/>
+                            <field name="incident_type" required="1"/>
+                            <field name="plague_type_id" required="1"/>
                             <field name="plague_type_custom"/>
-                            <field name="insect_type"/>
+                            <field name="insect_type" required="1"/>
                         </group>
                     </group>
                     <group>
                         <group string="Detalle">
                             <field name="date"/>
-                            <field name="organism_count"/>
-                            <field name="inspector"/>
+                            <field name="organism_count" required="1"/>
+                            <field name="inspector" required="1"/>
                             <field name="inspection_id"/>
                         </group>
                         <group string="Observaciones">
