@@ -1,0 +1,31 @@
+// Global styles for pest_control module
+// This file is loaded on all backend pages
+
+// Stat buttons — solid purple background with white text
+.oe_button_box .oe_stat_button {
+    background-color: #3d3a8c !important;
+    border-color: #3d3a8c !important;
+    color: white !important;
+
+    .o_stat_info .o_stat_value {
+        color: white !important;
+        font-weight: 700;
+    }
+
+    .o_stat_info .o_stat_text {
+        color: white !important;
+    }
+
+    .o_button_icon {
+        color: white !important;
+    }
+
+    i.fa {
+        color: white !important;
+    }
+
+    &:hover {
+        background-color: #2e2b6e !important;
+        border-color: #2e2b6e !important;
+    }
+}

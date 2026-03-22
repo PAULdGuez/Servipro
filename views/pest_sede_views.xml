@@ -195,6 +195,9 @@
                         domain="[('state', '=', 'active')]"/>
                 <filter string="Inactiva" name="filter_inactive"
                         domain="[('state', '=', 'inactive')]"/>
+                <separator/>
+                <filter string="Incluir Archivados" name="filter_archived"
+                        domain="[('active', 'in', [True, False])]"/>
                 <group>
                     <filter string="Ciudad" name="group_city"
                             context="{'group_by': 'city'}"/>
