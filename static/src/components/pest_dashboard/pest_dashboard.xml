@@ -66,9 +66,12 @@
                 <div class="charts-row">
                     <DashboardChart title="'Comparación de Plagas por Mes'" chartType="'bar'" chartData="state.chartsData.plagas_por_mes" height="350"/>
                     <DashboardChart title="'Distribución por Tipo de Incidencia'" chartType="'doughnut'" chartData="state.chartsData.tipo_incidencia_pie" height="300"/>
+                    <DashboardChart title="'Incidencias por Tipo (Barras)'" chartType="'bar'" chartData="state.chartsData.tipo_incidencia_pie" height="300"/>
                     <DashboardChart title="'Áreas con Mayor Incidencia'" chartType="'doughnut'" chartData="state.chartsData.areas_mayor_incidencia" height="300"/>
                     <DashboardChart title="'Trampas con Mayor Captura'" chartType="'bar'" chartData="state.chartsData.trampas_mayor_captura" height="350"/>
-                    <DashboardChart title="'Áreas que Presentaron Capturas'" chartType="'bar'" chartData="state.chartsData.areas_capturas_por_plaga" height="350"/>
+                    <DashboardChart title="'Áreas que Presentaron Capturas'" chartType="'bar'"
+                        chartData="state.chartsData.areas_capturas_por_plaga" height="350"
+                        chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
                     <DashboardChart title="'Incidencias por Tipo y Mes'" chartType="'bar'" chartData="state.chartsData.incidencias_tipo_mes" height="350"/>
                     <DashboardChart title="'Distribución de Trampas por Ubicación'" chartType="'bar'" chartData="state.chartsData.trampas_por_ubicacion" height="300"/>
                 </div>
@@ -76,13 +79,17 @@
                 <div class="charts-row">
                     <DashboardChart title="'Distribución Plagas — Voladores'" chartType="'doughnut'" chartData="state.chartsData.plagas_voladores" height="300"/>
                     <DashboardChart title="'Trampas Mayor Captura — Voladores'" chartType="'bar'" chartData="state.chartsData.trampas_captura_voladores" height="300"/>
-                    <DashboardChart title="'Áreas Capturas — Voladores'" chartType="'bar'" chartData="state.chartsData.areas_captura_voladores" height="300"/>
+                    <DashboardChart title="'Áreas Capturas — Voladores'" chartType="'bar'"
+                        chartData="state.chartsData.areas_captura_voladores" height="300"
+                        chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
                 </div>
                 <h5 class="section-title mt-4">Rastreros</h5>
                 <div class="charts-row">
                     <DashboardChart title="'Distribución Plagas — Rastreros'" chartType="'doughnut'" chartData="state.chartsData.plagas_rastreros" height="300"/>
                     <DashboardChart title="'Trampas Mayor Captura — Rastreros'" chartType="'bar'" chartData="state.chartsData.trampas_captura_rastreros" height="300"/>
-                    <DashboardChart title="'Áreas Capturas — Rastreros'" chartType="'bar'" chartData="state.chartsData.areas_captura_rastreros" height="300"/>
+                    <DashboardChart title="'Áreas Capturas — Rastreros'" chartType="'bar'"
+                        chartData="state.chartsData.areas_captura_rastreros" height="300"
+                        chartOptions="{scales: {x: {stacked: true}, y: {stacked: true}}}"/>
                 </div>
             </div>
 
