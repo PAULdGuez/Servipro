@@ -136,9 +136,12 @@ class PestSede(models.Model):
         params = params or {}
         date_from = params.get('date_from')
         date_to = params.get('date_to')
+        blueprint_id = params.get('blueprint_id')
 
         # Base domain for incidents in this sede
         domain = [('sede_id', '=', self.id)]
+        if blueprint_id:
+            domain.append(('blueprint_id', '=', blueprint_id))
         if date_from:
             domain.append(('date', '>=', date_from))
         if date_to:
@@ -297,6 +300,8 @@ class PestSede(models.Model):
         # ── Chart 8: Trampas por Ubicacion (bar) ──
         try:
             trap_domain = [('sede_id', '=', self.id), ('active', '=', True)]
+            if blueprint_id:
+                trap_domain.append(('blueprint_id', '=', blueprint_id))
             traps = Trap.search(trap_domain)
             zone_counts = {}
             for t in traps:

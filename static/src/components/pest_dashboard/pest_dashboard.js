@@ -15,6 +15,8 @@ export class PestDashboard extends Component {
             loading: true,
             error: null,
             sedeId: null,
+            blueprintId: null,
+            blueprints: [],
             dateFrom: null,
             dateTo: null,
             activeTab: "sede",
@@ -30,12 +32,32 @@ export class PestDashboard extends Component {
             this.state.sedes = sedes;
             if (sedes.length > 0) {
                 this.state.sedeId = sedes[0].id;
+                await this.loadBlueprints();
                 await this.loadChartsData();
             }
             this.state.loading = false;
         } catch (e) {
             this.state.error = "Error al cargar sedes: " + (e.message || "");
             this.state.loading = false;
+        }
+    }
+
+    async loadBlueprints() {
+        if (!this.state.sedeId) {
+            this.state.blueprints = [];
+            this.state.blueprintId = null;
+            return;
+        }
+        try {
+            const blueprints = await this.orm.searchRead(
+                "pest.blueprint",
+                [["sede_id", "=", this.state.sedeId], ["active", "=", true]],
+                ["name"]
+            );
+            this.state.blueprints = blueprints;
+            this.state.blueprintId = null;
+        } catch (e) {
+            this.state.blueprints = [];
         }
     }
 
@@ -47,6 +69,7 @@ export class PestDashboard extends Component {
             const params = {
                 date_from: this.state.dateFrom || false,
                 date_to: this.state.dateTo || false,
+                blueprint_id: this.state.blueprintId || false,
             };
             if (this.state.activeTab === "sede") {
                 const data = await this.orm.call("pest.sede", "get_dashboard_data", [[this.state.sedeId], params]);
@@ -67,6 +90,11 @@ export class PestDashboard extends Component {
 
     async onSedeChange(ev) {
         this.state.sedeId = parseInt(ev.target.value) || null;
+        await this.loadBlueprints();
+        await this.loadChartsData();
+    }
+    async onBlueprintChange(ev) {
+        this.state.blueprintId = parseInt(ev.target.value) || null;
         await this.loadChartsData();
     }
     async onDateFromChange(ev) {
