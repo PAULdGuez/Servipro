@@ -40,7 +40,6 @@
                         <button name="action_view_traps"
                                 type="object"
                                 class="oe_stat_button"
-                                style="background-color: #bef202;"
                                 icon="fa-crosshairs">
                             <field name="trap_count"
                                    string="Trampas"
@@ -49,7 +48,6 @@
                         <button name="action_view_blueprints"
                                 type="object"
                                 class="oe_stat_button"
-                                style="background-color: #bef202;"
                                 icon="fa-map">
                             <field name="blueprint_count"
                                    string="Planos"
@@ -58,7 +56,6 @@
                         <button name="action_view_incidents"
                                 type="object"
                                 class="oe_stat_button"
-                                style="background-color: #bef202;"
                                 icon="fa-bug">
                             <field name="incident_count"
                                    string="Incidencias"
