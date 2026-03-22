@@ -1,0 +1,79 @@
+.pest-dashboard {
+    padding: 16px;
+    background: #f8f9fa;
+    min-height: 100vh;
+
+    .dashboard-filters {
+        background: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+        color: #495057;
+        font-weight: 700;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 8px;
+    }
+
+    .dashboard-grid {
+        padding: 16px 0;
+    }
+
+    .charts-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.dashboard-chart-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 14px;
+        border-bottom: 1px solid #eee;
+
+        .chart-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 4px;
+        }
+    }
+
+    .chart-body {
+        padding: 10px;
+        position: relative;
+    }
+
+    &.fullscreen-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        border-radius: 0;
+        margin: 0;
+
+        .chart-body {
+            height: calc(100vh - 50px) !important;
+        }
+    }
+}

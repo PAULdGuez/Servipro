@@ -61,9 +61,16 @@
     'assets': {
         'web.assets_backend': [
             'pest_control/static/lib/simpleheat.min.js',
+            'pest_control/static/lib/chart.umd.min.js',
+            'pest_control/static/lib/chartjs-plugin-datalabels.min.js',
             'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.js',
             'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.xml',
             'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.scss',
+            'pest_control/static/src/components/dashboard_chart/dashboard_chart.js',
+            'pest_control/static/src/components/dashboard_chart/dashboard_chart.xml',
+            'pest_control/static/src/components/pest_dashboard/pest_dashboard.js',
+            'pest_control/static/src/components/pest_dashboard/pest_dashboard.xml',
+            'pest_control/static/src/components/pest_dashboard/pest_dashboard.scss',
         ],
     },
     'installable': True,
