@@ -72,13 +72,13 @@ export class PestDashboard extends Component {
                 blueprint_id: this.state.blueprintId || false,
             };
             if (this.state.activeTab === "sede") {
-                const data = await this.orm.call("pest.sede", "get_dashboard_data", [[this.state.sedeId], params]);
+                const data = await this.orm.call("pest.sede", "get_dashboard_data", [[this.state.sedeId]], {params});
                 this.state.chartsData = data || {};
             } else if (this.state.activeTab === "quejas") {
-                const data = await this.orm.call("pest.sede", "get_quejas_dashboard_data", [[this.state.sedeId], params]);
+                const data = await this.orm.call("pest.sede", "get_quejas_dashboard_data", [[this.state.sedeId]], {params});
                 this.state.chartsData = data || {};
             } else if (this.state.activeTab === "ventas") {
-                const data = await this.orm.call("pest.sede", "get_ventas_dashboard_data", [[this.state.sedeId], params]);
+                const data = await this.orm.call("pest.sede", "get_ventas_dashboard_data", [[this.state.sedeId]], {params});
                 this.state.chartsData = data || {};
             }
         } catch (e) {

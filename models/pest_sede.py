@@ -142,10 +142,15 @@ class PestSede(models.Model):
         domain = [('sede_id', '=', self.id)]
         if blueprint_id:
             domain.append(('blueprint_id', '=', blueprint_id))
+        import logging
+        _logger = logging.getLogger(__name__)
+
         if date_from:
-            domain.append(('date', '>=', date_from))
+            domain.append(('date', '>=', date_from + ' 00:00:00' if isinstance(date_from, str) and len(date_from) == 10 else date_from))
         if date_to:
-            domain.append(('date', '<=', date_to))
+            domain.append(('date', '<=', date_to + ' 23:59:59' if isinstance(date_to, str) and len(date_to) == 10 else date_to))
+
+        _logger.info('Dashboard params: date_from=%s, date_to=%s, blueprint_id=%s, domain=%s', date_from, date_to, blueprint_id, domain)
 
         Incident = self.env['pest.incident']
         Trap = self.env['pest.trap']
