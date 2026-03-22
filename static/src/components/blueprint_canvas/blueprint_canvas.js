@@ -4,6 +4,7 @@ import { Component, useState, onWillStart, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 
 export class BlueprintCanvas extends Component {
@@ -11,6 +12,7 @@ export class BlueprintCanvas extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
+        this.dialog = useService("dialog");
         this.containerRef = useRef("container");
 
         this.state = useState({
@@ -188,11 +190,17 @@ export class BlueprintCanvas extends Component {
         }, {
             onClose: async () => {
                 await this.loadData();
-                const registerIncident = window.confirm('¿Trampa creada exitosamente! ¿Desea registrar una incidencia para esta trampa?');
-                if (registerIncident && this.state.data && this.state.data.traps && this.state.data.traps.length > 0) {
-                    const newestTrap = this.state.data.traps[this.state.data.traps.length - 1];
-                    await this.onRegisterIncident(newestTrap);
-                }
+                this.dialog.add(ConfirmationDialog, {
+                    title: "Trampa Creada",
+                    body: "¿Desea registrar una incidencia para esta trampa?",
+                    confirm: async () => {
+                        if (this.state.data && this.state.data.traps && this.state.data.traps.length > 0) {
+                            const newestTrap = this.state.data.traps[this.state.data.traps.length - 1];
+                            await this.onRegisterIncident(newestTrap);
+                        }
+                    },
+                    cancel: () => {},
+                });
             },
         });
     }

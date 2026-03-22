@@ -120,7 +120,7 @@ class PestBlueprint(models.Model):
         # Batch read all trap data in one query
         traps_data = self.trap_ids.read([
             'name', 'coord_x_pct', 'coord_y_pct', 'current_state',
-            'trap_type_id', 'sede_id',
+            'trap_type_id', 'sede_id', 'zone_id',
         ])
 
         # Batch read trap types
@@ -146,6 +146,7 @@ class PestBlueprint(models.Model):
                 'trap_type_name': tt.get('name', ''),
                 'trap_type_icon': tt.get('icon', 'fa-crosshairs') or 'fa-crosshairs',
                 'sede_id': t['sede_id'][0] if t.get('sede_id') else False,
+                'zone_id': t['zone_id'][0] if t.get('zone_id') else False,
                 'incident_count': incident_counts.get(t['id'], 0),
             })
 
