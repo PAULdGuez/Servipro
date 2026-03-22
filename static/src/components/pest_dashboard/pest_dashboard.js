@@ -11,6 +11,10 @@ export class PestDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.notification = useService("notification");
+        // Read defaults from action context (when opened from stat button)
+        const context = this.props.action && this.props.action.context || {};
+        this._defaultSedeId = context.default_sede_id || null;
+        this._defaultBlueprintId = context.default_blueprint_id || null;
         this.state = useState({
             loading: true,
             error: null,
@@ -31,8 +35,11 @@ export class PestDashboard extends Component {
             const sedes = await this.orm.searchRead("pest.sede", [["active", "=", true]], ["name"]);
             this.state.sedes = sedes;
             if (sedes.length > 0) {
-                this.state.sedeId = sedes[0].id;
+                this.state.sedeId = this._defaultSedeId || sedes[0].id;
                 await this.loadBlueprints();
+                if (this._defaultBlueprintId) {
+                    this.state.blueprintId = this._defaultBlueprintId;
+                }
                 await this.loadChartsData();
             }
             this.state.loading = false;

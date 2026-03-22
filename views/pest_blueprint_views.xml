@@ -43,6 +43,11 @@
                         <button class="oe_stat_button" type="object" name="action_view_incidents" icon="fa-bug">
                             <field name="incident_count" string="Incidencias" widget="statinfo"/>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_view_dashboard" icon="fa-bar-chart">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Gráficas</span>
+                            </div>
+                        </button>
                     </div>
                     <group>
                         <group string="Datos del Plano">

@@ -212,6 +212,18 @@ class PestBlueprint(models.Model):
             'context': {'default_blueprint_id': self.id, 'default_sede_id': self.sede_id.id},
         }
 
+    def action_view_dashboard(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'pest_control.dashboard',
+            'name': 'Gráficas - ' + self.name,
+            'context': {
+                'default_sede_id': self.sede_id.id,
+                'default_blueprint_id': self.id,
+            },
+        }
+
     def can_user_edit_traps(self):
         self.ensure_one()
         return self.env.user.has_group('pest_control.group_pest_technician')
