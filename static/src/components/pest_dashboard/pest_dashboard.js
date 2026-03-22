@@ -83,8 +83,62 @@ export class PestDashboard extends Component {
         await this.loadChartsData();
     }
 
-    exportPowerPoint() {
-        this.notification.add("Exportar a PowerPoint: en desarrollo", { type: "warning" });
+    async exportPowerPoint() {
+        if (!window.PptxGenJS) {
+            this.notification.add('PptxGenJS no está cargado. Reemplace el stub con la librería real.', { type: 'danger' });
+            return;
+        }
+
+        this.notification.add('Generando presentación...', { type: 'info' });
+
+        try {
+            const pptx = new window.PptxGenJS();
+
+            // Get all chart canvases in the dashboard
+            const chartCards = document.querySelectorAll('.dashboard-chart-card');
+
+            for (const card of chartCards) {
+                const canvas = card.querySelector('canvas');
+                const titleEl = card.querySelector('.chart-title');
+                if (!canvas) continue;
+
+                const slide = pptx.addSlide();
+                const title = titleEl ? titleEl.textContent : 'Gráfica';
+
+                // Add title
+                slide.addText(title, {
+                    x: 0.5, y: 0.3, w: 9, h: 0.5,
+                    fontSize: 18, bold: true, color: '333333',
+                });
+
+                // Add chart image
+                const imgData = canvas.toDataURL('image/png');
+                slide.addImage({
+                    data: imgData,
+                    x: 0.5, y: 1.0, w: 9, h: 5.5,
+                });
+            }
+
+            // Add metadata slide
+            const metaSlide = pptx.addSlide();
+            const sede = this.state.sedes.find(s => s.id === this.state.sedeId);
+            metaSlide.addText('Dashboard de Control de Plagas', {
+                x: 1, y: 1, w: 8, h: 1, fontSize: 28, bold: true, color: '333333', align: 'center',
+            });
+            metaSlide.addText('Sede: ' + (sede ? sede.name : ''), {
+                x: 1, y: 2.5, w: 8, h: 0.5, fontSize: 16, color: '666666', align: 'center',
+            });
+            metaSlide.addText('Generado: ' + new Date().toLocaleDateString(), {
+                x: 1, y: 3.2, w: 8, h: 0.5, fontSize: 14, color: '999999', align: 'center',
+            });
+
+            const fileName = 'Dashboard_' + (sede ? sede.name.replace(/\s+/g, '_') : 'Sede') + '.pptx';
+            await pptx.writeFile({ fileName: fileName });
+
+            this.notification.add('Presentación exportada: ' + fileName, { type: 'success' });
+        } catch (error) {
+            this.notification.add('Error al exportar: ' + (error.message || ''), { type: 'danger' });
+        }
     }
 }
 
