@@ -258,6 +258,13 @@
                                 <option t-att-value="tt.id" t-esc="tt.name"/>
                             </t>
                         </select>
+                        <select class="form-select form-select-sm mb-2" t-on-change="onFilterTrapState">
+                            <option value="">Todos los estados</option>
+                            <option value="funciona">&#x2705; Funciona</option>
+                            <option value="en_reparacion">&#x1F527; En Reparación</option>
+                            <option value="no_funciona">&#x274C; No Funciona</option>
+                            <option value="sin_registro">&#x26AA; Sin Registro</option>
+                        </select>
                     </div>
                     <div class="side-panel-list">
                         <t t-foreach="filteredTraps" t-as="trap" t-key="trap.id">

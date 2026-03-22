@@ -25,6 +25,7 @@ export class BlueprintCanvas extends Component {
             zoomLevel: 1.0,
             sidePanelOpen: false,
             filterTrapType: null,
+            filterTrapState: null,
             searchTerm: '',
             highlightedTrapId: null,
             hiddenTypes: [],
@@ -326,6 +327,10 @@ export class BlueprintCanvas extends Component {
         this.state.filterTrapType = ev.target.value || null;
     }
 
+    onFilterTrapState(ev) {
+        this.state.filterTrapState = ev.target.value || null;
+    }
+
     onSearchTrap(ev) {
         this.state.searchTerm = ev.target.value || '';
     }
@@ -339,6 +344,9 @@ export class BlueprintCanvas extends Component {
         if (this.state.searchTerm) {
             const term = this.state.searchTerm.toLowerCase();
             traps = traps.filter(t => t.name.toLowerCase().includes(term));
+        }
+        if (this.state.filterTrapState) {
+            traps = traps.filter(t => t.current_state === this.state.filterTrapState);
         }
         return traps;
     }
