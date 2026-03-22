@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="pest_control.DashboardChart" owl="1">
+        <div t-att-class="'dashboard-chart-card' + (state.isFullscreen ? ' fullscreen-overlay' : '')">
+            <div class="chart-header">
+                <h6 class="chart-title mb-0" t-esc="props.title"/>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-light" t-on-click="downloadPNG" title="Descargar PNG">
+                        <i class="fa fa-download"/>
+                    </button>
+                    <button class="btn btn-sm btn-light" t-on-click="toggleFullscreen"
+                            t-att-title="state.isFullscreen ? 'Cerrar' : 'Pantalla completa'">
+                        <i t-att-class="state.isFullscreen ? 'fa fa-compress' : 'fa fa-expand'"/>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body" t-att-style="'height:' + (props.height || 300) + 'px'">
+                <t t-if="props.chartData and props.chartData.labels">
+                    <canvas t-ref="chartCanvas"/>
+                </t>
+                <t t-else="">
+                    <div class="text-muted text-center d-flex align-items-center justify-content-center h-100">
+                        <span><i class="fa fa-bar-chart me-2"/>Sin datos disponibles</span>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
