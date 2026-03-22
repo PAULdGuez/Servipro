@@ -37,13 +37,13 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_view_traps" icon="fa-crosshairs">
+                        <button class="oe_stat_button" type="object" name="action_view_traps" icon="fa-crosshairs" style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <field name="trap_count" string="Trampas" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" type="object" name="action_view_incidents" icon="fa-bug">
+                        <button class="oe_stat_button" type="object" name="action_view_incidents" icon="fa-bug" style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <field name="incident_count" string="Incidencias" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" type="object" name="action_view_dashboard" icon="fa-bar-chart">
+                        <button class="oe_stat_button" type="object" name="action_view_dashboard" icon="fa-bar-chart" style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Gráficas</span>
                             </div>

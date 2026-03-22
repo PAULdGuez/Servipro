@@ -40,7 +40,8 @@
                         <button name="action_view_traps"
                                 type="object"
                                 class="oe_stat_button"
-                                icon="fa-crosshairs">
+                                icon="fa-crosshairs"
+                                style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <field name="trap_count"
                                    string="Trampas"
                                    widget="statinfo"/>
@@ -48,7 +49,8 @@
                         <button name="action_view_blueprints"
                                 type="object"
                                 class="oe_stat_button"
-                                icon="fa-map">
+                                icon="fa-map"
+                                style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <field name="blueprint_count"
                                    string="Planos"
                                    widget="statinfo"/>
@@ -56,12 +58,13 @@
                         <button name="action_view_incidents"
                                 type="object"
                                 class="oe_stat_button"
-                                icon="fa-bug">
+                                icon="fa-bug"
+                                style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <field name="incident_count"
                                    string="Incidencias"
                                    widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" type="action" name="%(pest_dashboard_action)d" icon="fa-bar-chart">
+                        <button class="oe_stat_button" type="action" name="%(pest_dashboard_action)d" icon="fa-bar-chart" style="background-color: #3d3a8c !important; border-color: #3d3a8c !important; color: white !important;">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Gráficas</span>
                             </div>
