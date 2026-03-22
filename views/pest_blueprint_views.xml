@@ -69,11 +69,12 @@
                         <page string="Trampas" name="traps">
                             <field name="trap_ids">
                                 <list editable="bottom">
+                                    <field name="id" string="#" readonly="1"/>
                                     <field name="name"/>
                                      <field name="trap_type_id"/>
                                     <field name="zone_id" string="Ubicación"/>
-                                    <field name="coord_x_pct" string="X (%)"/>
-                                    <field name="coord_y_pct" string="Y (%)"/>
+                                    <field name="coord_x_pct" string="X (%)" optional="hide"/>
+                                    <field name="coord_y_pct" string="Y (%)" optional="hide"/>
                                     <field name="coord_x" column_invisible="1"/>
                                     <field name="coord_y" column_invisible="1"/>
                                     <field name="installation_date"/>
