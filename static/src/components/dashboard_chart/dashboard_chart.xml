@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="chart-body" t-att-style="'height:' + (props.height || 300) + 'px'">
-                <t t-if="props.chartData and props.chartData.labels">
+                <t t-if="hasData">
                     <canvas t-ref="chartCanvas"/>
                 </t>
                 <t t-else="">

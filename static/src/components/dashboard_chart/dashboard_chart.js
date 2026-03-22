@@ -11,6 +11,10 @@ export class DashboardChart extends Component {
         height: { type: Number, optional: true },
     };
 
+    get hasData() {
+        return !!(this.props.chartData && this.props.chartData.labels && this.props.chartData.labels.length > 0);
+    }
+
     setup() {
         this.canvasRef = useRef("chartCanvas");
         this.chartInstance = null;

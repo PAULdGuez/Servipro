@@ -382,6 +382,18 @@ class PestSede(models.Model):
         result['trampas_captura_rastreros'] = ras.get('trampas_captura', {'labels': [], 'datasets': []})
         result['areas_captura_rastreros'] = ras.get('areas_captura', {'labels': [], 'datasets': []})
 
+        # Ensure all chart keys exist (even if empty)
+        all_keys = [
+            'plagas_por_mes', 'tipo_incidencia_pie', 'areas_mayor_incidencia',
+            'trampas_mayor_captura', 'areas_capturas_por_plaga', 'incidencias_tipo_mes',
+            'trampas_por_ubicacion', 'plagas_voladores', 'trampas_captura_voladores',
+            'areas_captura_voladores', 'plagas_rastreros', 'trampas_captura_rastreros',
+            'areas_captura_rastreros',
+        ]
+        for key in all_keys:
+            if key not in result:
+                result[key] = {'labels': [], 'datasets': []}
+
         return result
 
     def get_quejas_dashboard_data(self, params=None):
@@ -526,6 +538,14 @@ class PestSede(models.Model):
         except Exception:
             result['estado_quejas'] = {'labels': [], 'datasets': []}
 
+        all_keys = [
+            'quejas_por_semana', 'lineas_afectadas', 'quejas_por_ano',
+            'tipo_insecto', 'quejas_clasificacion', 'estado_organismo', 'estado_quejas',
+        ]
+        for key in all_keys:
+            if key not in result:
+                result[key] = {'labels': [], 'datasets': []}
+
         return result
 
     def get_ventas_dashboard_data(self, params=None):
@@ -582,5 +602,10 @@ class PestSede(models.Model):
             }
         except Exception:
             result['ventas_por_usuario'] = {'labels': [], 'datasets': []}
+
+        all_keys = ['ventas_por_sede', 'ventas_por_usuario']
+        for key in all_keys:
+            if key not in result:
+                result[key] = {'labels': [], 'datasets': []}
 
         return result
