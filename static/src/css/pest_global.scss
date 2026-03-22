@@ -1,36 +1,41 @@
 // Global styles for pest_control module
 // Loaded on all backend pages via web.assets_backend
 
-// Stat buttons — solid purple background with white text
-// Using multiple selectors to ensure maximum specificity
-.o_form_view .oe_button_box .oe_stat_button,
-.o_form_view .oe_button_box > .oe_stat_button,
-.o_form_view div[name="button_box"] > button.oe_stat_button,
-.o_form_view .oe_button_box button.oe_stat_button,
+// Stat buttons — Odoo 19 renders these in .o_control_panel_actions
+// The buttons have classes: btn oe_stat_button btn-outline-secondary
+.o_control_panel_actions button.oe_stat_button,
 button.oe_stat_button {
     background-color: #3d3a8c !important;
     border-color: #3d3a8c !important;
     color: white !important;
 
-    * {
+    &.btn-outline-secondary {
+        background-color: #3d3a8c !important;
+        border-color: #3d3a8c !important;
         color: white !important;
     }
 
-    .o_stat_info {
-        .o_stat_value {
-            color: white !important;
-            font-weight: 700;
-        }
-        .o_stat_text {
-            color: white !important;
-        }
+    i.o_button_icon,
+    i.fa,
+    .o_button_icon {
+        color: white !important;
     }
 
-    .o_button_icon,
-    i,
-    i.fa,
-    span,
-    .fa {
+    .o_field_statinfo,
+    .o_stat_info {
+        color: white !important;
+    }
+
+    .o_stat_value {
+        color: white !important;
+        font-weight: 700;
+    }
+
+    .o_stat_text {
+        color: white !important;
+    }
+
+    * {
         color: white !important;
     }
 
@@ -39,10 +44,5 @@ button.oe_stat_button {
     &:active {
         background-color: #2e2b6e !important;
         border-color: #2e2b6e !important;
-        color: white !important;
-
-        * {
-            color: white !important;
-        }
     }
 }
