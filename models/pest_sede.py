@@ -383,3 +383,204 @@ class PestSede(models.Model):
         result['areas_captura_rastreros'] = ras.get('areas_captura', {'labels': [], 'datasets': []})
 
         return result
+
+    def get_quejas_dashboard_data(self, params=None):
+        self.ensure_one()
+        params = params or {}
+        date_from = params.get('date_from')
+        date_to = params.get('date_to')
+
+        domain = [('sede_id', '=', self.id)]
+        if date_from:
+            domain.append(('date', '>=', date_from))
+        if date_to:
+            domain.append(('date', '<=', date_to))
+
+        Complaint = self.env['pest.complaint']
+        colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#E7E9ED', '#8BC34A']
+        result = {}
+
+        # Chart 15: Quejas por Semana (line — current year vs previous)
+        try:
+            from datetime import datetime, timedelta
+            import calendar
+            now = datetime.now()
+            current_year = now.year
+            prev_year = current_year - 1
+
+            # Current year by week
+            curr_domain = domain + [('date', '>=', f'{current_year}-01-01'), ('date', '<=', f'{current_year}-12-31')]
+            curr_complaints = Complaint.search(curr_domain)
+            curr_weeks = {}
+            for c in curr_complaints:
+                if c.date:
+                    week = c.date.isocalendar()[1]
+                    curr_weeks[week] = curr_weeks.get(week, 0) + 1
+
+            # Previous year
+            prev_domain = domain + [('date', '>=', f'{prev_year}-01-01'), ('date', '<=', f'{prev_year}-12-31')]
+            prev_complaints = Complaint.search(prev_domain)
+            prev_weeks = {}
+            for c in prev_complaints:
+                if c.date:
+                    week = c.date.isocalendar()[1]
+                    prev_weeks[week] = prev_weeks.get(week, 0) + 1
+
+            weeks = list(range(1, 53))
+            result['quejas_por_semana'] = {
+                'labels': [f'S{w}' for w in weeks],
+                'datasets': [
+                    {'label': str(current_year), 'data': [curr_weeks.get(w, 0) for w in weeks], 'borderColor': '#36A2EB', 'fill': False},
+                    {'label': str(prev_year), 'data': [prev_weeks.get(w, 0) for w in weeks], 'borderColor': '#FF6384', 'fill': False},
+                ],
+            }
+        except Exception:
+            result['quejas_por_semana'] = {'labels': [], 'datasets': []}
+
+        # Chart 16: Lineas Afectadas (pie)
+        try:
+            complaints = Complaint.search(domain)
+            lines = {}
+            for c in complaints:
+                line = c.production_lines or 'Sin línea'
+                lines[line] = lines.get(line, 0) + 1
+            labels = list(lines.keys())
+            result['lineas_afectadas'] = {
+                'labels': labels,
+                'datasets': [{'data': list(lines.values()), 'backgroundColor': [colors[i % len(colors)] for i in range(len(labels))]}],
+            }
+        except Exception:
+            result['lineas_afectadas'] = {'labels': [], 'datasets': []}
+
+        # Chart 17: Quejas por Ano (bar)
+        try:
+            complaints = Complaint.search([('sede_id', '=', self.id)])
+            years = {}
+            for c in complaints:
+                if c.date:
+                    y = c.date.year
+                    years[y] = years.get(y, 0) + 1
+            sorted_years = sorted(years.items())
+            result['quejas_por_ano'] = {
+                'labels': [str(y[0]) for y in sorted_years],
+                'datasets': [{'label': 'Quejas', 'data': [y[1] for y in sorted_years], 'backgroundColor': '#36A2EB'}],
+            }
+        except Exception:
+            result['quejas_por_ano'] = {'labels': [], 'datasets': []}
+
+        # Chart 18: Tipo de Insecto (pie)
+        try:
+            complaints = Complaint.search(domain)
+            insects = {}
+            for c in complaints:
+                ins = c.insect or 'Sin especificar'
+                insects[ins] = insects.get(ins, 0) + 1
+            labels = list(insects.keys())
+            result['tipo_insecto'] = {
+                'labels': labels,
+                'datasets': [{'data': list(insects.values()), 'backgroundColor': [colors[i % len(colors)] for i in range(len(labels))]}],
+            }
+        except Exception:
+            result['tipo_insecto'] = {'labels': [], 'datasets': []}
+
+        # Chart 19: Clasificacion (bar)
+        try:
+            class_colors = {'critico': '#dc3545', 'alto': '#fd7e14', 'medio': '#ffc107', 'bajo': '#28a745'}
+            data = Complaint._read_group(domain, ['classification'], ['__count'])
+            labels = [str(d[0] or 'Sin clasificar') for d in data]
+            counts = [d[1] for d in data]
+            bg_colors = [class_colors.get(str(d[0]), '#6c757d') for d in data]
+            result['quejas_clasificacion'] = {
+                'labels': labels,
+                'datasets': [{'label': 'Quejas', 'data': counts, 'backgroundColor': bg_colors}],
+            }
+        except Exception:
+            result['quejas_clasificacion'] = {'labels': [], 'datasets': []}
+
+        # Chart 20: Estado organismo (doughnut)
+        try:
+            complaints = Complaint.search(domain)
+            states = {}
+            for c in complaints:
+                st = c.insect_state or 'Sin especificar'
+                states[st] = states.get(st, 0) + 1
+            labels = list(states.keys())
+            result['estado_organismo'] = {
+                'labels': labels,
+                'datasets': [{'data': list(states.values()), 'backgroundColor': ['#28a745', '#dc3545', '#6c757d'][:len(labels)]}],
+            }
+        except Exception:
+            result['estado_organismo'] = {'labels': [], 'datasets': []}
+
+        # Chart 21: Estado quejas (doughnut)
+        try:
+            data = Complaint._read_group(domain, ['state'], ['__count'])
+            labels = [str(d[0] or 'Sin estado') for d in data]
+            counts = [d[1] for d in data]
+            state_colors = {'pendiente': '#ffc107', 'en_proceso': '#17a2b8', 'resuelta': '#28a745', 'cerrada': '#6c757d'}
+            bg = [state_colors.get(str(d[0]), '#6c757d') for d in data]
+            result['estado_quejas'] = {
+                'labels': labels,
+                'datasets': [{'data': counts, 'backgroundColor': bg}],
+            }
+        except Exception:
+            result['estado_quejas'] = {'labels': [], 'datasets': []}
+
+        return result
+
+    def get_ventas_dashboard_data(self, params=None):
+        self.ensure_one()
+        params = params or {}
+        result = {}
+
+        try:
+            SaleOrder = self.env['sale.order']
+        except Exception:
+            # sale module not installed
+            return {
+                'ventas_por_sede': {'labels': [], 'datasets': []},
+                'ventas_por_usuario': {'labels': [], 'datasets': []},
+            }
+
+        # Check if sede_id field exists on sale.order
+        if 'sede_id' not in SaleOrder._fields:
+            return {
+                'ventas_por_sede': {'labels': [], 'datasets': []},
+                'ventas_por_usuario': {'labels': [], 'datasets': []},
+            }
+
+        domain = []
+        date_from = params.get('date_from')
+        date_to = params.get('date_to')
+        if date_from:
+            domain.append(('date_order', '>=', date_from))
+        if date_to:
+            domain.append(('date_order', '<=', date_to))
+
+        colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+
+        # Chart 22: Ventas por Sede
+        try:
+            data = SaleOrder._read_group(domain + [('sede_id', '!=', False)], ['sede_id'], ['__count'])
+            labels = [d[0].name if d[0] else 'Sin sede' for d in data]
+            counts = [d[1] for d in data]
+            result['ventas_por_sede'] = {
+                'labels': labels,
+                'datasets': [{'label': 'Ventas', 'data': counts, 'backgroundColor': [colors[i % len(colors)] for i in range(len(labels))]}],
+            }
+        except Exception:
+            result['ventas_por_sede'] = {'labels': [], 'datasets': []}
+
+        # Chart 23: Ventas por Usuario
+        try:
+            data = SaleOrder._read_group(domain, ['user_id'], ['__count'])
+            labels = [d[0].name if d[0] else 'Sin usuario' for d in data]
+            counts = [d[1] for d in data]
+            result['ventas_por_usuario'] = {
+                'labels': labels,
+                'datasets': [{'label': 'Ventas', 'data': counts, 'backgroundColor': [colors[i % len(colors)] for i in range(len(labels))]}],
+            }
+        except Exception:
+            result['ventas_por_usuario'] = {'labels': [], 'datasets': []}
+
+        return result
