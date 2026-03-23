@@ -72,7 +72,9 @@ class PestIncidentImportWizard(models.TransientModel):
                 'Fecha (YYYY-MM-DD)',
                 'Tipo Plaga',
                 'Tipo Incidencia (captura/hallazgo)',
+                'Tipo Insecto (volador/rastrero)',
                 'Cantidad',
+                'Inspector',
                 'Notas',
             ]
             for col, header in enumerate(headers, 1):
@@ -151,8 +153,10 @@ class PestIncidentImportWizard(models.TransientModel):
                 date_raw = values[1] if len(values) > 1 else None
                 plague_name = str(values[2] or '').strip() if len(values) > 2 else ''
                 incident_type_raw = str(values[3] or '').strip().lower() if len(values) > 3 else ''
-                organism_count_raw = values[4] if len(values) > 4 else None
-                notes = str(values[5] or '').strip() if len(values) > 5 else ''
+                insect_type_raw = str(values[4] or '').strip().lower() if len(values) > 4 else ''
+                organism_count_raw = values[5] if len(values) > 5 else None
+                inspector_raw = str(values[6] or '').strip() if len(values) > 6 else ''
+                notes = str(values[7] or '').strip() if len(values) > 7 else ''
 
                 # Match trap
                 trap = trap_map.get(trap_name.lower())
@@ -193,6 +197,15 @@ class PestIncidentImportWizard(models.TransientModel):
                         'Use "captura" o "hallazgo".'
                     )
 
+                # Validate insect type
+                insect_type = insect_type_raw if insect_type_raw in ('volador', 'rastrero') else False
+                if not insect_type and not error_msg:
+                    error_msg = f'Tipo de insecto inválido: "{insect_type_raw}". Use "volador" o "rastrero".'
+
+                # Validate inspector
+                if not inspector_raw and not error_msg:
+                    error_msg = 'Inspector vacío.'
+
                 # Validate count
                 try:
                     count = int(organism_count_raw or 0)
@@ -211,6 +224,8 @@ class PestIncidentImportWizard(models.TransientModel):
                     'plague_type_name': plague_name,
                     'plague_type_id': plague.id if plague else False,
                     'incident_type': incident_type or False,
+                    'insect_type': insect_type or False,
+                    'inspector': inspector_raw,
                     'organism_count': count,
                     'notes': notes,
                     'error_message': error_msg,
@@ -242,6 +257,8 @@ class PestIncidentImportWizard(models.TransientModel):
                 'sede_id': self.blueprint_id.sede_id.id,
                 'plague_type_id': line.plague_type_id.id,
                 'incident_type': line.incident_type,
+                'insect_type': line.insect_type,
+                'inspector': line.inspector or '',
                 'organism_count': line.organism_count,
                 'date': date_val,
                 'notes': line.notes or '',
@@ -277,14 +294,20 @@ class PestIncidentImportPreview(models.TransientModel):
         ('hallazgo', 'Hallazgo'),
     ], string='Tipo Incidencia')
     organism_count = fields.Integer(string='Cantidad')
+    insect_type = fields.Selection([
+        ('volador', 'Volador'),
+        ('rastrero', 'Rastrero'),
+    ], string='Tipo Insecto')
+    inspector = fields.Char(string='Inspector')
     notes = fields.Text(string='Notas')
     error_message = fields.Char(string='Error')
     is_valid = fields.Boolean(compute='_compute_is_valid', store=True, string='Válido')
 
-    @api.depends('trap_id', 'plague_type_id', 'incident_type', 'error_message')
+    @api.depends('trap_id', 'plague_type_id', 'incident_type', 'insect_type', 'inspector', 'error_message')
     def _compute_is_valid(self):
         for line in self:
             line.is_valid = bool(
                 line.trap_id and line.plague_type_id
-                and line.incident_type and not line.error_message
+                and line.incident_type and line.insect_type
+                and line.inspector and not line.error_message
             )

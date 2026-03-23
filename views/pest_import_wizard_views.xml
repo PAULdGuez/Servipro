@@ -55,6 +55,8 @@
                             <field name="plague_type_id"/>
                             <field name="incident_type"/>
                             <field name="organism_count"/>
+                            <field name="insect_type"/>
+                            <field name="inspector"/>
                             <field name="notes"/>
                             <field name="error_message"/>
                         </list>
