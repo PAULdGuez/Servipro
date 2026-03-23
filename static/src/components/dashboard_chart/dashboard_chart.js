@@ -20,7 +20,9 @@ export class DashboardChart extends Component {
         this.chartInstance = null;
         this.state = useState({ isFullscreen: false });
 
-        onMounted(() => this._tryRender());
+        onMounted(() => {
+            setTimeout(() => this._tryRender(), 50);
+        });
         onPatched(() => this._tryRender());
         onWillUnmount(() => this._destroyChart());
     }

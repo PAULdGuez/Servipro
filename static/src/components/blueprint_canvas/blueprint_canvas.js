@@ -1,6 +1,6 @@
 /** @odoo-module */
 
-import { Component, useState, onWillStart, useRef } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
@@ -40,6 +40,26 @@ export class BlueprintCanvas extends Component {
 
         onWillStart(async () => {
             await this.loadData();
+        });
+
+        this._lastHeatmapData = null;
+        this._resizeTimer = null;
+        this._onResize = () => {
+            if (this.state.heatmapActive) {
+                this._removeHeatmapCanvas();
+                clearTimeout(this._resizeTimer);
+                this._resizeTimer = setTimeout(() => {
+                    if (this.state.heatmapActive && this._lastHeatmapData) {
+                        this._renderHeatmap(this._lastHeatmapData);
+                    }
+                }, 300);
+            }
+        };
+        window.addEventListener('resize', this._onResize);
+
+        onWillUnmount(() => {
+            window.removeEventListener('resize', this._onResize);
+            clearTimeout(this._resizeTimer);
         });
     }
 
@@ -190,18 +210,24 @@ export class BlueprintCanvas extends Component {
             }
         }, {
             onClose: async () => {
+                const oldCount = this.state.data ? this.state.data.traps.length : 0;
                 await this.loadData();
-                this.dialog.add(ConfirmationDialog, {
-                    title: "Trampa Creada",
-                    body: "¿Desea registrar una incidencia para esta trampa?",
-                    confirm: async () => {
-                        if (this.state.data && this.state.data.traps && this.state.data.traps.length > 0) {
-                            const newestTrap = this.state.data.traps[this.state.data.traps.length - 1];
-                            await this.onRegisterIncident(newestTrap);
-                        }
-                    },
-                    cancel: () => {},
-                });
+                const newCount = this.state.data ? this.state.data.traps.length : 0;
+
+                // Only ask about incident if a new trap was actually created
+                if (newCount > oldCount) {
+                    this.dialog.add(ConfirmationDialog, {
+                        title: "Trampa Creada",
+                        body: "¿Desea registrar una incidencia para esta trampa?",
+                        confirm: async () => {
+                            if (this.state.data && this.state.data.traps && this.state.data.traps.length > 0) {
+                                const newestTrap = this.state.data.traps[this.state.data.traps.length - 1];
+                                await this.onRegisterIncident(newestTrap);
+                            }
+                        },
+                        cancel: () => {},
+                    });
+                }
             },
         });
     }
@@ -468,6 +494,7 @@ export class BlueprintCanvas extends Component {
     }
 
     _renderHeatmap(data) {
+        this._lastHeatmapData = data;
         this._removeHeatmapCanvas();
 
         const container = this.containerRef.el;
@@ -627,10 +654,10 @@ export class BlueprintCanvas extends Component {
     getPopoverPosition(trap) {
         const x = trap.coord_x_pct;
         const y = trap.coord_y_pct;
-        if (y < 25) return 'bottom';
-        if (y > 85) return 'top';
-        if (x < 15) return 'right';
-        if (x > 85) return 'left';
+        if (y < 30) return 'bottom';
+        if (y > 80) return 'top';
+        if (x < 20) return 'right';
+        if (x > 80) return 'left';
         return 'top';
     }
 }

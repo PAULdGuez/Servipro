@@ -68,7 +68,7 @@
                     <notebook>
                         <page string="Trampas" name="traps">
                             <field name="trap_ids">
-                                <list editable="bottom">
+                                <list editable="bottom" default_order="name">
                                     <field name="id" string="#" readonly="1"/>
                                     <field name="name"/>
                                      <field name="trap_type_id"/>

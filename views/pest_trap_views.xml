@@ -47,13 +47,13 @@
                     <group>
                         <group string="Identificación">
                             <field name="name"/>
-                            <field name="trap_type_id"/>
-                            <field name="sede_id"/>
+                            <field name="trap_type_id" required="1"/>
+                            <field name="sede_id" required="1"/>
                             <field name="blueprint_id"
                                    domain="[('sede_id', '=', sede_id)]"/>
                         </group>
                         <group string="Ubicación">
-                            <field name="zone_id" string="Ubicación" placeholder="Seleccione una ubicación..."/>
+                            <field name="zone_id" string="Ubicación" required="1" placeholder="Seleccione una ubicación..."/>
                             <field name="coord_x" invisible="1"/>
                             <field name="coord_y" invisible="1"/>
                             <field name="installation_date"/>
@@ -67,6 +67,7 @@
                                    decoration-warning="current_state == 'en_reparacion'"
                                    decoration-danger="current_state == 'no_funciona'"
                                    decoration-info="current_state == 'sin_registro'"/>
+                            <field name="initial_state" invisible="id"/>
                             <field name="active"/>
                         </group>
                     </group>

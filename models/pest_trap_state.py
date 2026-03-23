@@ -50,6 +50,17 @@ class PestTrapState(models.Model):
         traps = records.mapped('trap_id')
         if traps:
             traps._compute_current_state()
+        # Log state changes to blueprint chatter
+        for rec in records:
+            if rec.trap_id and rec.trap_id.blueprint_id:
+                rec.trap_id.blueprint_id.message_post(
+                    body='Estado de trampa %s cambiado a: %s' % (
+                        rec.trap_id.name,
+                        dict(self._fields['state'].selection).get(rec.state, rec.state),
+                    ),
+                    message_type='comment',
+                    subtype_xmlid='mail.mt_note',
+                )
         return records
 
     def write(self, vals):

@@ -85,6 +85,15 @@ class PestTrap(models.Model):
         compute='_compute_current_state',
         store=True,
     )
+    initial_state = fields.Selection(
+        selection=[
+            ('funciona', 'Funciona'),
+            ('en_reparacion', 'En Reparación'),
+            ('no_funciona', 'No Funciona'),
+        ],
+        string='Estado Inicial',
+        store=False,
+    )
 
     _sql_constraints = [
         (
@@ -96,7 +105,10 @@ class PestTrap(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        # Extract initial_state before passing to super (it's not stored)
+        initial_states = []
         for vals in vals_list:
+            initial_states.append(vals.pop('initial_state', None))
             if not vals.get('name') and vals.get('trap_type_id') and vals.get('blueprint_id'):
                 trap_type = self.env['pest.trap.type'].browse(vals['trap_type_id'])
                 prefix = trap_type.code or 'TRP'
@@ -113,7 +125,27 @@ class PestTrap(models.Model):
                 vals['name'] = sequence.next_by_code(seq_code)
             elif not vals.get('name'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('pest.trap.generic') or 'TRP-NEW'
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        # Create initial state records if provided and log to blueprint chatter
+        for rec, initial in zip(records, initial_states):
+            if initial:
+                self.env['pest.trap.state'].create({
+                    'trap_id': rec.id,
+                    'blueprint_id': rec.blueprint_id.id if rec.blueprint_id else False,
+                    'sede_id': rec.sede_id.id if rec.sede_id else False,
+                    'state': initial,
+                    'observations': 'Estado inicial al crear trampa',
+                })
+            if rec.blueprint_id:
+                rec.blueprint_id.message_post(
+                    body='Nueva trampa creada: %s (%s)' % (
+                        rec.name,
+                        rec.trap_type_id.name if rec.trap_type_id else 'Sin tipo',
+                    ),
+                    message_type='comment',
+                    subtype_xmlid='mail.mt_note',
+                )
+        return records
 
     @api.depends('incident_ids')
     def _compute_incident_count(self):

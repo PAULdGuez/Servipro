@@ -6,7 +6,7 @@ class PestTrapMovementWizard(models.TransientModel):
     _description = 'Wizard para mover trampa'
 
     trap_id = fields.Many2one('pest.trap', string='Trampa', required=True, readonly=True)
-    trap_name = fields.Char(related='trap_id.name', string='Nombre Trampa', readonly=True)
+    trap_name = fields.Char(related='trap_id.name', string='ID Trampa', readonly=True)
     blueprint_id = fields.Many2one('pest.blueprint', string='Plano', required=True, readonly=True)
     zone_from_id = fields.Many2one('pest.zone', string='Zona Anterior', readonly=True)
     zone_to_id = fields.Many2one('pest.zone', string='Zona Nueva')
@@ -52,5 +52,16 @@ class PestTrapMovementWizard(models.TransientModel):
             )
             if zone_name:
                 trap.location = zone_name
-        
+
+        # Log movement to blueprint chatter
+        if self.blueprint_id:
+            self.blueprint_id.message_post(
+                body='Trampa %s movida. Motivo: %s' % (
+                    trap.name,
+                    self.comment or 'Sin motivo',
+                ),
+                message_type='comment',
+                subtype_xmlid='mail.mt_note',
+            )
+
         return {'type': 'ir.actions.act_window_close'}

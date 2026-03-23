@@ -7,7 +7,7 @@
             <form string="Mover Trampa">
                 <group>
                     <group string="Trampa">
-                        <field name="trap_name"/>
+                        <field name="trap_name" string="ID Trampa"/>
                         <field name="zone_from_id" string="Ubicación Anterior"/>
                     </group>
                     <group string="Destino">
