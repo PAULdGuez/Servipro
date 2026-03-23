@@ -193,7 +193,7 @@
             top: 0;
             background: #ffffff;
             padding-bottom: 8px;
-            border-bottom: 1px solid var(--bs-border-color);
+            border-bottom: 2px solid #3d3a8c;
             margin-bottom: 8px;
             z-index: 5;
         }
@@ -217,9 +217,18 @@
         .table {
             font-size: 11px;
 
+            thead tr {
+                background-color: #3d3a8c;
+                color: white;
+            }
+
             th {
                 font-size: 10px;
                 text-transform: uppercase;
+                color: white;
+                background-color: #3d3a8c;
+                border-color: #3d3a8c;
+                padding: 6px 8px;
             }
         }
     }

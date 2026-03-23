@@ -186,7 +186,12 @@
                         <div>
                             <strong t-esc="state.trapDetail.trap_name"/> 
                             <span class="text-muted">— <t t-esc="state.trapDetail.trap_type"/></span>
-                            <span class="badge text-bg-secondary ms-2" t-esc="state.trapDetail.current_state"/>
+                            <span class="badge ms-2" t-att-class="{
+                                'text-bg-success': state.trapDetail.current_state === 'funciona',
+                                'text-bg-warning': state.trapDetail.current_state === 'en_reparacion',
+                                'text-bg-danger': state.trapDetail.current_state === 'no_funciona',
+                                'text-bg-secondary': state.trapDetail.current_state === 'sin_registro' or !state.trapDetail.current_state
+                            }" t-esc="state.trapDetail.current_state"/>
                             <small class="text-muted ms-2" t-if="state.trapDetail.location" t-esc="'📍 ' + state.trapDetail.location"/>
                         </div>
                         <button class="btn-close btn-sm" t-on-click="closeDetailPanel"/>

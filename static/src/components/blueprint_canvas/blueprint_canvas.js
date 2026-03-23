@@ -1,6 +1,6 @@
 /** @odoo-module */
 
-import { Component, useState, onWillStart, onMounted, onWillUnmount, useRef } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
@@ -57,57 +57,9 @@ export class BlueprintCanvas extends Component {
         };
         window.addEventListener('resize', this._onResize);
 
-        // DOM Bridge: dynamic style tag for highlighting table rows
-        this._highlightStyleEl = null;
-
-        // DOM Bridge: delegated click listener for table rows
-        this._onTableRowClick = (ev) => {
-            const row = ev.target.closest('tr.o_data_row, .o_data_row');
-            if (!row) return;
-
-            // Try multiple attributes that Odoo might use
-            const trapId = parseInt(row.dataset.id || row.dataset.resId || row.getAttribute('data-res-id') || '0');
-            if (!trapId || !this.state.data || !this.state.data.traps) return;
-
-            // Verify this trap belongs to our blueprint
-            const trap = this.state.data.traps.find(t => t.id === trapId);
-            if (!trap) return;
-
-            // Highlight the trap on the map
-            this.state.highlightedTrapId = trapId;
-            this._highlightTableRow(trapId);
-
-            // Auto-clear after 3 seconds
-            clearTimeout(this._tableHighlightTimer);
-            this._tableHighlightTimer = setTimeout(() => {
-                if (this.state.highlightedTrapId === trapId) {
-                    this.state.highlightedTrapId = null;
-                }
-            }, 3000);
-        };
-
-        onMounted(() => {
-            // Attach delegated listener to the closest form view
-            const formView = this.containerRef.el && this.containerRef.el.closest('.o_form_view');
-            if (formView) {
-                formView.addEventListener('click', this._onTableRowClick);
-                this._formViewEl = formView;
-            }
-        });
-
         onWillUnmount(() => {
             window.removeEventListener('resize', this._onResize);
             clearTimeout(this._resizeTimer);
-            clearTimeout(this._tableHighlightTimer);
-            // Clean up DOM bridge
-            if (this._highlightStyleEl) {
-                this._highlightStyleEl.remove();
-                this._highlightStyleEl = null;
-            }
-            if (this._formViewEl) {
-                this._formViewEl.removeEventListener('click', this._onTableRowClick);
-                this._formViewEl = null;
-            }
         });
     }
 
@@ -295,12 +247,9 @@ export class BlueprintCanvas extends Component {
         if (this.state.selectedTrapId === trap.id) {
             this.state.selectedTrapId = null;
             this.state.trapDetail = null;
-            this._highlightTableRow(null);
             return;
         }
         this.state.selectedTrapId = trap.id;
-        // Highlight corresponding row in the trap table below the widget
-        this._highlightTableRow(trap.id);
         try {
             const detail = await this.orm.call('pest.trap', 'get_detail_data', [[trap.id]]);
             this.state.trapDetail = detail;
@@ -312,7 +261,6 @@ export class BlueprintCanvas extends Component {
     closeDetailPanel() {
         this.state.trapDetail = null;
         this.state.selectedTrapId = null;
-        this._highlightTableRow(null);
     }
 
     async onRegisterIncident(trap) {
@@ -711,38 +659,6 @@ export class BlueprintCanvas extends Component {
             }
         }
         return inside;
-    }
-
-    _highlightTableRow(trapId) {
-        // Remove existing highlight style
-        if (this._highlightStyleEl) {
-            this._highlightStyleEl.remove();
-            this._highlightStyleEl = null;
-        }
-
-        if (!trapId) return;
-
-        // Create a dynamic <style> tag that targets the specific row
-        // Odoo 19 uses data-id on tr.o_data_row for record IDs
-        const style = document.createElement('style');
-        style.id = 'blueprint-trap-highlight-style';
-        style.textContent = `
-            tr.o_data_row[data-id="${trapId}"] td,
-            .o_data_row[data-id="${trapId}"] td {
-                background-color: rgba(61, 58, 140, 0.2) !important;
-                box-shadow: inset 0 0 0 2px #3d3a8c;
-            }
-        `;
-        document.head.appendChild(style);
-        this._highlightStyleEl = style;
-
-        // Try to scroll the row into view
-        setTimeout(() => {
-            const row = document.querySelector(`tr.o_data_row[data-id="${trapId}"], .o_data_row[data-id="${trapId}"]`);
-            if (row) {
-                row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }, 100);
     }
 
     getPopoverPosition(trap) {

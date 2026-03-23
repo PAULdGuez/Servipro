@@ -86,9 +86,6 @@
 
                     <notebook>
                         <page string="Trampas" name="traps">
-                            <div class="text-muted small mb-1">
-                                <i class="fa fa-info-circle"/> Haga clic en una fila para resaltar la trampa en el plano
-                            </div>
                             <field name="trap_ids">
                                 <list editable="bottom" default_order="name">
                                     <field name="id" string="#" readonly="1"/>
