@@ -63,44 +63,24 @@
                     </group>
                     <group string="Umbrales del Heatmap" name="heatmap_config">
                         <div class="mb-2">
-                            <strong class="small">Organismos (volumen)</strong>
-                            <div class="d-flex align-items-center gap-4 mt-1">
+                            <div class="d-flex align-items-center gap-4">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:lime;"></span>
+                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:lime;border:1px solid #ccc;"></span>
                                     <label for="heatmap_umbral_bajo" string="Mín"/>
                                     <field name="heatmap_umbral_bajo" nolabel="1" style="width:60px;"/>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:orange;"></span>
+                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:orange;border:1px solid #ccc;"></span>
                                     <label for="heatmap_umbral_medio" string="Med"/>
                                     <field name="heatmap_umbral_medio" nolabel="1" style="width:60px;"/>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:red;"></span>
+                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:red;border:1px solid #ccc;"></span>
                                     <label for="heatmap_umbral_alto" string="Máx"/>
                                     <field name="heatmap_umbral_alto" nolabel="1" style="width:60px;"/>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <strong class="small">Incidencias (frecuencia)</strong>
-                            <div class="d-flex align-items-center gap-4 mt-1">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:cyan;"></span>
-                                    <label for="heatmap_inc_umbral_bajo" string="Mín"/>
-                                    <field name="heatmap_inc_umbral_bajo" nolabel="1" style="width:60px;"/>
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:magenta;"></span>
-                                    <label for="heatmap_inc_umbral_medio" string="Med"/>
-                                    <field name="heatmap_inc_umbral_medio" nolabel="1" style="width:60px;"/>
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:red;"></span>
-                                    <label for="heatmap_inc_umbral_alto" string="Máx"/>
-                                    <field name="heatmap_inc_umbral_alto" nolabel="1" style="width:60px;"/>
-                                </div>
-                            </div>
+                            <small class="text-muted mt-1 d-block">Organismos: verde→naranja→rojo | Incidencias: azul→magenta→rojo</small>
                         </div>
                     </group>
                     <group string="Plano Interactivo">
