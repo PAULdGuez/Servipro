@@ -7,6 +7,7 @@ class PestTrapMovementWizard(models.TransientModel):
 
     trap_id = fields.Many2one('pest.trap', string='Trampa', required=True, readonly=True)
     trap_name = fields.Char(related='trap_id.name', string='ID Trampa', readonly=True)
+    trap_type_name = fields.Char(related='trap_id.trap_type_id.name', string='Tipo de Trampa', readonly=True)
     blueprint_id = fields.Many2one('pest.blueprint', string='Plano', required=True, readonly=True)
     zone_from_id = fields.Many2one('pest.zone', string='Zona Anterior', readonly=True)
     zone_to_id = fields.Many2one('pest.zone', string='Zona Nueva')

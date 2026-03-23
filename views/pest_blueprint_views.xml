@@ -61,15 +61,27 @@
                             <field name="image" widget="image" string="Subir Plano Original"/>
                         </group>
                     </group>
+                    <group string="Umbrales del Heatmap" name="heatmap_config">
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:blue;"></span>
+                                <label for="heatmap_umbral_bajo" string="Mín"/>
+                                <field name="heatmap_umbral_bajo" nolabel="1" style="width:60px;"/>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:yellow;"></span>
+                                <label for="heatmap_umbral_medio" string="Med"/>
+                                <field name="heatmap_umbral_medio" nolabel="1" style="width:60px;"/>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:red;"></span>
+                                <label for="heatmap_umbral_alto" string="Máx"/>
+                                <field name="heatmap_umbral_alto" nolabel="1" style="width:60px;"/>
+                            </div>
+                        </div>
+                    </group>
                     <group string="Plano Interactivo">
                         <field name="image_web" widget="blueprint_canvas" nolabel="1" colspan="2"/>
-                    </group>
-                    <group string="Configuración Mapa de Calor" name="heatmap_config">
-                        <group>
-                            <field name="heatmap_umbral_bajo"/>
-                            <field name="heatmap_umbral_medio"/>
-                            <field name="heatmap_umbral_alto"/>
-                        </group>
                     </group>
 
                     <notebook>

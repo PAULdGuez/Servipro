@@ -157,7 +157,13 @@ export class BlueprintCanvas extends Component {
                 default_zone_from_id: trap && trap.zone_id ? trap.zone_id : false,
             },
         }, {
-            onClose: () => this.loadData(),
+            onClose: async () => {
+                await this.loadData();
+                // Force chatter refresh by reloading the form
+                if (this.props.record && this.props.record.load) {
+                    await this.props.record.load();
+                }
+            },
         });
     }
 
@@ -218,6 +224,10 @@ export class BlueprintCanvas extends Component {
             onClose: async () => {
                 const oldCount = this.state.data ? this.state.data.traps.length : 0;
                 await this.loadData();
+                // Force chatter refresh by reloading the form
+                if (this.props.record && this.props.record.load) {
+                    await this.props.record.load();
+                }
                 const newCount = this.state.data ? this.state.data.traps.length : 0;
 
                 // Only ask about incident if a new trap was actually created
@@ -713,10 +723,11 @@ export class BlueprintCanvas extends Component {
     getPopoverPosition(trap) {
         const x = trap.coord_x_pct;
         const y = trap.coord_y_pct;
-        if (y < 30) return 'bottom';
-        if (y > 80) return 'top';
-        if (x < 25) return 'right';
-        if (x > 75) return 'left';
+        // More aggressive thresholds
+        if (y < 35) return 'bottom';
+        if (y > 75) return 'top';
+        if (x < 30) return 'right';
+        if (x > 70) return 'left';
         return 'top';
     }
 }
