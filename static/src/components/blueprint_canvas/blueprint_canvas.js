@@ -1,6 +1,6 @@
 /** @odoo-module */
 
-import { Component, useState, onWillStart, onWillUnmount, useRef } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount, onWillUpdateProps, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
@@ -43,6 +43,30 @@ export class BlueprintCanvas extends Component {
 
         onWillStart(async () => {
             await this.loadData();
+        });
+
+        onWillUpdateProps(async (nextProps) => {
+            // When the record is saved, props update. Reload data and re-render heatmap.
+            if (nextProps.record && nextProps.record.resId) {
+                await this.loadData();
+                if (this.state.heatmapActive && this._lastHeatmapData) {
+                    // Re-fetch heatmap data with potentially new thresholds
+                    try {
+                        const response = await fetch(`/pest_control/blueprint/${nextProps.record.resId}/heatmap_data`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { mode: this.state.heatmapMode } }),
+                        });
+                        const data = await response.json();
+                        const heatmapData = data.result || data;
+                        if (heatmapData.points && heatmapData.points.length > 0) {
+                            this._renderHeatmap(heatmapData);
+                        }
+                    } catch (e) {
+                        // Silently fail — heatmap will use old data
+                    }
+                }
+            }
         });
 
         this._lastHeatmapData = null;
