@@ -111,8 +111,17 @@ class PestBlueprint(models.Model):
                     rec.image_processing_state = 'pending'
         return records
 
-    def get_widget_data(self):
+    def get_widget_data(self, limit=200, offset=0):
         self.ensure_one()
+
+        # Total count before pagination
+        total_trap_count = len(self.trap_ids)
+
+        # Apply limit/offset to trap recordset
+        if limit:
+            trap_ids_to_read = self.trap_ids[offset:offset + limit]
+        else:
+            trap_ids_to_read = self.trap_ids
 
         # Batch incident counts (already using _read_group from previous fix)
         incident_counts = {}
@@ -124,8 +133,8 @@ class PestBlueprint(models.Model):
         except Exception:
             pass
 
-        # Batch read all trap data in one query
-        traps_data = self.trap_ids.read([
+        # Batch read all trap data in one query (paginated)
+        traps_data = trap_ids_to_read.read([
             'name', 'coord_x_pct', 'coord_y_pct', 'current_state',
             'trap_type_id', 'sede_id', 'zone_id',
         ])
@@ -200,6 +209,10 @@ class PestBlueprint(models.Model):
                 'umbral_medio': self.heatmap_umbral_medio or 20,
                 'umbral_alto': self.heatmap_umbral_alto or 50,
             },
+            'total_trap_count': total_trap_count,
+            'trap_offset': offset,
+            'trap_limit': limit,
+            'has_more_traps': bool(limit) and (offset + limit) < total_trap_count,
         }
 
 

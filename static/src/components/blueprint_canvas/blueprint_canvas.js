@@ -36,6 +36,8 @@ export class BlueprintCanvas extends Component {
             drawingPoints: [],
             selectedZoneId: null,
             isEditMode: false,
+            trapOffset: 0,
+            trapLimit: 200,
         });
 
         onWillStart(async () => {
@@ -70,7 +72,19 @@ export class BlueprintCanvas extends Component {
                 this.state.error = new Error("El plano de sede debe guardarse antes de usar el mapa interactivo.");
                 return;
             }
-            const data = await this.orm.call(this.props.record.resModel, "get_widget_data", [[this.props.record.resId]]);
+            const recordId = this.props.record.resId;
+            const data = await this.orm.call(
+                this.props.record.resModel,
+                "get_widget_data",
+                [[recordId]],
+                { limit: this.state.trapLimit, offset: this.state.trapOffset }
+            );
+
+            if (this.state.trapOffset > 0 && this.state.data) {
+                // Append traps to existing list (Load More scenario)
+                data.traps = [...this.state.data.traps, ...data.traps];
+            }
+
             this.state.data = data;
             this.state.error = null;
             this.state.loading = false;
@@ -79,6 +93,11 @@ export class BlueprintCanvas extends Component {
             this.state.loading = false;
             this.notification.add("Sucedió un error cargando el mapa de trampas. " + (error.message || ""), { type: "danger" });
         }
+    }
+
+    async loadMoreTraps() {
+        this.state.trapOffset += this.state.trapLimit;
+        await this.loadData();
     }
 
     onDragStart(ev, trap) {
@@ -361,10 +380,12 @@ export class BlueprintCanvas extends Component {
 
     onFilterTrapType(ev) {
         this.state.filterTrapType = ev.target.value || null;
+        this.state.trapOffset = 0;
     }
 
     onFilterTrapState(ev) {
         this.state.filterTrapState = ev.target.value || null;
+        this.state.trapOffset = 0;
     }
 
     isTrapHighlighted(trap) {
@@ -386,6 +407,7 @@ export class BlueprintCanvas extends Component {
 
     onSearchTrap(ev) {
         this.state.searchTerm = ev.target.value || '';
+        this.state.trapOffset = 0;
     }
 
     get filteredTraps() {
