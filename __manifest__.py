@@ -63,8 +63,6 @@
     'assets': {
         'web.assets_backend': [
             'pest_control/static/src/css/pest_global.scss',
-            'pest_control/static/src/css/pest_dark_mode.scss',
-            'pest_control/static/src/js/dark_mode_loader.js',
             'pest_control/static/lib/simpleheat.min.js',
             'pest_control/static/lib/chart.umd.min.js',
             'pest_control/static/lib/chartjs-plugin-datalabels.min.js',

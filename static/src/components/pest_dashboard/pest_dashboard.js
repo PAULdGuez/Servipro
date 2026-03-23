@@ -27,7 +27,6 @@ export class PestDashboard extends Component {
             sedes: [],
             chartsData: {},
             hiddenCharts: [],
-            darkMode: localStorage.getItem('pest_dark_mode') === 'true',
         });
         onMounted(async () => await this.loadSedes());
     }
@@ -161,17 +160,6 @@ export class PestDashboard extends Component {
             {key: 'estado_organismo', title: 'Estado Organismo'},
             {key: 'estado_quejas', title: 'Estado Quejas'},
         ];
-    }
-
-    toggleDarkMode() {
-        this.state.darkMode = !this.state.darkMode;
-        localStorage.setItem('pest_dark_mode', this.state.darkMode ? 'true' : 'false');
-        const actionManager = document.querySelector('.o_action_manager');
-        if (actionManager) {
-            actionManager.classList.toggle('pest_dark_mode', this.state.darkMode);
-        }
-        // Reload charts to pick up new theme colors
-        this.loadChartsData();
     }
 
     async exportPowerPoint() {
