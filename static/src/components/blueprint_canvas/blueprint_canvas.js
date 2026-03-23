@@ -57,9 +57,15 @@ export class BlueprintCanvas extends Component {
         };
         window.addEventListener('resize', this._onResize);
 
+        // Listen for clicks on the trap table rows to highlight the corresponding trap on the map
+        this._boundTableRowClick = this._onTableRowClick.bind(this);
+        document.addEventListener('click', this._boundTableRowClick);
+
         onWillUnmount(() => {
             window.removeEventListener('resize', this._onResize);
+            document.removeEventListener('click', this._boundTableRowClick);
             clearTimeout(this._resizeTimer);
+            clearTimeout(this._tableHighlightTimer);
         });
     }
 
@@ -237,9 +243,12 @@ export class BlueprintCanvas extends Component {
         if (this.state.selectedTrapId === trap.id) {
             this.state.selectedTrapId = null;
             this.state.trapDetail = null;
+            this._highlightTableRow(null);
             return;
         }
         this.state.selectedTrapId = trap.id;
+        // Highlight corresponding row in the trap table below the widget
+        this._highlightTableRow(trap.id);
         try {
             const detail = await this.orm.call('pest.trap', 'get_detail_data', [[trap.id]]);
             this.state.trapDetail = detail;
@@ -251,6 +260,7 @@ export class BlueprintCanvas extends Component {
     closeDetailPanel() {
         this.state.trapDetail = null;
         this.state.selectedTrapId = null;
+        this._highlightTableRow(null);
     }
 
     async onRegisterIncident(trap) {
@@ -649,6 +659,55 @@ export class BlueprintCanvas extends Component {
             }
         }
         return inside;
+    }
+
+    _highlightTableRow(trapId) {
+        // Remove previous highlights
+        document.querySelectorAll('.o_list_table tr.o_trap_row_highlight').forEach(
+            row => row.classList.remove('o_trap_row_highlight')
+        );
+
+        if (!trapId) return;
+
+        // Find the trap table — Odoo renders each row with a data-id attribute
+        const rows = document.querySelectorAll('.o_list_table .o_data_row');
+        for (const row of rows) {
+            const dataId = row.dataset.id;
+            if (dataId && parseInt(dataId) === trapId) {
+                row.classList.add('o_trap_row_highlight');
+                // Scroll the row into view
+                row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                break;
+            }
+        }
+    }
+
+    _onTableRowClick(ev) {
+        // Check if the click was on a row in the trap table
+        const row = ev.target.closest('.o_list_table .o_data_row');
+        if (!row) return;
+
+        const dataId = row.dataset.id;
+        if (!dataId) return;
+
+        const trapId = parseInt(dataId);
+        if (!trapId || !this.state.data || !this.state.data.traps) return;
+
+        // Check if this trap belongs to our blueprint
+        const trap = this.state.data.traps.find(t => t.id === trapId);
+        if (!trap) return;
+
+        // Highlight the trap on the map
+        this.state.highlightedTrapId = trapId;
+        this._highlightTableRow(trapId);
+
+        // Auto-clear highlight after 3 seconds
+        clearTimeout(this._tableHighlightTimer);
+        this._tableHighlightTimer = setTimeout(() => {
+            if (this.state.highlightedTrapId === trapId) {
+                this.state.highlightedTrapId = null;
+            }
+        }, 3000);
     }
 
     getPopoverPosition(trap) {
