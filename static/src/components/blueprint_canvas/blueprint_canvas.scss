@@ -109,6 +109,22 @@
                 box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.5);
             }
 
+            &:focus {
+                outline: 3px solid #6c63ff;
+                outline-offset: 2px;
+                z-index: 100;
+            }
+
+            &:focus:not(:focus-visible) {
+                outline: none; // Hide outline for mouse clicks
+            }
+
+            &:focus-visible {
+                outline: 3px solid #6c63ff;
+                outline-offset: 2px;
+                z-index: 100;
+            }
+
                 .o_blueprint_popover {
                 position: absolute;
                 z-index: 9999;
