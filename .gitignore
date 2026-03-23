@@ -1,27 +1,28 @@
+# Python
 __pycache__/
-pest_control-3l0.2/
-pest_control-3l0.3/
-pest_control-3l0.4/
-pest_control-3l0.6/
-pest_control-3l0.7/
-pest_control-3l0.8/
-pest_control-3l0.10/
-pest_control-3l0.11/
-pest_control-3l0.12/
-pest_control-3l0.16/
-pest_control-3l0.14/
-pest_control-3l0.15/
-pest_control-3l0.18/
-pest_control-6sn.2/
-pest_control-6sn.4/
-pest_control-6sn.5/
-pest_control-6sn.6/
-pest_control-j19.2/
-pest_control-j19.3/
-pest_control-j19.5/
-pest_control-j19.6/
-pest_control-j19.7/
-pest_control-pcx.2/
-pest_control-pcx.3/
-pest_control-pcx.5/
-pest_control-pcx.6/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Beads issue tracker (local only)
+.beads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Worktrees
+pest_control-*/
+
+# Review system outputs
+prompts/
+reviews/
+
+# Temporary files
+*.tmp
+*.bak
