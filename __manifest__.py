@@ -64,8 +64,8 @@
         'web.assets_backend': [
             'pest_control/static/src/css/pest_global.scss',
             'pest_control/static/lib/simpleheat.min.js',
-            'pest_control/static/lib/chart.umd.min.js',
-            'pest_control/static/lib/chartjs-plugin-datalabels.min.js',
+            # chart.umd.min.js and chartjs-plugin-datalabels.min.js are loaded on-demand
+            # by pest_dashboard.js via _ensureChartJsLoaded() — saves ~213KB on initial load
             # 'pest_control/static/lib/pptxgenjs.min.js',  # TODO: replace with bundle version
             'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.js',
             'pest_control/static/src/components/blueprint_canvas/blueprint_canvas.xml',

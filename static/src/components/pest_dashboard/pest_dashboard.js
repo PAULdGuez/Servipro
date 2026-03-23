@@ -69,11 +69,27 @@ export class PestDashboard extends Component {
         }
     }
 
+    async _ensureChartJsLoaded() {
+        if (window.Chart) return; // Already loaded
+
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+
+        await loadScript('/pest_control/static/lib/chart.umd.min.js');
+        await loadScript('/pest_control/static/lib/chartjs-plugin-datalabels.min.js');
+    }
+
     async loadChartsData() {
         if (!this.state.sedeId) return;
         this.state.loading = true;
         this.state.error = null;
         try {
+            await this._ensureChartJsLoaded();
             const params = {
                 date_from: this.state.dateFrom || false,
                 date_to: this.state.dateTo || false,
