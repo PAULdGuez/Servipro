@@ -227,11 +227,28 @@ class PestTrap(models.Model):
             [('trap_id', '=', self.id)],
             ['date', 'state', 'observations', 'user_id'],
             limit=5, order='date desc')
+
+        # Get totals
+        total_incidents = self.env['pest.incident'].search_count([('trap_id', '=', self.id)])
+        total_organisms = 0
+        try:
+            org_data = self.env['pest.incident']._read_group(
+                [('trap_id', '=', self.id)],
+                [],
+                ['organism_count:sum'],
+            )
+            if org_data:
+                total_organisms = org_data[0][0] or 0
+        except Exception:
+            pass
+
         return {
             'trap_name': self.name or '',
             'trap_type': self.trap_type_id.name if self.trap_type_id else '',
             'location': self.location or '',
             'current_state': self.current_state or 'sin_registro',
+            'total_incidents': total_incidents,
+            'total_organisms': total_organisms,
             'incidents': [{
                 'date': str(i.get('date') or ''),
                 'plague': i['plague_type_id'][1] if i.get('plague_type_id') else '',

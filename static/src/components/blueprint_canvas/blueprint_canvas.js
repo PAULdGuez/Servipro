@@ -615,6 +615,29 @@ export class BlueprintCanvas extends Component {
 
         const heat = window.simpleheat(canvas);
 
+        // Different gradient for each mode
+        if (this.state.heatmapMode === 'incidents') {
+            // Blue-purple gradient for frequency
+            heat.gradient({
+                0.0: 'rgba(0, 0, 255, 0)',
+                0.2: 'blue',
+                0.4: 'cyan',
+                0.6: 'magenta',
+                0.8: 'purple',
+                1.0: 'red'
+            });
+        } else {
+            // Default green-yellow-red gradient for volume
+            heat.gradient({
+                0.0: 'rgba(0, 255, 0, 0)',
+                0.2: 'lime',
+                0.4: 'yellow',
+                0.6: 'orange',
+                0.8: 'orangered',
+                1.0: 'red'
+            });
+        }
+
         // Convert percentage coordinates to pixel coordinates
         const points = data.points.map(p => [
             (p.x / 100) * canvas.width,
