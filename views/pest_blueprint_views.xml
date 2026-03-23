@@ -103,6 +103,7 @@
                             </div>
                         </div>
                     </group>
+                        <div class="text-muted small mt-1"><i class="fa fa-info-circle"/> Tras guardar, reactive el heatmap para aplicar los nuevos umbrales.</div>
                     <group string="Plano Interactivo">
                         <field name="image_web" widget="blueprint_canvas" nolabel="1" colspan="2"/>
                     </group>
