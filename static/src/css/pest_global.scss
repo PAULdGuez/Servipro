@@ -47,14 +47,3 @@ button.oe_stat_button {
     }
 }
 
-// Highlight style for trap table rows (DOM bridge between widget and table)
-.o_list_table .o_data_row.o_trap_row_highlight {
-    background-color: rgba(61, 58, 140, 0.15) !important;
-    outline: 2px solid #3d3a8c;
-    outline-offset: -2px;
-    transition: background-color 0.3s ease;
-
-    td {
-        background-color: transparent !important;
-    }
-}
