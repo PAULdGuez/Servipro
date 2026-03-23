@@ -308,27 +308,71 @@ export class BlueprintCanvas extends Component {
     }
 
     onKeyDown(ev) {
-        if (!this.state.data.can_edit || this.props.readonly) return;
-        // Space or Enter on container to add trap
-        if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains('blueprint-container')) {
-            ev.preventDefault();
-            this.action.doAction({
-                type: 'ir.actions.act_window',
-                res_model: 'pest.trap',
-                views: [[false, 'form']],
-                target: 'new',
-                context: {
-                    default_blueprint_id: this.props.record.resId,
-                    default_coord_x_pct: 50,
-                    default_coord_y_pct: 50,
-                    default_sede_id: this.state.data && this.state.data.sede_id ? this.state.data.sede_id : false,
+        if (!this.state.data) return;
+
+        const traps = this.state.data.traps;
+        if (!traps || traps.length === 0) return;
+
+        switch (ev.key) {
+            case 'Tab': {
+                // Navigate between traps
+                ev.preventDefault();
+                const currentIdx = traps.findIndex(t => t.id === this.state.selectedTrapId);
+                let nextIdx;
+                if (ev.shiftKey) {
+                    nextIdx = currentIdx <= 0 ? traps.length - 1 : currentIdx - 1;
+                } else {
+                    nextIdx = currentIdx >= traps.length - 1 ? 0 : currentIdx + 1;
                 }
-            }, {
-                onClose: () => {
-                    this.state.loading = true;
-                    this.loadData();
+                const nextTrap = traps[nextIdx];
+                this.state.selectedTrapId = nextTrap.id;
+                this.onTrapMarkerClick({ stopPropagation: () => {} }, nextTrap);
+                break;
+            }
+            case 'Enter':
+            case ' ': {
+                // Open popover for selected trap (same as click)
+                ev.preventDefault();
+                if (this.state.selectedTrapId) {
+                    const trap = traps.find(t => t.id === this.state.selectedTrapId);
+                    if (trap) {
+                        this.onTrapMarkerClick({ stopPropagation: () => {} }, trap);
+                    }
                 }
-            });
+                break;
+            }
+            case 'Escape': {
+                // Close popover
+                this.state.selectedTrapId = null;
+                this.state.trapDetail = null;
+                break;
+            }
+            case 'ArrowUp':
+            case 'ArrowDown':
+            case 'ArrowLeft':
+            case 'ArrowRight': {
+                // Move selected trap (only in edit mode)
+                if (!this.state.isEditMode || !this.state.selectedTrapId) break;
+                ev.preventDefault();
+                const trap = traps.find(t => t.id === this.state.selectedTrapId);
+                if (!trap) break;
+
+                const step = ev.shiftKey ? 5 : 1; // Shift = bigger steps
+                let newX = trap.coord_x_pct;
+                let newY = trap.coord_y_pct;
+
+                switch (ev.key) {
+                    case 'ArrowUp': newY = Math.max(0, newY - step); break;
+                    case 'ArrowDown': newY = Math.min(100, newY + step); break;
+                    case 'ArrowLeft': newX = Math.max(0, newX - step); break;
+                    case 'ArrowRight': newX = Math.min(100, newX + step); break;
+                }
+
+                // Update position locally (visual feedback)
+                trap.coord_x_pct = newX;
+                trap.coord_y_pct = newY;
+                break;
+            }
         }
     }
 
