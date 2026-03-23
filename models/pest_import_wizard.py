@@ -69,6 +69,7 @@ class PestIncidentImportWizard(models.TransientModel):
             # Headers
             headers = [
                 'Trampa',
+                'Ubicación',
                 'Fecha (YYYY-MM-DD)',
                 'Tipo Plaga',
                 'Tipo Incidencia (captura/hallazgo)',
@@ -83,6 +84,7 @@ class PestIncidentImportWizard(models.TransientModel):
             # Pre-fill trap names
             for row, trap in enumerate(type_traps, 2):
                 ws.cell(row=row, column=1, value=trap.name)
+                ws.cell(row=row, column=2, value=trap.zone_id.name if trap.zone_id else (trap.location or ''))
             # Auto-width
             for col in ws.columns:
                 max_length = max(len(str(cell.value or '')) for cell in col)
@@ -150,13 +152,14 @@ class PestIncidentImportWizard(models.TransientModel):
                     continue
 
                 trap_name = str(values[0] or '').strip()
-                date_raw = values[1] if len(values) > 1 else None
-                plague_name = str(values[2] or '').strip() if len(values) > 2 else ''
-                incident_type_raw = str(values[3] or '').strip().lower() if len(values) > 3 else ''
-                insect_type_raw = str(values[4] or '').strip().lower() if len(values) > 4 else ''
-                organism_count_raw = values[5] if len(values) > 5 else None
-                inspector_raw = str(values[6] or '').strip() if len(values) > 6 else ''
-                notes = str(values[7] or '').strip() if len(values) > 7 else ''
+                # values[1] = Ubicación (informational only, ignored during import)
+                date_raw = values[2] if len(values) > 2 else None
+                plague_name = str(values[3] or '').strip() if len(values) > 3 else ''
+                incident_type_raw = str(values[4] or '').strip().lower() if len(values) > 4 else ''
+                insect_type_raw = str(values[5] or '').strip().lower() if len(values) > 5 else ''
+                organism_count_raw = values[6] if len(values) > 6 else None
+                inspector_raw = str(values[7] or '').strip() if len(values) > 7 else ''
+                notes = str(values[8] or '').strip() if len(values) > 8 else ''
 
                 # Match trap
                 trap = trap_map.get(trap_name.lower())
