@@ -17,8 +17,7 @@ ALLOWED_DOCS = {'CONTRIBUTING.md', 'TECHNICAL_ARCHITECTURE.md', 'USER_MANUAL.md'
 class PestDocsController(http.Controller):
 
     @http.route('/pest_control/blueprint/<int:blueprint_id>/heatmap_data', type='jsonrpc', auth='user')
-    def get_heatmap_data(self, blueprint_id, mode='organisms', **kwargs):
-        """Return heatmap data. mode='organisms' for total organisms, mode='incidents' for incident count."""
+    def get_heatmap_data(self, blueprint_id, mode='incidents', plague_type_id=None, **kwargs):
         blueprint = request.env['pest.blueprint'].browse(blueprint_id)
         if not blueprint.exists():
             return {'error': 'Blueprint not found'}
@@ -31,15 +30,21 @@ class PestDocsController(http.Controller):
         if not traps:
             return {'points': [], 'max_value': 1}
 
+        # Base domain
+        domain = [('trap_id', 'in', traps.ids)]
+
+        # Filter by plague type if specified
+        if plague_type_id:
+            domain.append(('plague_type_id', '=', int(plague_type_id)))
+
         # Build trap coordinate map
         trap_coords = {t.id: (t.coord_x_pct, t.coord_y_pct) for t in traps}
 
         points = []
 
         if mode == 'incidents':
-            # Count number of incidents per trap (frequency)
             incident_data = request.env['pest.incident']._read_group(
-                domain=[('trap_id', 'in', traps.ids)],
+                domain=domain,
                 groupby=['trap_id'],
                 aggregates=['__count'],
             )
@@ -47,15 +52,10 @@ class PestDocsController(http.Controller):
                 if count and count > 0:
                     coords = trap_coords.get(trap.id)
                     if coords:
-                        points.append({
-                            'x': coords[0] or 0,
-                            'y': coords[1] or 0,
-                            'value': count,
-                        })
+                        points.append({'x': coords[0] or 0, 'y': coords[1] or 0, 'value': count})
         else:
-            # Sum organism_count per trap (volume) — default
             incident_data = request.env['pest.incident']._read_group(
-                domain=[('trap_id', 'in', traps.ids)],
+                domain=domain,
                 groupby=['trap_id'],
                 aggregates=['organism_count:sum'],
             )
@@ -63,14 +63,24 @@ class PestDocsController(http.Controller):
                 if total_organisms and total_organisms > 0:
                     coords = trap_coords.get(trap.id)
                     if coords:
-                        points.append({
-                            'x': coords[0] or 0,
-                            'y': coords[1] or 0,
-                            'value': total_organisms,
-                        })
+                        points.append({'x': coords[0] or 0, 'y': coords[1] or 0, 'value': total_organisms})
 
         max_value = max((p['value'] for p in points), default=1)
-        return {'points': points, 'max_value': max_value, 'mode': mode}
+
+        # Get plague-specific threshold if filtering by plague
+        threshold_alto = None
+        if plague_type_id:
+            plague = request.env['pest.plague.type'].browse(int(plague_type_id))
+            if plague.exists():
+                threshold_alto = plague.heatmap_umbral_alto
+
+        return {
+            'points': points,
+            'max_value': max_value,
+            'mode': mode,
+            'plague_type_id': plague_type_id,
+            'threshold_alto': threshold_alto,
+        }
 
     @http.route('/pest_control/docs/<string:filename>', type='http', auth='user', website=True)
     def render_doc(self, filename, **kw):

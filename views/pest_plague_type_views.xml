@@ -16,6 +16,9 @@
                        decoration-warning="category == 'rastrero'"
                        decoration-muted="category == 'otro'"/>
                 <field name="active"/>
+                <field name="heatmap_umbral_bajo" string="Umbral Bajo"/>
+                <field name="heatmap_umbral_medio" string="Umbral Medio"/>
+                <field name="heatmap_umbral_alto" string="Umbral Alto"/>
             </list>
         </field>
     </record>
@@ -37,6 +40,13 @@
                         <group>
                             <field name="category"/>
                             <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Umbrales del Heatmap">
+                        <group>
+                            <field name="heatmap_umbral_bajo"/>
+                            <field name="heatmap_umbral_medio"/>
+                            <field name="heatmap_umbral_alto"/>
                         </group>
                     </group>
                 </sheet>

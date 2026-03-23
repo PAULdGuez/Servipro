@@ -202,6 +202,28 @@ class PestBlueprint(models.Model):
                 'color': zone.color or '#3498db55',
             })
 
+        # Plagues with incidents in this blueprint (for heatmap filter)
+        plague_incidents = []
+        try:
+            pi_data = self.env['pest.incident']._read_group(
+                [('trap_id', 'in', self.trap_ids.ids)],
+                ['plague_type_id'],
+                ['organism_count:sum', '__count'],
+            )
+            for plague, org_sum, inc_count in pi_data:
+                if plague:
+                    plague_incidents.append({
+                        'id': plague.id,
+                        'name': plague.name,
+                        'organism_sum': org_sum or 0,
+                        'incident_count': inc_count or 0,
+                        'umbral_bajo': plague.heatmap_umbral_bajo or 5,
+                        'umbral_medio': plague.heatmap_umbral_medio or 20,
+                        'umbral_alto': plague.heatmap_umbral_alto or 50,
+                    })
+        except Exception:
+            pass
+
         return {
             'image_url': f'/web/image/pest.blueprint/{self.id}/image_web',
             'traps': trap_list,
@@ -218,6 +240,7 @@ class PestBlueprint(models.Model):
                 'inc_umbral_medio': self.heatmap_inc_umbral_medio or 10,
                 'inc_umbral_alto': self.heatmap_inc_umbral_alto or 30,
             },
+            'plague_types_with_incidents': plague_incidents,
             'total_trap_count': total_trap_count,
             'trap_offset': offset,
             'trap_limit': limit,

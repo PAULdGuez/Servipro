@@ -23,6 +23,12 @@ class PestPlagueType(models.Model):
         string='Categoría',
     )
     active = fields.Boolean(default=True)
+    heatmap_umbral_bajo = fields.Integer(string='Umbral Bajo', default=5,
+        help='Cantidad de organismos considerada nivel bajo para esta plaga')
+    heatmap_umbral_medio = fields.Integer(string='Umbral Medio', default=20,
+        help='Cantidad de organismos considerada nivel medio para esta plaga')
+    heatmap_umbral_alto = fields.Integer(string='Umbral Alto', default=50,
+        help='Cantidad de organismos considerada nivel alto/critico para esta plaga')
 
     _sql_constraints = [
         (

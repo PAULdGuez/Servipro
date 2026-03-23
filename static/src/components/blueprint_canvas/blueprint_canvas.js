@@ -32,7 +32,7 @@ export class BlueprintCanvas extends Component {
             showIncidentBadges: true,
             heatmapActive: false,
             heatmapLoading: false,
-            heatmapMode: 'organisms', // 'organisms' or 'incidents'
+            heatmapFilter: 'global_incidents', // format: 'global_incidents', 'global_organisms', 'organisms_123', 'incidents_123'
             drawingMode: false,
             drawingPoints: [],
             selectedZoneId: null,
@@ -52,10 +52,24 @@ export class BlueprintCanvas extends Component {
                 if (this.state.heatmapActive && this._lastHeatmapData) {
                     // Re-fetch heatmap data with potentially new thresholds
                     try {
+                        const parts = this.state.heatmapFilter.split('_');
+                        let mode, plagueId;
+                        if (this.state.heatmapFilter === 'global_incidents') {
+                            mode = 'incidents';
+                            plagueId = null;
+                        } else if (this.state.heatmapFilter === 'global_organisms') {
+                            mode = 'organisms';
+                            plagueId = null;
+                        } else {
+                            mode = parts[0];
+                            plagueId = parseInt(parts[1]);
+                        }
+                        const params = { mode: mode };
+                        if (plagueId) params.plague_type_id = plagueId;
                         const response = await fetch(`/pest_control/blueprint/${nextProps.record.resId}/heatmap_data`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { mode: this.state.heatmapMode } }),
+                            body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: params }),
                         });
                         const data = await response.json();
                         const heatmapData = data.result || data;
@@ -574,10 +588,27 @@ export class BlueprintCanvas extends Component {
 
         this.state.heatmapLoading = true;
         try {
+            const parts = this.state.heatmapFilter.split('_');
+            let mode, plagueId;
+
+            if (this.state.heatmapFilter === 'global_incidents') {
+                mode = 'incidents';
+                plagueId = null;
+            } else if (this.state.heatmapFilter === 'global_organisms') {
+                mode = 'organisms';
+                plagueId = null;
+            } else {
+                mode = parts[0];
+                plagueId = parseInt(parts[1]);
+            }
+
+            const params = { mode: mode };
+            if (plagueId) params.plague_type_id = plagueId;
+
             const response = await fetch(`/pest_control/blueprint/${this.props.record.resId}/heatmap_data`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { mode: this.state.heatmapMode } }),
+                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: params }),
             });
             const data = await response.json();
             const heatmapData = data.result || data;
@@ -594,31 +625,49 @@ export class BlueprintCanvas extends Component {
         this.state.heatmapLoading = false;
     }
 
-    async switchHeatmapMode() {
-        this.state.heatmapMode = this.state.heatmapMode === 'organisms' ? 'incidents' : 'organisms';
-        if (this.state.heatmapActive) {
-            // Reload heatmap with new mode
-            this._removeHeatmapCanvas();
-            this.state.heatmapLoading = true;
-            try {
-                const response = await fetch(`/pest_control/blueprint/${this.props.record.resId}/heatmap_data`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { mode: this.state.heatmapMode } }),
-                });
-                const data = await response.json();
-                const heatmapData = data.result || data;
-                if (heatmapData.points && heatmapData.points.length > 0) {
-                    this._renderHeatmap(heatmapData);
-                } else {
-                    this.notification.add('No hay datos para este modo de mapa de calor.', { type: 'info' });
-                    this.state.heatmapActive = false;
-                }
-            } catch (error) {
-                this.notification.add('Error al cambiar modo del mapa de calor.', { type: 'danger' });
-            }
-            this.state.heatmapLoading = false;
+    async onHeatmapFilterChange(ev) {
+        this.state.heatmapFilter = ev.target.value;
+        if (!this.state.heatmapActive) return;
+
+        // Parse the filter value
+        const parts = this.state.heatmapFilter.split('_');
+        let mode, plagueId;
+
+        if (this.state.heatmapFilter === 'global_incidents') {
+            mode = 'incidents';
+            plagueId = null;
+        } else if (this.state.heatmapFilter === 'global_organisms') {
+            mode = 'organisms';
+            plagueId = null;
+        } else {
+            // format: 'organisms_123' or 'incidents_123'
+            mode = parts[0];
+            plagueId = parseInt(parts[1]);
         }
+
+        this._removeHeatmapCanvas();
+        this.state.heatmapLoading = true;
+        try {
+            const params = { mode: mode };
+            if (plagueId) params.plague_type_id = plagueId;
+
+            const response = await fetch(`/pest_control/blueprint/${this.props.record.resId}/heatmap_data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: params }),
+            });
+            const data = await response.json();
+            const heatmapData = data.result || data;
+
+            if (heatmapData.points && heatmapData.points.length > 0) {
+                this._renderHeatmap(heatmapData);
+            } else {
+                this.notification.add('No hay datos para este filtro.', { type: 'info' });
+            }
+        } catch (error) {
+            this.notification.add('Error al cargar mapa de calor.', { type: 'danger' });
+        }
+        this.state.heatmapLoading = false;
     }
 
     _renderHeatmap(data) {
@@ -639,9 +688,10 @@ export class BlueprintCanvas extends Component {
 
         const heat = window.simpleheat(canvas);
 
-        // Different gradient for each mode
-        if (this.state.heatmapMode === 'incidents') {
-            // Blue-purple gradient for frequency
+        // Determine gradient based on filter
+        const isIncidentMode = this.state.heatmapFilter.startsWith('incidents') || this.state.heatmapFilter === 'global_incidents';
+
+        if (isIncidentMode) {
             heat.gradient({
                 0.0: 'rgba(0, 0, 255, 0)',
                 0.2: 'blue',
@@ -651,7 +701,6 @@ export class BlueprintCanvas extends Component {
                 1.0: 'red'
             });
         } else {
-            // Default green-yellow-red gradient for volume
             heat.gradient({
                 0.0: 'rgba(0, 255, 0, 0)',
                 0.2: 'lime',
@@ -678,14 +727,18 @@ export class BlueprintCanvas extends Component {
         });
 
         heat.data(filteredPoints);
-        // Read thresholds directly from the form record (always up-to-date)
-        const record = this.props.record && this.props.record.data || {};
-        const config = this.state.data && this.state.data.heatmap_config || {};
+        // Use plague-specific threshold if available from the data response
         let maxVal;
-        if (this.state.heatmapMode === 'incidents') {
-            maxVal = record.heatmap_inc_umbral_alto || config.inc_umbral_alto || data.max_value || 30;
+        if (data.threshold_alto) {
+            maxVal = data.threshold_alto;
         } else {
-            maxVal = record.heatmap_umbral_alto || config.umbral_alto || data.max_value || 50;
+            const record = this.props.record && this.props.record.data || {};
+            const config = this.state.data && this.state.data.heatmap_config || {};
+            if (isIncidentMode) {
+                maxVal = record.heatmap_inc_umbral_alto || config.inc_umbral_alto || data.max_value || 30;
+            } else {
+                maxVal = record.heatmap_umbral_alto || config.umbral_alto || data.max_value || 50;
+            }
         }
         heat.max(maxVal);
         heat.radius(45, 35);

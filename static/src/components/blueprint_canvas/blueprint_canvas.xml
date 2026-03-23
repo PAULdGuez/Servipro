@@ -42,12 +42,17 @@
                             t-att-disabled="state.heatmapLoading">
                         <i t-att-class="state.heatmapLoading ? 'fa fa-spinner fa-spin' : 'fa fa-fire'"/>
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary" 
+                    <select class="form-select form-select-sm" style="width:auto; max-width:250px;"
                             t-if="state.heatmapActive"
-                            t-on-click="switchHeatmapMode" 
-                            t-att-title="state.heatmapMode === 'organisms' ? 'Modo actual: Organismos. Click para cambiar a Incidencias' : 'Modo actual: Incidencias. Click para cambiar a Organismos'">
-                        <span class="small" t-esc="state.heatmapMode === 'organisms' ? 'ORG' : 'INC'"/>
-                    </button>
+                            t-on-change="onHeatmapFilterChange"
+                            t-att-value="state.heatmapFilter">
+                        <option value="global_incidents">Global — Incidencias</option>
+                        <option value="global_organisms">Global — Organismos</option>
+                        <t t-foreach="state.data.plague_types_with_incidents || []" t-as="pt" t-key="pt.id">
+                            <option t-att-value="'organisms_' + pt.id" t-esc="pt.name + ' — Organismos (' + pt.organism_sum + ')'"/>
+                            <option t-att-value="'incidents_' + pt.id" t-esc="pt.name + ' — Incidencias (' + pt.incident_count + ')'"/>
+                        </t>
+                    </select>
                     <span class="mx-1 border-start" style="height: 20px;"/>
                     <button class="btn btn-sm" 
                             t-att-class="state.isEditMode ? 'btn-success' : 'btn-light'"
