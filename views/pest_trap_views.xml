@@ -67,7 +67,7 @@
                                    decoration-warning="current_state == 'en_reparacion'"
                                    decoration-danger="current_state == 'no_funciona'"
                                    decoration-info="current_state == 'sin_registro'"/>
-                            <field name="initial_state" invisible="id"/>
+                            <field name="initial_state" readonly="id"/>
                             <field name="active"/>
                         </group>
                     </group>

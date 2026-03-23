@@ -83,14 +83,6 @@
                             <field name="active"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Configuración Mapa de Calor" name="heatmap_config">
-                            <field name="heatmap_umbral_bajo"/>
-                            <field name="heatmap_umbral_medio"/>
-                            <field name="heatmap_umbral_alto"/>
-                        </group>
-                    </group>
-
                     <notebook>
                         <page string="Planos" name="blueprints">
                             <field name="blueprint_ids">

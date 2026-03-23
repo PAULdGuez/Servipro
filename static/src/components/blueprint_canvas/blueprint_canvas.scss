@@ -43,6 +43,7 @@
         width: 100%;
         height: auto;
         display: inline-block;
+        overflow: visible;
 
         &.can-edit {
             cursor: crosshair;
@@ -110,15 +111,21 @@
 
             .o_blueprint_popover {
                 position: absolute;
-                z-index: 1050;
+                z-index: 9999;
                 background-color: #ffffff;
                 border: 2px solid #333333;
                 border-radius: 8px;
                 padding: 12px;
                 min-width: 220px;
+                max-width: 250px;
                 box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
                 cursor: default;
                 color: #212529;
+
+                // Prevent overflow outside the container
+                &.popover-left, &.popover-right {
+                    max-width: 200px;
+                }
 
                 &.popover-top {
                     bottom: 100%;

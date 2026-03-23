@@ -39,6 +39,13 @@ class PestBlueprint(models.Model):
         ('failed', 'Fallido'),
     ], string='Estado Procesamiento', default='done')
 
+    heatmap_umbral_bajo = fields.Integer(string='Umbral Bajo (Heatmap)', default=5,
+        help='Cantidad de organismos considerada nivel bajo')
+    heatmap_umbral_medio = fields.Integer(string='Umbral Medio (Heatmap)', default=20,
+        help='Cantidad de organismos considerada nivel medio')
+    heatmap_umbral_alto = fields.Integer(string='Umbral Alto (Heatmap)', default=50,
+        help='Cantidad de organismos considerada nivel alto/critico')
+
     # ── Relations ───────────────────────────────────────────────────
     trap_ids = fields.One2many(
         'pest.trap',
@@ -189,9 +196,9 @@ class PestBlueprint(models.Model):
             'zones': zones,
             'sede_id': self.sede_id.id if self.sede_id else False,
             'heatmap_config': {
-                'umbral_bajo': self.sede_id.heatmap_umbral_bajo or 5,
-                'umbral_medio': self.sede_id.heatmap_umbral_medio or 20,
-                'umbral_alto': self.sede_id.heatmap_umbral_alto or 50,
+                'umbral_bajo': self.heatmap_umbral_bajo or 5,
+                'umbral_medio': self.heatmap_umbral_medio or 20,
+                'umbral_alto': self.heatmap_umbral_alto or 50,
             },
         }
 

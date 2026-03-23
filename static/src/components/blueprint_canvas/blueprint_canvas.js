@@ -656,8 +656,8 @@ export class BlueprintCanvas extends Component {
         const y = trap.coord_y_pct;
         if (y < 30) return 'bottom';
         if (y > 80) return 'top';
-        if (x < 20) return 'right';
-        if (x > 80) return 'left';
+        if (x < 25) return 'right';
+        if (x > 75) return 'left';
         return 'top';
     }
 }
