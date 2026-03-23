@@ -654,10 +654,15 @@ export class BlueprintCanvas extends Component {
         });
 
         heat.data(filteredPoints);
+        // Read thresholds directly from the form record (always up-to-date)
+        const record = this.props.record && this.props.record.data || {};
         const config = this.state.data && this.state.data.heatmap_config || {};
-        const maxVal = this.state.heatmapMode === 'incidents'
-            ? (config.inc_umbral_alto || data.max_value || 30)
-            : (config.umbral_alto || data.max_value || 50);
+        let maxVal;
+        if (this.state.heatmapMode === 'incidents') {
+            maxVal = record.heatmap_inc_umbral_alto || config.inc_umbral_alto || data.max_value || 30;
+        } else {
+            maxVal = record.heatmap_umbral_alto || config.umbral_alto || data.max_value || 50;
+        }
         heat.max(maxVal);
         heat.radius(45, 35);
         heat.draw(0.05);
