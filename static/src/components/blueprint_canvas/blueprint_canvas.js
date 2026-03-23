@@ -77,7 +77,7 @@ export class BlueprintCanvas extends Component {
                 this.props.record.resModel,
                 "get_widget_data",
                 [[recordId]],
-                { limit: this.state.trapLimit, offset: this.state.trapOffset }
+                
             );
 
             if (this.state.trapOffset > 0 && this.state.data) {
