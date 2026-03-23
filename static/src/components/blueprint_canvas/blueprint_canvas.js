@@ -32,6 +32,7 @@ export class BlueprintCanvas extends Component {
             showIncidentBadges: true,
             heatmapActive: false,
             heatmapLoading: false,
+            heatmapMode: 'organisms', // 'organisms' or 'incidents'
             drawingMode: false,
             drawingPoints: [],
             selectedZoneId: null,
@@ -552,7 +553,7 @@ export class BlueprintCanvas extends Component {
             const response = await fetch(`/pest_control/blueprint/${this.props.record.resId}/heatmap_data`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} }),
+                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { mode: this.state.heatmapMode } }),
             });
             const data = await response.json();
             const heatmapData = data.result || data;
@@ -567,6 +568,33 @@ export class BlueprintCanvas extends Component {
             this.notification.add('Error al cargar datos del mapa de calor.', { type: 'danger' });
         }
         this.state.heatmapLoading = false;
+    }
+
+    async switchHeatmapMode() {
+        this.state.heatmapMode = this.state.heatmapMode === 'organisms' ? 'incidents' : 'organisms';
+        if (this.state.heatmapActive) {
+            // Reload heatmap with new mode
+            this._removeHeatmapCanvas();
+            this.state.heatmapLoading = true;
+            try {
+                const response = await fetch(`/pest_control/blueprint/${this.props.record.resId}/heatmap_data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { mode: this.state.heatmapMode } }),
+                });
+                const data = await response.json();
+                const heatmapData = data.result || data;
+                if (heatmapData.points && heatmapData.points.length > 0) {
+                    this._renderHeatmap(heatmapData);
+                } else {
+                    this.notification.add('No hay datos para este modo de mapa de calor.', { type: 'info' });
+                    this.state.heatmapActive = false;
+                }
+            } catch (error) {
+                this.notification.add('Error al cambiar modo del mapa de calor.', { type: 'danger' });
+            }
+            this.state.heatmapLoading = false;
+        }
     }
 
     _renderHeatmap(data) {
