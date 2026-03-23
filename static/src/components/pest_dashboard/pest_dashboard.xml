@@ -33,6 +33,12 @@
                     <button class="btn btn-sm btn-outline-primary" t-on-click="exportPowerPoint">
                         <i class="fa fa-file-powerpoint-o"/> Exportar PPTX
                     </button>
+                    <button class="btn btn-sm" 
+                            t-att-class="state.darkMode ? 'btn-dark' : 'btn-outline-secondary'"
+                            t-on-click="toggleDarkMode" 
+                            title="Modo Oscuro">
+                        <i t-att-class="state.darkMode ? 'fa fa-sun-o' : 'fa fa-moon-o'"/>
+                    </button>
                 </div>
             </div>
 

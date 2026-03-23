@@ -1,6 +1,6 @@
 .pest-dashboard {
     padding: 16px;
-    background: #f8f9fa;
+    background: var(--pest-bg-primary);
     
     overflow-y: auto;
     height: calc(100vh - 50px);
@@ -8,16 +8,16 @@
     
 
     .dashboard-filters {
-        background: white;
+        background: var(--pest-bg-card);
         padding: 12px 16px;
         border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: var(--pest-shadow);
     }
 
     .section-title {
-        color: #495057;
+        color: var(--pest-text-primary);
         font-weight: 700;
-        border-bottom: 2px solid #dee2e6;
+        border-bottom: 2px solid var(--pest-accent);
         padding-bottom: 8px;
     }
 
@@ -37,9 +37,9 @@
 }
 
 .dashboard-chart-card {
-    background: white;
+    background: var(--pest-bg-card);
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: var(--pest-shadow);
     overflow: hidden;
 
     .chart-header {
@@ -47,12 +47,12 @@
         justify-content: space-between;
         align-items: center;
         padding: 10px 14px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--pest-border-color);
 
         .chart-title {
             font-size: 13px;
             font-weight: 600;
-            color: #333;
+            color: var(--pest-text-primary);
         }
 
         .chart-actions {

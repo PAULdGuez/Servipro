@@ -17,10 +17,10 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        background: rgba(255, 255, 255, 0.9);
+        background: var(--pest-bg-card);
         border-radius: 6px;
         padding: 4px 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--pest-shadow);
 
         .zoom-level {
             font-size: 12px;
@@ -112,15 +112,15 @@
                 .o_blueprint_popover {
                 position: absolute;
                 z-index: 9999;
-                background-color: #ffffff;
-                border: 2px solid #333333;
+                background-color: var(--pest-bg-card);
+                border: 2px solid var(--pest-border-color);
                 border-radius: 8px;
                 padding: 12px;
                 min-width: 180px;
                 max-width: 250px;
-                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+                box-shadow: var(--pest-shadow-lg);
                 cursor: default;
-                color: #212529;
+                color: var(--pest-text-primary);
 
                 &.popover-top {
                     bottom: 100%;
@@ -181,8 +181,8 @@
     .o_trap_detail_panel {
         width: 100%;
         order: 50;
-        border-top: 2px solid var(--bs-border-color);
-        background: #ffffff;
+        border-top: 2px solid var(--pest-border-color);
+        background: var(--pest-bg-card);
         padding: 10px 12px;
         max-height: 220px;
         overflow-y: auto;
@@ -191,9 +191,9 @@
         .detail-header {
             position: sticky;
             top: 0;
-            background: #ffffff;
+            background: var(--pest-bg-card);
             padding-bottom: 8px;
-            border-bottom: 2px solid #3d3a8c;
+            border-bottom: 2px solid var(--pest-accent);
             margin-bottom: 8px;
             z-index: 5;
         }
@@ -218,16 +218,16 @@
             font-size: 11px;
 
             thead tr {
-                background-color: #3d3a8c;
-                color: white;
+                background-color: var(--pest-table-header-bg);
+                color: var(--pest-table-header-color);
             }
 
             th {
                 font-size: 10px;
                 text-transform: uppercase;
-                color: white;
-                background-color: #3d3a8c;
-                border-color: #3d3a8c;
+                color: var(--pest-table-header-color);
+                background-color: var(--pest-table-header-bg);
+                border-color: var(--pest-table-header-bg);
                 padding: 6px 8px;
             }
         }
@@ -240,8 +240,8 @@
         width: 180px;
         min-width: 180px;
         max-height: 100%;
-        border-left: 1px solid var(--bs-border-color);
-        background: var(--bs-white);
+        border-left: 1px solid var(--pest-border-color);
+        background: var(--pest-bg-card);
         overflow: hidden;
         flex-shrink: 0;
         order: 2;
@@ -252,8 +252,8 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--bs-secondary);
-            border-bottom: 1px solid var(--bs-border-color);
+            color: var(--pest-text-secondary);
+            border-bottom: 1px solid var(--pest-border-color);
             flex-shrink: 0;
         }
 
@@ -274,7 +274,7 @@
             transition: opacity 0.2s, background-color 0.15s;
 
             &:hover {
-                background: var(--bs-gray-200);
+                background: var(--pest-accent-light);
             }
 
             &.legend-hidden {
@@ -311,17 +311,17 @@
     right: 0;
     width: 280px;
     height: 100%;
-    background: #ffffff;
-    border-left: 1px solid var(--bs-border-color);
+    background: var(--pest-bg-card);
+    border-left: 1px solid var(--pest-border-color);
     z-index: 90;
     display: flex;
     flex-direction: column;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--pest-shadow-lg);
     order: 3;
 
     .side-panel-header {
         padding: 12px;
-        border-bottom: 1px solid var(--bs-border-color);
+        border-bottom: 1px solid var(--pest-border-color);
         
         h6 {
             margin-bottom: 8px;
@@ -341,12 +341,12 @@
         transition: background-color 0.15s;
 
         &:hover {
-            background-color: var(--bs-light);
+            background-color: var(--pest-accent-light);
         }
 
         &.active {
-            background-color: var(--bs-primary-bg-subtle);
-            border-left: 3px solid var(--bs-primary);
+            background-color: var(--pest-accent-light);
+            border-left: 3px solid var(--pest-accent);
         }
     }
 }

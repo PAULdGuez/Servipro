@@ -43,6 +43,12 @@
                     </button>
                     <span class="mx-1 border-start" style="height: 20px;"/>
                     <button class="btn btn-sm" 
+                            t-att-class="state.darkMode ? 'btn-dark' : 'btn-light'"
+                            t-on-click="toggleDarkMode" 
+                            title="Modo Oscuro">
+                        <i t-att-class="state.darkMode ? 'fa fa-sun-o' : 'fa fa-moon-o'"/>
+                    </button>
+                    <button class="btn btn-sm" 
                             t-att-class="state.isEditMode ? 'btn-success' : 'btn-light'"
                             t-on-click="toggleEditMode" 
                             title="Modo Edición"

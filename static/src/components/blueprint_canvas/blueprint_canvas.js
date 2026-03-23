@@ -36,6 +36,7 @@ export class BlueprintCanvas extends Component {
             drawingPoints: [],
             selectedZoneId: null,
             isEditMode: false,
+            darkMode: localStorage.getItem('pest_dark_mode') === 'true',
         });
 
         onWillStart(async () => {
@@ -670,6 +671,15 @@ export class BlueprintCanvas extends Component {
         if (x < 30) return 'right';
         if (x > 70) return 'left';
         return 'top';
+    }
+
+    toggleDarkMode() {
+        this.state.darkMode = !this.state.darkMode;
+        localStorage.setItem('pest_dark_mode', this.state.darkMode ? 'true' : 'false');
+        const actionManager = document.querySelector('.o_action_manager');
+        if (actionManager) {
+            actionManager.classList.toggle('pest_dark_mode', this.state.darkMode);
+        }
     }
 }
 

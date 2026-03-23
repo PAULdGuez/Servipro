@@ -1,0 +1,269 @@
+// ═══════════════════════════════════════════════════════════
+// PEST CONTROL — Dark Mode (Midday.ai inspired)
+// ═══════════════════════════════════════════════════════════
+
+// Default (light mode) variables
+:root {
+    --pest-bg-primary: #ffffff;
+    --pest-bg-secondary: #f8f9fa;
+    --pest-bg-card: #ffffff;
+    --pest-bg-input: #ffffff;
+    --pest-text-primary: #212529;
+    --pest-text-secondary: #6c757d;
+    --pest-text-muted: #adb5bd;
+    --pest-border-color: #dee2e6;
+    --pest-border-subtle: #e9ecef;
+    --pest-accent: #3d3a8c;
+    --pest-accent-hover: #2e2b6e;
+    --pest-accent-light: rgba(61, 58, 140, 0.1);
+    --pest-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --pest-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --pest-success: #198754;
+    --pest-warning: #ffc107;
+    --pest-danger: #dc3545;
+    --pest-info: #0dcaf0;
+    --pest-table-header-bg: #3d3a8c;
+    --pest-table-header-color: #ffffff;
+    --pest-table-stripe: rgba(0, 0, 0, 0.02);
+    --pest-chart-text: #666666;
+    --pest-chart-grid: #e0e0e0;
+}
+
+// Dark mode overrides — scoped to .o_action_manager
+.o_action_manager.pest_dark_mode {
+    --pest-bg-primary: #0a0a0f;
+    --pest-bg-secondary: #12121a;
+    --pest-bg-card: #1a1a2e;
+    --pest-bg-input: #16162a;
+    --pest-text-primary: #e0e0e0;
+    --pest-text-secondary: #a0a0b0;
+    --pest-text-muted: #606070;
+    --pest-border-color: #2a2a3a;
+    --pest-border-subtle: #1e1e2e;
+    --pest-accent: #6c63ff;
+    --pest-accent-hover: #5a52e0;
+    --pest-accent-light: rgba(108, 99, 255, 0.15);
+    --pest-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --pest-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --pest-success: #2dd4bf;
+    --pest-warning: #fbbf24;
+    --pest-danger: #f87171;
+    --pest-info: #38bdf8;
+    --pest-table-header-bg: #1e1e3a;
+    --pest-table-header-color: #e0e0e0;
+    --pest-table-stripe: rgba(255, 255, 255, 0.02);
+    --pest-chart-text: #a0a0b0;
+    --pest-chart-grid: #2a2a3a;
+
+    // ── Odoo Form View ──
+    .o_form_view {
+        background-color: var(--pest-bg-primary) !important;
+        color: var(--pest-text-primary);
+    }
+
+    .o_form_sheet_bg {
+        background-color: var(--pest-bg-primary) !important;
+    }
+
+    .o_form_sheet {
+        background-color: var(--pest-bg-card) !important;
+        border-color: var(--pest-border-color) !important;
+        box-shadow: var(--pest-shadow-lg);
+        color: var(--pest-text-primary);
+    }
+
+    // ── Groups and Labels ──
+    .o_group {
+        border-color: var(--pest-border-color) !important;
+    }
+
+    .o_inner_group .o_td_label, label.o_form_label, .o_form_label {
+        color: var(--pest-text-secondary) !important;
+    }
+
+    .o_group .o_group_header, .o_horizontal_separator {
+        color: var(--pest-text-primary) !important;
+    }
+
+    // ── Inputs ──
+    .o_field_widget input,
+    .o_field_widget select,
+    .o_field_widget textarea,
+    .o_input,
+    .form-control,
+    .form-select {
+        background-color: var(--pest-bg-input) !important;
+        color: var(--pest-text-primary) !important;
+        border-color: var(--pest-border-color) !important;
+    }
+
+    .o_field_widget .o_input:focus,
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: 0 0 0 0.2rem var(--pest-accent-light) !important;
+        border-color: var(--pest-accent) !important;
+    }
+
+    // ── Notebook / Tabs ──
+    .o_notebook .nav-tabs {
+        border-color: var(--pest-border-color);
+
+        .nav-link {
+            color: var(--pest-text-secondary);
+            border-color: transparent;
+
+            &.active {
+                color: var(--pest-accent);
+                background-color: var(--pest-bg-card);
+                border-color: var(--pest-border-color) var(--pest-border-color) var(--pest-bg-card);
+            }
+
+            &:hover:not(.active) {
+                border-color: var(--pest-border-subtle);
+                color: var(--pest-text-primary);
+            }
+        }
+    }
+
+    // ── Tables / Lists ──
+    .o_list_view, .o_list_renderer {
+        background-color: var(--pest-bg-card) !important;
+        color: var(--pest-text-primary);
+    }
+
+    .o_list_table {
+        color: var(--pest-text-primary);
+        --bs-table-bg: var(--pest-bg-card);
+
+        thead th {
+            background-color: var(--pest-table-header-bg) !important;
+            color: var(--pest-table-header-color) !important;
+            border-color: var(--pest-border-color) !important;
+        }
+
+        tbody tr {
+            border-color: var(--pest-border-color) !important;
+
+            &:nth-child(even) {
+                background-color: var(--pest-table-stripe);
+            }
+
+            &:hover {
+                background-color: var(--pest-accent-light) !important;
+            }
+
+            td {
+                border-color: var(--pest-border-color) !important;
+                color: var(--pest-text-primary);
+                background-color: transparent !important;
+            }
+        }
+    }
+
+    // ── Kanban ──
+    .o_kanban_view {
+        background-color: var(--pest-bg-primary) !important;
+    }
+
+    .o_kanban_record, .o_kanban_record_details {
+        background-color: var(--pest-bg-card) !important;
+        border-color: var(--pest-border-color) !important;
+        color: var(--pest-text-primary) !important;
+    }
+
+    // ── Control Panel ──
+    .o_control_panel {
+        background-color: var(--pest-bg-secondary) !important;
+        border-color: var(--pest-border-color) !important;
+        color: var(--pest-text-primary);
+    }
+
+    .o_control_panel .breadcrumb {
+        color: var(--pest-text-secondary);
+        a, .breadcrumb-item { color: var(--pest-accent); }
+    }
+
+    .o_cp_searchview, .o_searchview {
+        background-color: var(--pest-bg-input) !important;
+        border-color: var(--pest-border-color) !important;
+        color: var(--pest-text-primary) !important;
+    }
+
+    .o_searchview input {
+        color: var(--pest-text-primary) !important;
+    }
+
+    // ── Chatter ──
+    .o-mail-Form-chatter, .o-mail-Chatter {
+        background-color: var(--pest-bg-secondary) !important;
+        color: var(--pest-text-primary);
+    }
+
+    .o-mail-Message, .o-mail-Message-content {
+        color: var(--pest-text-primary) !important;
+    }
+
+    // ── Badges ──
+    .badge.text-bg-secondary {
+        background-color: var(--pest-border-color) !important;
+        color: var(--pest-text-primary) !important;
+    }
+
+    .badge.text-bg-success { background-color: var(--pest-success) !important; }
+    .badge.text-bg-warning { background-color: var(--pest-warning) !important; color: #000 !important; }
+    .badge.text-bg-danger { background-color: var(--pest-danger) !important; }
+    .badge.text-bg-info { background-color: var(--pest-info) !important; }
+
+    // ── Stat Buttons ──
+    .oe_stat_button {
+        background-color: var(--pest-accent) !important;
+        border-color: var(--pest-accent) !important;
+        &:hover { background-color: var(--pest-accent-hover) !important; }
+    }
+
+    // ── Buttons ──
+    .btn-secondary, .btn-outline-secondary {
+        background-color: var(--pest-bg-input) !important;
+        border-color: var(--pest-border-color) !important;
+        color: var(--pest-text-primary) !important;
+    }
+
+    .btn-primary {
+        background-color: var(--pest-accent) !important;
+        border-color: var(--pest-accent) !important;
+        &:hover { background-color: var(--pest-accent-hover) !important; }
+    }
+
+    // ── Modals / Dialogs ──
+    .modal-content {
+        background-color: var(--pest-bg-card) !important;
+        border-color: var(--pest-border-color) !important;
+        color: var(--pest-text-primary);
+    }
+
+    .modal-header, .modal-footer {
+        border-color: var(--pest-border-color) !important;
+    }
+
+    // ── Dropdowns ──
+    .dropdown-menu {
+        background-color: var(--pest-bg-card) !important;
+        border-color: var(--pest-border-color) !important;
+
+        .dropdown-item {
+            color: var(--pest-text-primary) !important;
+            &:hover { background-color: var(--pest-accent-light) !important; }
+        }
+    }
+
+    // ── Scrollbars (Webkit) ──
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--pest-bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--pest-border-color); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--pest-text-muted); }
+
+    // ── Transitions ──
+    * {
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+}

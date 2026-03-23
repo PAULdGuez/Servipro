@@ -37,6 +37,12 @@ export class DashboardChart extends Component {
         this._destroyChart();
         const canvas = this.canvasRef.el;
         if (!canvas || !window.Chart) return;
+
+        // Read theme colors from CSS variables
+        const style = getComputedStyle(document.documentElement);
+        const textColor = style.getPropertyValue('--pest-chart-text').trim() || '#666';
+        const gridColor = style.getPropertyValue('--pest-chart-grid').trim() || '#e0e0e0';
+
         this.chartInstance = new window.Chart(canvas.getContext("2d"), {
             type: this.props.chartType || "bar",
             data: this.props.chartData,
@@ -44,8 +50,21 @@ export class DashboardChart extends Component {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } },
+                    legend: {
+                        position: "bottom",
+                        labels: { boxWidth: 12, font: { size: 11 }, color: textColor }
+                    },
                     title: { display: false },
+                },
+                scales: {
+                    x: {
+                        ticks: { color: textColor },
+                        grid: { color: gridColor },
+                    },
+                    y: {
+                        ticks: { color: textColor },
+                        grid: { color: gridColor },
+                    },
                 },
                 ...(this.props.chartOptions || {}),
             },
