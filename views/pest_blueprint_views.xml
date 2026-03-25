@@ -63,47 +63,41 @@
                     </group>
                     <group string="Umbrales del Heatmap" name="heatmap_config">
                         <div class="mb-2">
-                            <strong class="small">Organismos (verde→naranja→rojo)</strong>
+                            <strong class="small">Organismos</strong>
                             <div class="d-flex align-items-center gap-4 mt-1">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:lime;border:1px solid #ccc;"></span>
                                     <label for="heatmap_umbral_bajo" string="Mín"/>
                                     <field name="heatmap_umbral_bajo" nolabel="1" style="width:60px;"/>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:orange;border:1px solid #ccc;"></span>
                                     <label for="heatmap_umbral_medio" string="Med"/>
                                     <field name="heatmap_umbral_medio" nolabel="1" style="width:60px;"/>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:red;border:1px solid #ccc;"></span>
                                     <label for="heatmap_umbral_alto" string="Máx"/>
                                     <field name="heatmap_umbral_alto" nolabel="1" style="width:60px;"/>
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <strong class="small">Incidencias (azul→magenta→rojo)</strong>
+                            <strong class="small">Incidencias</strong>
                             <div class="d-flex align-items-center gap-4 mt-1">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:cyan;border:1px solid #ccc;"></span>
                                     <label for="heatmap_inc_umbral_bajo" string="Mín"/>
                                     <field name="heatmap_inc_umbral_bajo" nolabel="1" style="width:60px;"/>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:magenta;border:1px solid #ccc;"></span>
                                     <label for="heatmap_inc_umbral_medio" string="Med"/>
                                     <field name="heatmap_inc_umbral_medio" nolabel="1" style="width:60px;"/>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:red;border:1px solid #ccc;"></span>
                                     <label for="heatmap_inc_umbral_alto" string="Máx"/>
                                     <field name="heatmap_inc_umbral_alto" nolabel="1" style="width:60px;"/>
                                 </div>
                             </div>
                         </div>
-                    </group>
                         <div class="text-muted small mt-1"><i class="fa fa-info-circle"/> Tras guardar, reactive el heatmap para aplicar los nuevos umbrales.</div>
+                    </group>
                     <group string="Plano Interactivo">
                         <field name="image_web" widget="blueprint_canvas" nolabel="1" colspan="2"/>
                     </group>

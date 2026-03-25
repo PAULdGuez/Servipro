@@ -435,11 +435,11 @@ export class BlueprintCanvas extends Component {
     }
 
     onZoomIn() {
-        this.state.zoomLevel = Math.min(3.0, this.state.zoomLevel + 0.25);
+        this.state.zoomLevel = Math.min(3.0, +(this.state.zoomLevel + 0.10).toFixed(2));
     }
 
     onZoomOut() {
-        this.state.zoomLevel = Math.max(0.5, this.state.zoomLevel - 0.25);
+        this.state.zoomLevel = Math.max(0.5, +(this.state.zoomLevel - 0.10).toFixed(2));
     }
 
     onZoomReset() {
