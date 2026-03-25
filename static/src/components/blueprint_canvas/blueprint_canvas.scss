@@ -293,9 +293,18 @@
                 background: var(--bs-gray-200);
             }
 
-            &.legend-hidden {
+            &.legend-active {
+                background-color: #3d3a8c;
+                color: white;
+                
+                .badge {
+                    background-color: white !important;
+                    color: #3d3a8c !important;
+                }
+            }
+
+            &.legend-dimmed {
                 opacity: 0.35;
-                text-decoration: line-through;
             }
 
             .legend-icon {

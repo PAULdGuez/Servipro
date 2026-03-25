@@ -274,7 +274,7 @@
                         <t t-foreach="state.data.trap_types" t-as="tt" t-key="tt.id">
                             <div class="legend-item" 
                                  t-on-click="() => this.toggleTypeVisibility(tt.id)"
-                                 t-att-class="{'legend-hidden': state.hiddenTypes.includes(tt.id)}">
+                                 t-att-class="{'legend-active': state.selectedType === tt.id, 'legend-dimmed': state.selectedType and state.selectedType !== tt.id}">
                                 <span class="legend-icon"><i t-att-class="'fa ' + (tt.icon || 'fa-crosshairs')"/></span>
                                 <span class="legend-name" t-esc="tt.name"/>
                                 <span class="badge text-bg-secondary" t-esc="tt.count"/>

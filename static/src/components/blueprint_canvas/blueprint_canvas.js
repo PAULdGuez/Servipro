@@ -28,7 +28,7 @@ export class BlueprintCanvas extends Component {
             filterTrapState: null,
             searchTerm: '',
             highlightedTrapId: null,
-            hiddenTypes: [],
+            selectedType: null,
             showIncidentBadges: true,
             heatmapActive: false,
             heatmapLoading: false,
@@ -567,16 +567,16 @@ export class BlueprintCanvas extends Component {
     }
 
     toggleTypeVisibility(typeId) {
-        const idx = this.state.hiddenTypes.indexOf(typeId);
-        if (idx >= 0) {
-            this.state.hiddenTypes.splice(idx, 1);
+        if (this.state.selectedType === typeId) {
+            this.state.selectedType = null; // Deselect — show all
         } else {
-            this.state.hiddenTypes.push(typeId);
+            this.state.selectedType = typeId; // Select — show only this type
         }
     }
 
     isTrapVisible(trap) {
-        return !this.state.hiddenTypes.includes(trap.trap_type_id);
+        if (!this.state.selectedType) return true; // No filter — show all
+        return trap.trap_type_id === this.state.selectedType;
     }
 
     async toggleHeatmap() {
