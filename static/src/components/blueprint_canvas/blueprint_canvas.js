@@ -116,7 +116,7 @@ export class BlueprintCanvas extends Component {
                 this.props.record.resModel,
                 "get_widget_data",
                 [[recordId]],
-                
+
             );
 
             if (this.state.trapOffset > 0 && this.state.data) {
@@ -194,7 +194,7 @@ export class BlueprintCanvas extends Component {
     async updateTrapPosition(trapId, pctX, pctY) {
         // Get current trap data for zone_from
         const trap = this.state.data.traps.find(t => t.id === trapId);
-        
+
         // Open the movement wizard instead of window.prompt
         await this.action.doAction({
             type: 'ir.actions.act_window',
@@ -293,7 +293,7 @@ export class BlueprintCanvas extends Component {
                                 await this.onRegisterIncident(newestTrap);
                             }
                         },
-                        cancel: () => {},
+                        cancel: () => { },
                     });
                 }
             },
@@ -384,7 +384,7 @@ export class BlueprintCanvas extends Component {
                 }
                 const nextTrap = traps[nextIdx];
                 this.state.selectedTrapId = nextTrap.id;
-                this.onTrapMarkerClick({ stopPropagation: () => {} }, nextTrap);
+                this.onTrapMarkerClick({ stopPropagation: () => { } }, nextTrap);
                 break;
             }
             case 'Enter':
@@ -394,7 +394,7 @@ export class BlueprintCanvas extends Component {
                 if (this.state.selectedTrapId) {
                     const trap = traps.find(t => t.id === this.state.selectedTrapId);
                     if (trap) {
-                        this.onTrapMarkerClick({ stopPropagation: () => {} }, trap);
+                        this.onTrapMarkerClick({ stopPropagation: () => { } }, trap);
                     }
                 }
                 break;
@@ -474,18 +474,20 @@ export class BlueprintCanvas extends Component {
     isTrapHighlighted(trap) {
         // Individual trap highlight from side panel click
         if (this.state.highlightedTrapId === trap.id) return true;
-        
+
         const hasTypeFilter = !!this.state.filterTrapType;
         const hasStateFilter = !!this.state.filterTrapState;
-        
+        const hasLegendFilter = !!this.state.selectedType;
+
         // No filters active — no highlight
-        if (!hasTypeFilter && !hasStateFilter) return false;
-        
+        if (!hasTypeFilter && !hasStateFilter && !hasLegendFilter) return false;
+
         const matchesType = !hasTypeFilter || ('' + trap.trap_type_id === this.state.filterTrapType);
         const matchesState = !hasStateFilter || (trap.current_state === this.state.filterTrapState);
-        
+        const matchesLegend = !hasLegendFilter || (trap.trap_type_id === this.state.selectedType);
+
         // Highlight only if ALL active filters match
-        return matchesType && matchesState;
+        return matchesType && matchesState && matchesLegend;
     }
 
     onSearchTrap(ev) {
