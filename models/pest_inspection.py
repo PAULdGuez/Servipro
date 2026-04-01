@@ -18,6 +18,10 @@ class PestInspection(models.Model):
         string='Sede',
         required=True,
     )
+    company_id = fields.Many2one(
+        'res.company', string='Empresa',
+        related='sede_id.company_id', store=True, index=True,
+    )
     inspector_id = fields.Many2one(
         'res.users',
         string='Inspector',
