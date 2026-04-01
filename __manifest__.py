@@ -82,5 +82,5 @@
     'auto_install': False,
     'license': 'LGPL-3',
     'external_dependencies': {'python': ['Pillow', 'openpyxl', 'markdown']},
-    'post_init_hook': '_post_init_hook_migrate_coordinates',
+    'post_init_hook': 'post_init_hook',
 }
