@@ -28,3 +28,15 @@ reviews/
 *.bak
 pest_control-t4z/
 pest_control-gv4/
+# bd worktree
+.worktrees/pest_control-doh.1/
+# bd worktree
+.worktrees/pest_control-doh.2/
+# bd worktree
+.worktrees/pest_control-doh.3/
+# bd worktree
+.worktrees/pest_control-doh.4/
+# bd worktree
+.worktrees/pest_control-doh.5/
+# bd worktree
+.worktrees/pest_control-doh.6/
