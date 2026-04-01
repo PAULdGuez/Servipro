@@ -19,6 +19,11 @@ class PestSede(models.Model):
         string='País',
     )
     active = fields.Boolean(default=True)
+    company_id = fields.Many2one(
+        'res.company', string='Empresa', required=True,
+        default=lambda self: self.env.company,
+        index=True,
+    )
     state = fields.Selection(
         selection=[
             ('active', 'Activa'),
