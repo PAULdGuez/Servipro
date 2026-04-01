@@ -22,6 +22,10 @@ class PestBlueprint(models.Model):
         required=True,
         ondelete='cascade',
     )
+    company_id = fields.Many2one(
+        'res.company', string='Empresa',
+        related='sede_id.company_id', store=True, index=True,
+    )
     description = fields.Text(string='Descripción')
     image = fields.Binary(
         string='Imagen del Plano',
