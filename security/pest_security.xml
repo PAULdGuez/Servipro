@@ -38,5 +38,61 @@
             <field name="implied_ids" eval="[(4, ref('group_pest_technician'))]"/>
             <field name="comment">Acceso completo: gestion de sedes, planos, trampas, reportes y aprobaciones</field>
         </record>
+
+        <!-- Record Rules: Multi-Empresa -->
+        <record id="rule_pest_sede_company" model="ir.rule">
+            <field name="name">Sede: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_sede"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_blueprint_company" model="ir.rule">
+            <field name="name">Plano: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_blueprint"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_trap_company" model="ir.rule">
+            <field name="name">Trampa: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_trap"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_incident_company" model="ir.rule">
+            <field name="name">Incidencia: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_incident"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_inspection_company" model="ir.rule">
+            <field name="name">Inspeccion: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_inspection"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_complaint_company" model="ir.rule">
+            <field name="name">Queja: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_complaint"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_evidence_company" model="ir.rule">
+            <field name="name">Evidencia: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_evidence"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_trap_state_company" model="ir.rule">
+            <field name="name">Estado Trampa: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_trap_state"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
+        <record id="rule_pest_trap_movement_company" model="ir.rule">
+            <field name="name">Movimiento Trampa: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_trap_movement"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
     </data>
 </odoo>
