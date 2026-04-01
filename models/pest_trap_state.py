@@ -12,6 +12,10 @@ class PestTrapState(models.Model):
         required=True,
         ondelete='cascade',
     )
+    company_id = fields.Many2one(
+        'res.company', string='Empresa',
+        related='trap_id.company_id', store=True, index=True,
+    )
     blueprint_id = fields.Many2one(
         'pest.blueprint',
         string='Plano',

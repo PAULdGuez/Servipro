@@ -18,6 +18,10 @@ class PestComplaint(models.Model):
         string='Sede',
         required=True,
     )
+    company_id = fields.Many2one(
+        'res.company', string='Empresa',
+        related='sede_id.company_id', store=True, index=True,
+    )
     date = fields.Date(
         string='Fecha',
         required=True,

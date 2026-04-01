@@ -13,6 +13,10 @@ class PestEvidence(models.Model):
         required=True,
         ondelete='cascade',
     )
+    company_id = fields.Many2one(
+        'res.company', string='Empresa',
+        related='blueprint_id.company_id', store=True, index=True,
+    )
     location = fields.Char(
         string='Ubicación',
         required=True,
