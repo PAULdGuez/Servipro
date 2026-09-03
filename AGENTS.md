@@ -38,3 +38,16 @@ bd sync               # Sync with git
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 
+## Contexto del proyecto (vault de Obsidian)
+
+**Flujos globales:**
+- `C:\Users\Usuario\Documents\mi-vault\02 - Areas\agentes\flujo-lead.md`
+- `C:\Users\Usuario\Documents\mi-vault\02 - Areas\agentes\flujo-worker.md`
+- `C:\Users\Usuario\Documents\mi-vault\02 - Areas\agentes\convenciones-beads.md`
+
+**Contexto del proyecto:**
+- `C:\Users\Usuario\Documents\mi-vault\01 - Proyectos\pest_control\Index.md`
+- `C:\Users\Usuario\Documents\mi-vault\01 - Proyectos\pest_control\arquitectura\Overview.md`
+
+Lee solo las notas relevantes para tu rol antes de comenzar.
+

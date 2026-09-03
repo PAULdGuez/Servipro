@@ -81,6 +81,7 @@
                         <group string="Estado">
                             <field name="state"/>
                             <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
