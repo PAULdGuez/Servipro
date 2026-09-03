@@ -6,16 +6,14 @@ def _post_init_hook_migrate_coordinates(env):
     _logger = logging.getLogger(__name__)
 
     # Only migrate blueprints that actually need it
-    # (have traps with absolute coords but no percentage coords)
-    env.cr.execute("""
-        SELECT DISTINCT bp.id FROM pest_blueprint bp
-        JOIN pest_trap t ON t.blueprint_id = bp.id
-        WHERE bp.image IS NOT NULL
-          AND t.coord_x != 0
-          AND (t.coord_x_pct = 0 OR t.coord_x_pct IS NULL)
-        LIMIT 1
-    """)
-    needs_migration = env.cr.fetchone()
+    # (have traps with absolute coords but no percentage coords).
+    # Via ORM, no SQL: 'image' is a Binary(attachment=True), so it has no column
+    # in pest_blueprint -- it lives in ir_attachment.
+    needs_migration = env['pest.trap'].search_count([
+        ('blueprint_id.image', '!=', False),
+        ('coord_x', '!=', 0),
+        '|', ('coord_x_pct', '=', 0), ('coord_x_pct', '=', False),
+    ], limit=1)
 
     if not needs_migration:
         _logger.info("pest_control: No coordinate migration needed.")
