@@ -1,6 +1,6 @@
 {
     'name': 'ServiPro - Control de Plagas',
-    'version': '19.0.1.0.34',
+    'version': '19.0.1.0.36',
     'category': 'Services',
     'summary': 'Sistema de gestion integral de control de plagas',
     'description': """
@@ -62,6 +62,12 @@
         'reports/pest_report_visit.xml',
     ],
     'assets': {
+        # La marca va en `_assets_primary_variables` con `prepend`: es la única forma de
+        # sustituir el morado de Odoo de raíz. Sin el `prepend` las variables llegan tarde
+        # y gana el morado. Detalle y contrastes medidos en el propio archivo.
+        'web._assets_primary_variables': [
+            ('prepend', 'pest_control/static/src/scss/marca_primary_variables.scss'),
+        ],
         'web.assets_backend': [
             'pest_control/static/src/css/pest_global.scss',
             'pest_control/static/lib/simpleheat.min.js',

@@ -1,0 +1,40 @@
+// ═══════════════════════════════════════════════════════════════════════════
+//  LA MARCA DE SERVIPRO  ·  fuente única de verdad
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Los colores NO se eligieron: se midieron de su propio sitio (servipro.com.mx) el
+// 2026-09-04. El logo es un rectángulo azul con el nombre en blanco y un swoosh ámbar;
+// el ámbar se repite en el menú activo, los subrayados y las flechas.
+//
+// ⚠️ Antes de esto el módulo usaba `#3d3a8c` —un azul-morado escrito a mano 24 veces por
+// el código— que NO es de su marca. Alguien lo eligió y se quedó, mezclado con restos del
+// morado nativo de Odoo (`#714B67`) y del azul de Bootstrap (`#0d6efd`).
+//
+// CONTRASTE, medido y no supuesto (AA exige 4.5 para texto normal):
+//   #012FFF  con texto blanco → 7.36   ✅  sirve para lo que se pulsa
+//   #F8B81D  con texto blanco → 1.77   ❌  el texto se pierde
+//   #F8B81D  con texto oscuro → 10.67  ✅  por eso el ámbar SOLO va con texto oscuro
+//
+// ⇒ El azul es el color de la ACCIÓN. El ámbar es para DESTACAR, nunca de fondo bajo
+//   texto blanco. No es una preferencia: es lo que dicen los números.
+//
+// POR QUÉ VA EN `web._assets_primary_variables` Y CON `prepend`:
+// Es la única forma de matar el morado de Odoo de raíz. Con SCSS por pantalla el morado
+// sobrevive en todo lo que no tocaste —botones nativos, pestañas del notebook, enlaces,
+// chatter— y queda medio sistema de un color y medio de otro, que se ve peor que dejarlo
+// vainilla. El `prepend` es obligatorio: sin él las variables llegan tarde y gana el morado.
+//
+// BLAST RADIUS, asumido: esto repinta el backend COMPLETO de la base donde se instale,
+// incluidos otros módulos. Es correcto aquí —es el ERP de un cliente y lo desarrollamos
+// nosotros— y no toca otras bases del mismo servidor.
+
+$o-brand-primary:        #012FFF;   // el azul del logo · 7.36 con blanco
+$o-brand-secondary:      #001E9E;   // el mismo, oscurecido, para estados activos · 12.50
+$o-brand-lightsecondary: #E6ECFF;   // fondo suave derivado, para selecciones y avisos
+$o-community-color:      #012FFF;
+$o-enterprise-color:     #012FFF;
+
+// El ámbar de la marca. Vive aquí para que exista UNA sola definición en todo el proyecto
+// y no vuelva a escribirse a mano. Su regla de uso va en el comentario de arriba.
+$sp-accent:              #F8B81D;
+$sp-accent-text:         #4A3600;   // texto sobre el ámbar cuando hace de fondo

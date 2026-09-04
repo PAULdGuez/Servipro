@@ -209,7 +209,7 @@
             top: 0;
             background: #ffffff;
             padding-bottom: 8px;
-            border-bottom: 2px solid #3d3a8c;
+            border-bottom: 2px solid $o-brand-primary;
             margin-bottom: 8px;
             z-index: 5;
         }
@@ -234,7 +234,7 @@
             font-size: 11px;
 
             thead tr {
-                background-color: #3d3a8c;
+                background-color: $o-brand-primary;
                 color: white;
             }
 
@@ -242,8 +242,8 @@
                 font-size: 10px;
                 text-transform: uppercase;
                 color: white;
-                background-color: #3d3a8c;
-                border-color: #3d3a8c;
+                background-color: $o-brand-primary;
+                border-color: $o-brand-primary;
                 padding: 6px 8px;
             }
         }
@@ -294,12 +294,12 @@
             }
 
             &.legend-active {
-                background-color: #3d3a8c;
+                background-color: $o-brand-primary;
                 color: white;
                 
                 .badge {
                     background-color: white !important;
-                    color: #3d3a8c !important;
+                    color: $o-brand-primary !important;
                 }
             }
 
