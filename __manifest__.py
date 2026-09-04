@@ -1,6 +1,6 @@
 {
     'name': 'ServiPro - Control de Plagas',
-    'version': '19.0.1.0.5',
+    'version': '19.0.1.0.6',
     'category': 'Services',
     'summary': 'Sistema de gestion integral de control de plagas',
     'description': """
@@ -75,6 +75,9 @@
             'pest_control/static/src/components/pest_dashboard/pest_dashboard.js',
             'pest_control/static/src/components/pest_dashboard/pest_dashboard.xml',
             'pest_control/static/src/components/pest_dashboard/pest_dashboard.scss',
+        ],
+        'web.assets_tests': [
+            'pest_control/static/tests/tours/*.js',
         ],
     },
     'installable': True,
