@@ -18,7 +18,7 @@
                         <select class="form-select form-select-sm" style="width:200px" t-on-change="onBlueprintChange">
                             <option value="">Todos los planos</option>
                             <t t-foreach="state.blueprints" t-as="bp" t-key="bp.id">
-                                <option t-att-value="bp.id" t-att-selected="bp.id === state.blueprintId" t-esc="bp.name"/>
+                                <option t-att-value="bp.id" t-att-selected="bp.id === state.blueprintId" t-esc="bp.etiqueta or bp.name"/>
                             </t>
                         </select>
                     </div>

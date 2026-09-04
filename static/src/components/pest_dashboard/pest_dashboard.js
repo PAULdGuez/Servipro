@@ -60,13 +60,40 @@ export class PestDashboard extends Component {
             const blueprints = await this.orm.searchRead(
                 "pest.blueprint",
                 [["sede_id", "=", this.state.sedeId], ["active", "=", true]],
-                ["name"]
+                ["name", "trap_count"],
+                // El que tiene más trampas primero: en las sedes con nombres repetidos, el
+                // plano bueno queda arriba en vez de perdido entre copias vacías.
+                { order: "trap_count desc, name asc" }
             );
-            this.state.blueprints = blueprints;
+            this.state.blueprints = this._etiquetarPlanos(blueprints);
             this.state.blueprintId = null;
         } catch (e) {
             this.state.blueprints = [];
         }
+    }
+
+    /**
+     * Da a cada plano el texto que se lee en el desplegable.
+     *
+     * Existe por un caso real: en Bimbo Azcapotzalco hay CUATRO planos llamados «BMA
+     * Azcapotzalco» y tres están vacíos. En el desplegable eran cuatro renglones idénticos, así
+     * que elegir el bueno era cuestión de suerte — y elegir mal dejaba las catorce gráficas en
+     * «Sin datos disponibles» delante del cliente. Son 20 planos de 96 con el nombre repetido.
+     *
+     * Solo se añade el conteo a los que COMPARTEN nombre: donde no hay ambigüedad, el texto de
+     * más sobra.
+     */
+    _etiquetarPlanos(planos) {
+        const veces = {};
+        for (const p of planos) {
+            veces[p.name] = (veces[p.name] || 0) + 1;
+        }
+        return planos.map((p) => ({
+            ...p,
+            etiqueta: veces[p.name] > 1
+                ? `${p.name} — ${p.trap_count} ${p.trap_count === 1 ? "trampa" : "trampas"}`
+                : p.name,
+        }));
     }
 
     async _ensureChartJsLoaded() {
