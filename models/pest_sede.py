@@ -76,6 +76,12 @@ class PestSede(models.Model):
         compute='_compute_counts',
         store=True,
     )
+    trap_count_archivado = fields.Integer(
+        string='Trampas en planos archivados',
+        compute='_compute_incident_count_archivado',
+        help='Trampas de esta sede que cuelgan de un plano archivado, y por eso no aparecen '
+             'al sumar los planos de la lista.',
+    )
     incident_count_archivado = fields.Integer(
         string='En planos archivados',
         # Método propio, no `_compute_counts`: los otros contadores son `store=True` y el ORM
@@ -132,12 +138,19 @@ class PestSede(models.Model):
             rec.blueprint_count = bp_counts.get(rec.id, 0)
             rec.incident_count = inc_map.get(rec.id, 0)
 
-    @api.depends('blueprint_ids.active', 'blueprint_ids.incident_ids')
+    @api.depends('blueprint_ids.active', 'blueprint_ids.incident_ids', 'blueprint_ids.trap_ids')
     def _compute_incident_count_archivado(self):
-        """Lo que cuenta el total pero el usuario no puede alcanzar desde la lista de planos."""
-        arch_map = helpers.contar_incidencias_archivadas(self)
+        """Lo que cuenta el total pero el usuario no puede alcanzar desde la lista de planos.
+
+        Los DOS conteos —incidencias y trampas— van en el mismo método a propósito: son el mismo
+        hecho («lo que hay en planos archivados») visto desde dos lados. Separarlos fue lo que
+        dejó el descuadre de trampas vivo cuando el de incidencias ya estaba cerrado.
+        """
+        inc_map = helpers.contar_incidencias_archivadas(self)
+        trap_map = helpers.contar_trampas_archivadas(self)
         for rec in self:
-            rec.incident_count_archivado = arch_map.get(rec.id, 0)
+            rec.incident_count_archivado = inc_map.get(rec.id, 0)
+            rec.trap_count_archivado = trap_map.get(rec.id, 0)
 
     # ── Actions ─────────────────────────────────────────────────────
     def action_view_traps(self):

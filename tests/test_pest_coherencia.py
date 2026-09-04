@@ -178,3 +178,33 @@ class TestPestCoherenciaArchivados(TransactionCase):
         self.env.invalidate_all()
         self.assertEqual((self.sede.incident_count, self.sede.incident_count_archivado), antes,
                          'desarchivar debe dejar los contadores como estaban')
+
+    def test_b05_las_TRAMPAS_archivadas_tambien_quedan_explicadas(self):
+        """El gemelo del b02, y existe porque se arregló uno y se dejó el otro.
+
+        Cerrado el descuadre de incidencias, la ficha de Bimbo Azcapotzalco decía 582 trampas y
+        sus planos visibles sumaban 243: **339 de diferencia sin nada que la explicara**, en la
+        misma pantalla donde las incidencias ya cuadraban.
+
+        ⇒ Cuando arregles un hecho, busca su hermano ANTES de dar el arreglo por cerrado.
+        """
+        tipo = self.env['pest.trap.type'].create({'name': 'Tipo b05', 'code': 'b05'})
+        for plano, cuantas in ((self.vivo, 2), (self.archivado, 3)):
+            for i in range(cuantas):
+                self.env['pest.trap'].create({
+                    'name': '%s-%d' % (plano.name[:6], i), 'sede_id': self.sede.id,
+                    'blueprint_id': plano.id, 'trap_type_id': tipo.id,
+                })
+        self.archivado.active = False
+        self.env.invalidate_all()
+
+        visibles = sum(
+            b.trap_count
+            for b in self.env['pest.blueprint'].search([('sede_id', '=', self.sede.id)])
+        )
+        self.assertEqual(visibles, 2)
+        self.assertEqual(self.sede.trap_count_archivado, 3)
+        self.assertEqual(
+            self.sede.trap_count, visibles + self.sede.trap_count_archivado,
+            'el total de trampas no cuadra con lo visible más lo archivado',
+        )

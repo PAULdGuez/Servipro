@@ -62,6 +62,36 @@ def contar_incidencias(registros):
     return {agrupado.id: cuantas for agrupado, cuantas in datos}
 
 
+def _sedes_con_planos_archivados(sedes):
+    """Los planos archivados de estas sedes. Base común de los dos conteos de abajo."""
+    if not sedes.ids:
+        return sedes.env['pest.blueprint']
+    return sedes.env['pest.blueprint'].with_context(active_test=False).search([
+        ('sede_id', 'in', sedes.ids), ('active', '=', False),
+    ])
+
+
+def contar_trampas_archivadas(sedes):
+    """{id de sede: trampas que cuelgan de un plano ARCHIVADO}.
+
+    🔑 **Existe porque arreglar solo las incidencias dejó el gemelo roto.** Al cerrar el descuadre
+    de incidencias no se tocó el de trampas, y quedó peor que antes: la ficha de Bimbo Azcapotzalco
+    decía 582 trampas y sus planos visibles sumaban 243 — **339 de diferencia, sin nada que la
+    explicara**, mientras las incidencias de esa misma pantalla ya cuadraban.
+
+    Es exactamente el patrón que este módulo viene persiguiendo: dos hechos hermanos, se arregla
+    uno y el otro se queda viejo. Por eso los dos conteos comparten la misma base de planos
+    archivados en vez de repetir la consulta.
+    """
+    archivados = _sedes_con_planos_archivados(sedes)
+    if not archivados:
+        return {}
+    datos = sedes.env['pest.trap'].sudo()._read_group(
+        [('blueprint_id', 'in', archivados.ids)], ['sede_id'], ['__count'],
+    )
+    return {sede.id: cuantas for sede, cuantas in datos}
+
+
 def contar_incidencias_archivadas(sedes):
     """{id de sede: incidencias que cuelgan de un plano ARCHIVADO}.
 
@@ -80,11 +110,7 @@ def contar_incidencias_archivadas(sedes):
     cuentan aparte y se dicen en pantalla: *«2,289, de las cuales 11 en planos archivados»*.
     Ningún dato se pierde y el número deja de parecer un error.
     """
-    if not sedes.ids:
-        return {}
-    archivados = sedes.env['pest.blueprint'].with_context(active_test=False).search([
-        ('sede_id', 'in', sedes.ids), ('active', '=', False),
-    ])
+    archivados = _sedes_con_planos_archivados(sedes)
     if not archivados:
         return {}
     datos = sedes.env['pest.incident'].sudo()._read_group(
