@@ -27,10 +27,32 @@ export class DashboardChart extends Component {
         onWillUnmount(() => this._destroyChart());
     }
 
+    /**
+     * 🔑 **Actualizar la gráfica que ya existe, NUNCA tirarla y rehacerla.**
+     *
+     * Rehacerla en cada repintado costó una gráfica en blanco durante meses: la
+     * «Distribución por Tipo de Incidencia» tiene una gemela que consume los mismos datos, y
+     * entre las dos se disparaban repintados en cadena. Medido con un contador puesto en el
+     * constructor de la librería: **se creaba 122 veces**, contra 1 de las otras trece. Cada
+     * creación arrancaba la animación en cero grados y la destruían antes del primer fotograma,
+     * así que el arco existía, con los datos correctos, y no llegaba a dibujarse nunca.
+     *
+     * El fallo es **mudo**: sin error en consola, sin aviso, un cuadro vacío que se lee como
+     * «esta planta no tiene datos».
+     */
     _tryRender() {
-        if (this.props.chartData && this.props.chartData.labels) {
-            this._renderChart();
+        if (!this.props.chartData || !this.props.chartData.labels) {
+            return;
         }
+        if (this.chartInstance) {
+            this.chartInstance.data = this._copiaDeDatos();
+            // Sin animación: un repintado puede llegar mientras la anterior corre, y la gráfica
+            // se queda congelada en un fotograma intermedio — un arco a medio dibujar, que se ve
+            // peor que vacío porque parece un dato.
+            this.chartInstance.update("none");
+            return;
+        }
+        this._renderChart();
     }
 
     _renderChart() {
@@ -39,7 +61,13 @@ export class DashboardChart extends Component {
         if (!canvas || !window.Chart) return;
         this.chartInstance = new window.Chart(canvas.getContext("2d"), {
             type: this.props.chartType || "bar",
-            data: this.props.chartData,
+            // 🔑 Una COPIA, nunca el objeto del estado. Chart.js se adueña del objeto de datos
+            // que recibe y escribe dentro de cada dataset; si dos gráficas comparten el mismo
+            // (pasa en cuanto se pintan los mismos datos como dona y como barras), la segunda
+            // se lo arrebata a la primera y **la primera se queda en blanco, sin dar ningún
+            // error**. Copiar también evita que Chart.js escriba dentro del estado reactivo de
+            // OWL, que dispara repintados en cadena.
+            data: this._copiaDeDatos(),
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -50,6 +78,16 @@ export class DashboardChart extends Component {
                 ...(this.props.chartOptions || {}),
             },
         });
+    }
+
+    /** Copia superficial, con su propio arreglo de datasets: es donde Chart.js escribe. */
+    _copiaDeDatos() {
+        const datos = this.props.chartData || {};
+        return {
+            ...datos,
+            labels: Array.isArray(datos.labels) ? [...datos.labels] : datos.labels,
+            datasets: Array.isArray(datos.datasets) ? datos.datasets.map((d) => ({ ...d })) : [],
+        };
     }
 
     _destroyChart() {
