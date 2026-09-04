@@ -15,6 +15,22 @@
             <field name="sequence">10</field>
         </record>
 
+        <!-- 🔑 Un privilege PROPIO para la pertenencia, y no es burocracia.
+             Los grupos que comparten privilege se pintan como un solo desplegable y son
+             EXCLUYENTES. Metiendo aquí «Personal de ServiPro» junto a los roles, elegir
+             «Supervisor» borraba la pertenencia y al revés — o sea, desde la pantalla era
+             imposible crear a alguien que fuera Supervisor Y de ServiPro, que es justo lo
+             que es Itzel. Y sacándolo sin más, el grupo desaparecía de la ficha: no se podía
+             marcar por ningún lado.
+             Con su propio privilege salen DOS desplegables, que es lo que significan:
+             el rol dice QUÉ PUEDE HACER, la pertenencia dice PARA QUIÉN TRABAJA. -->
+        <record id="privilege_pest_pertenencia" model="res.groups.privilege">
+            <field name="name">Pertenencia</field>
+            <field name="description">Si la persona trabaja para ServiPro o para un cliente</field>
+            <field name="category_id" ref="module_category_pest_control"/>
+            <field name="sequence">20</field>
+        </record>
+
         <!-- User Groups -->
         <record id="group_pest_client" model="res.groups">
             <field name="name">Cliente</field>
@@ -49,8 +65,22 @@
              Quien no la lleva, solo las que tenga asignadas una por una. -->
         <record id="group_pest_staff" model="res.groups">
             <field name="name">Personal de ServiPro</field>
-            <field name="privilege_id" ref="privilege_pest_control"/>
-            <field name="sequence">20</field>
+            <!-- 🔴 SIN `privilege_id`, y no es un olvido. Los grupos que comparten un
+                 «privilege» se pintan como UN SOLO DESPLEGABLE y son EXCLUYENTES: eligiendo
+                 «Supervisor» se pierde «Personal de ServiPro» y al revés.
+                 Con los cuatro juntos, desde la pantalla de usuario **era imposible crear a
+                 alguien que fuera Supervisor Y personal de ServiPro** — que es exactamente lo
+                 que es Itzel. Solo se podía por código, y eso no es una función: es un truco.
+                 Fuera del privilege aparece como una casilla aparte, que se marca ADEMÁS del
+                 rol. Que es lo que significa: el rol dice QUÉ PUEDE HACER, esta casilla dice
+                 PARA QUIÉN TRABAJA. Son dos preguntas distintas y no deben competir.
+
+                 ⚠️ Y hay que VACIARLO explícitamente con `eval="False"`: quitar el campo del
+                 XML no lo borra —Odoo solo escribe lo que el XML declara—, así que el grupo se
+                 quedaba con su privilege y seguía saliendo en el desplegable. Es la MISMA
+                 trampa que con los `groups` de las reglas de registro, segunda vez en el
+                 mismo día. -->
+            <field name="privilege_id" ref="privilege_pest_pertenencia"/>
             <field name="comment">Trabaja para la empresa de servicio, no para un cliente: ve todas las sedes sin asignarlas una por una</field>
         </record>
 

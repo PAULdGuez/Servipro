@@ -49,6 +49,40 @@ class ResUsers(models.Model):
         for user in self:
             user.pest_es_personal = bool(grupo) and grupo in user.all_group_ids
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Las sedes se asignan aparte, con permiso elevado. El porqué, en `_asignar_sedes`."""
+        sedes = [v.pop('pest_sede_ids', None) for v in vals_list]
+        usuarios = super().create(vals_list)
+        for usuario, comandos in zip(usuarios, sedes):
+            if comandos:
+                usuario._asignar_sedes(comandos)
+        return usuarios
+
+    def _asignar_sedes(self, comandos):
+        """Escribe las sedes del usuario con permiso elevado, y valida después.
+
+        🔴 **El fallo que arregla:** dar de alta a un usuario de Bimbo **reventaba al guardar**
+        con un error de acceso que hablaba de «top-secret records». La causa no era nuestra:
+        al enlazar registros en un Many2many, Odoo comprueba que quien escribe pueda **leerlos**,
+        y el administrador —parado en la empresa ServiPro— no puede leer las sedes de Bimbo.
+
+        Resultado: **era imposible crear un usuario de cliente sin cambiar antes de empresa en el
+        selector de arriba**, y nada lo decía. El administrador se quedaba mirando un error que
+        no menciona la palabra «empresa».
+
+        El permiso elevado es legítimo y está acotado: asignar sedes a un usuario es una
+        operación **administrativa** —quien puede editar el usuario ya pasó el permiso sobre
+        `res.users`— y la invariante que de verdad importa (que la sede pertenezca a una empresa
+        del usuario) **la sigue comprobando `_check_sedes_de_su_empresa`**, que corre igual.
+        No se salta ninguna regla de negocio: se salta un requisito de lectura que aquí sobra.
+        """
+        # ⚠️ `super(...)`, NO `self.sudo().write(...)`: eso vuelve a entrar en el `write` de
+        # abajo, que vuelve a llamar aquí, y el alta muere con un desbordamiento de pila.
+        # Un `write` sobrescrito que reescribe el mismo campo tiene que saltarse a sí mismo.
+        super(ResUsers, self.sudo()).write({'pest_sede_ids': comandos})
+        self._check_sedes_de_su_empresa()
+
     def write(self, vals):
         """Un reemplazo de sedes tiene que reemplazarlas TODAS, archivadas incluidas.
 
@@ -64,9 +98,12 @@ class ResUsers(models.Model):
         La vista ya las muestra para que el administrador las vea, pero eso es comodidad: por RPC
         o por importación se entra por debajo de la pantalla. Esto es la regla.
         """
+        comandos_sede = vals.pop('pest_sede_ids', None)
         resultado = super().write(vals)
+        if comandos_sede is not None:
+            self._asignar_sedes(comandos_sede)
 
-        comandos = vals.get('pest_sede_ids')
+        comandos = comandos_sede
         reemplazo = [c for c in (comandos or []) if isinstance(c, (list, tuple)) and c[0] == 6]
         if reemplazo:
             nuevas = list(reemplazo[-1][2] or [])
@@ -92,9 +129,24 @@ class ResUsers(models.Model):
         La vista ya filtra el desplegable, pero un `domain` de vista no es una garantía: por RPC o
         por importación se entra por debajo. La vista es comodidad; esto es la regla.
         """
+        # 🔴 `sudo()` aquí, y es la diferencia entre que el alta funcione o no.
+        #
+        # Sin él, dar de alta a un usuario de Bimbo **fallaba al guardar** con un error de
+        # acceso: el administrador puede ELEGIR la planta en el desplegable —la vista le pasa
+        # las empresas del usuario que edita— pero al guardar, esta comprobación lee las sedes
+        # con la empresa ACTIVA del administrador, que es ServiPro, y rebota.
+        #
+        # El resultado era que **no se podía crear un usuario de cliente sin cambiar antes de
+        # empresa en el selector de arriba**, y el error no lo decía: hablaba de «top-secret
+        # records».
+        #
+        # El `sudo()` es legítimo porque esto **no decide un acceso, comprueba una
+        # invariante**: que las sedes asignadas pertenezcan a las empresas del usuario. Leerlas
+        # es lo que hace la comprobación posible; el permiso del administrador para asignarlas
+        # ya lo gobiernan las reglas de `res.users`.
         for user in self:
-            ajenas = user.pest_sede_ids.filtered(
-                lambda s: s.company_id and s.company_id not in user.company_ids)
+            ajenas = user.sudo().pest_sede_ids.filtered(
+                lambda s: s.company_id and s.company_id not in user.sudo().company_ids)
             if ajenas:
                 raise ValidationError(_(
                     'No se puede dar acceso a %(sedes)s: pertenecen a una empresa distinta '
