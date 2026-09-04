@@ -117,3 +117,34 @@ def contar_incidencias_archivadas(sedes):
         [('blueprint_id', 'in', archivados.ids)], ['sede_id'], ['__count'],
     )
     return {sede.id: cuantas for sede, cuantas in datos}
+
+
+def solo_si_puede(operacion='read'):
+    """Decorador para métodos llamables por RPC: comprueba el permiso ANTES de ejecutar.
+
+    EL AGUJERO QUE CIERRA
+    ---------------------
+    Odoo protege la LECTURA de campos y la ESCRITURA, pero **no impide invocar un método**
+    sobre un registro que no puedes ver. Un cliente puede llamar por RPC a
+    `pest.sede(<id de otro cliente>).get_dashboard_data()` y el método se ejecuta: devuelve
+    vacío —las reglas hacen su trabajo dentro— pero **no da error**.
+
+    Eso no filtra datos, y por eso es leve. Pero permite **averiguar qué identificadores
+    existen**: uno que no existe truena de otra forma que uno que existe y no te toca. Es
+    enumeración, y es de las cosas que un senior no deja abiertas «porque no filtra nada».
+
+    Va como decorador y no copiado en cada método a propósito: son cinco hoy, y el sexto que
+    alguien añada nace protegido solo si el guard es una pieza y no una costumbre.
+
+    Detectado por una auditoría independiente el 2026-09-04.
+    """
+    def envolver(metodo):
+        from functools import wraps
+
+        @wraps(metodo)
+        def interior(self, *args, **kwargs):
+            if self.ids:
+                self.check_access(operacion)
+            return metodo(self, *args, **kwargs)
+        return interior
+    return envolver

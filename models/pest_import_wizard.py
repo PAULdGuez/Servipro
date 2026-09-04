@@ -2,6 +2,7 @@ import base64
 import io
 from datetime import datetime
 
+from . import helpers
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
@@ -40,6 +41,7 @@ class PestIncidentImportWizard(models.TransientModel):
             rec.success_count = len(lines.filtered('is_valid'))
             rec.error_count = rec.total_count - rec.success_count
 
+    @helpers.solo_si_puede('read')
     def action_download_template(self):
         """Generate and download an XLSX template for this blueprint."""
         self.ensure_one()

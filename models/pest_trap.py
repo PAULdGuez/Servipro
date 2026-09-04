@@ -181,6 +181,7 @@ class PestTrap(models.Model):
         for rec in self:
             rec.current_state = state_map.get(rec.id, 'sin_registro')
 
+    @helpers.solo_si_puede('write')
     def action_move_to_from_widget(self, new_x_pct, new_y_pct, comment=''):
         from odoo.exceptions import UserError
         for trap in self:
@@ -216,6 +217,7 @@ class PestTrap(models.Model):
                 if zone_name:
                     trap.location = zone_name
 
+    @helpers.solo_si_puede('read')
     def get_detail_data(self):
         self.ensure_one()
         incidents = self.env['pest.incident'].search_read(

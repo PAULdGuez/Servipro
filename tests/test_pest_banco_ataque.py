@@ -96,3 +96,84 @@ class TestBancoDeAtaque(TransactionCase):
         datos = plano.get_widget_data()          # sin zone_id a propósito
         self.assertEqual(len(datos['traps']), 1)
         self.assertEqual(datos['traps'][0]['name'], 'TRAP-BANCO')
+
+
+class TestMetodosLlamablesPorRPC(TransactionCase):
+    """Invocar un método sobre un registro ajeno tiene que REBOTAR, no devolver vacío.
+
+    Odoo protege leer campos y escribir, pero **no impide llamar a un método** sobre un registro
+    que no puedes ver. Antes de esto, un cliente podía llamar por RPC a
+    `pest.sede(<id de otro cliente>).get_dashboard_data()`: el método se ejecutaba y devolvía las
+    13 gráficas vacías, sin error.
+
+    No filtraba datos —las reglas hacen su trabajo dentro— pero permitía **averiguar qué
+    identificadores existen**, que es enumeración. Lo encontró una auditoría independiente.
+
+    🔑 **Y la prueba se escribe con el caché invalidado JUSTO antes de cada llamada.** Sin eso
+    lee lo que el superusuario dejó cargado y **miente en las dos direcciones**: puede dar por
+    buena una fuga que no existe, o dar por protegido algo que no lo está. Pasó dos veces en este
+    proyecto.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.mia = cls.env['res.company'].create({'name': 'Mi empresa RPC'})
+        cls.suya = cls.env['res.company'].create({'name': 'Empresa ajena RPC'})
+        cls.sede_ajena = cls.env['pest.sede'].create({'name': 'Planta ajena', 'company_id': cls.suya.id})
+        cls.plano_ajeno = cls.env['pest.blueprint'].create({
+            'name': 'Plano ajeno', 'sede_id': cls.sede_ajena.id})
+        cls.trampa_ajena = cls.env['pest.trap'].create({
+            'name': 'TRAP-AJENA', 'sede_id': cls.sede_ajena.id,
+            'blueprint_id': cls.plano_ajeno.id,
+            'trap_type_id': cls.env['pest.trap.type'].create({'name': 'T RPC', 'code': 'trpc'}).id,
+        })
+        cls.mia_sede = cls.env['pest.sede'].create({'name': 'Mi planta', 'company_id': cls.mia.id})
+        cls.usuario = cls.env['res.users'].create({
+            'name': 'cliente RPC', 'login': 'cliente.rpc',
+            'company_id': cls.mia.id, 'company_ids': [(6, 0, [cls.mia.id])],
+            'group_ids': [(4, cls.env.ref('pest_control.group_pest_client').id)],
+            'pest_sede_ids': [(6, 0, cls.mia_sede.ids)],
+        })
+
+    # ⚠️ **MEDIDO: de los cuatro, solo `get_dashboard_data` era un agujero real.**
+    #
+    # Anulando el guard, de estas cuatro pruebas cae UNA (`r01`). Las otras tres siguen verdes:
+    # `get_detail_data`, `get_widget_data` y `action_move_to_from_widget` ya rebotaban solos,
+    # porque leen campos del registro y ahí Odoo sí comprueba el permiso. `get_dashboard_data`
+    # no leía ninguno —solo agrupaba con el id— y por eso se colaba.
+    #
+    # Se dejan las cuatro y el guard en los cuatro **a propósito**: r02-r04 no prueban el guard,
+    # prueban que el comportamiento correcto se mantiene si alguien toca esos métodos y deja de
+    # leer campos. Pero conviene saber cuál muerde y cuál no: **una prueba verde por una razón
+    # distinta de la que dice su nombre es una prueba que no protege lo que crees.**
+
+    def _como_el(self, registro):
+        self.env.invalidate_all()          # sin esto la prueba lee del caché del admin y miente
+        return registro.with_user(self.usuario)
+
+    def test_r01_el_tablero_de_una_sede_ajena_REBOTA(self):
+        with self.assertRaises(AccessError):
+            self._como_el(self.sede_ajena).get_dashboard_data()
+
+    def test_r02_la_ficha_de_una_trampa_ajena_REBOTA(self):
+        with self.assertRaises(AccessError):
+            self._como_el(self.trampa_ajena).get_detail_data()
+
+    def test_r03_el_plano_ajeno_REBOTA(self):
+        with self.assertRaises(AccessError):
+            self._como_el(self.plano_ajeno).get_widget_data()
+
+    def test_r04_mover_una_trampa_ajena_REBOTA(self):
+        with self.assertRaises(AccessError):
+            self._como_el(self.trampa_ajena).action_move_to_from_widget(10.0, 20.0)
+
+    def test_r05_y_SOBRE_LO_SUYO_sigue_funcionando(self):
+        """La prueba del caso contrario: un guard que bloquea todo también «protege».
+
+        Sin esto, poner el candado en el sitio equivocado dejaría los cuatro tests de arriba en
+        verde y el sistema inservible para el usuario legítimo.
+        """
+        datos = self._como_el(self.mia_sede).get_dashboard_data()
+        self.assertTrue(isinstance(datos, dict) and datos,
+                        'el usuario no puede ver el tablero de su propia sede')

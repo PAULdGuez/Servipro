@@ -187,6 +187,7 @@ class PestSede(models.Model):
         }
 
     # ── Dashboard ────────────────────────────────────────────────────
+    @helpers.solo_si_puede('read')
     def get_dashboard_data(self, params=None):
         """Return aggregated data for 14 sede charts in Chart.js format."""
         self.ensure_one()

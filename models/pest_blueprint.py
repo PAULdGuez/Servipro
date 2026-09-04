@@ -128,6 +128,7 @@ class PestBlueprint(models.Model):
                     rec.image_processing_state = 'pending'
         return records
 
+    @helpers.solo_si_puede('read')
     def get_widget_data(self, limit=200, offset=0):
         self.ensure_one()
 
