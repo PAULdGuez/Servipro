@@ -91,6 +91,52 @@ class TestPestCoherencia(TransactionCase):
             helpers.dominio_incidencias(self.env['pest.trap.type'].search([], limit=1))
 
 
+
+    def test_archivar_una_trampa_baja_el_contador(self):
+        """Archivar tiene que MOVER el número, no dejarlo rancio.
+
+        El fallo real: los contadores cuentan solo lo activo —correcto—, pero archivar una
+        trampa no disparaba el recálculo, porque Odoo no considera que el One2many «cambió»
+        si el registro sigue existiendo y solo se movió su `active`. La ficha decía 2 con
+        una sola activa, y lo seguía diciendo hasta que otra cosa forzara el recomputo.
+
+        Un número rancio es peor que uno mal calculado: el mal calculado se puede razonar;
+        el rancio parece correcto y contradice a la pantalla de al lado.
+        """
+        otra = self.env['pest.trap'].create({
+            'name': 'TRAP-ARCHIVABLE', 'sede_id': self.sede.id,
+            'blueprint_id': self.plano.id, 'trap_type_id': self.tipo.id,
+        })
+        self.env.flush_all()
+        antes = self.sede.trap_count
+        self.assertEqual(antes, 2, 'de partida hay dos trampas en la sede')
+
+        otra.active = False
+        self.env.invalidate_all()
+
+        self.assertEqual(
+            self.sede.trap_count, 1,
+            'al archivar una trampa el contador de la ficha tiene que bajar; si se queda '
+            'en %d, está mostrando un número viejo que contradice a la lista de trampas'
+            % self.sede.trap_count,
+        )
+
+    def test_desarchivarla_lo_devuelve(self):
+        """El caso contrario: si solo bajara, el contador tampoco seguiría a la realidad."""
+        otra = self.env['pest.trap'].create({
+            'name': 'TRAP-VUELVE', 'sede_id': self.sede.id,
+            'blueprint_id': self.plano.id, 'trap_type_id': self.tipo.id,
+        })
+        otra.active = False
+        self.env.invalidate_all()
+        con_archivada = self.sede.trap_count
+        otra.active = True
+        self.env.invalidate_all()
+        self.assertEqual(
+            self.sede.trap_count, con_archivada + 1,
+            'desarchivar una trampa tiene que volver a sumarla',
+        )
+
 class TestPestCoherenciaArchivados(TransactionCase):
     """Vector c05 del banco de ataque: los archivados, ¿entran o no en los totales?
 
@@ -207,50 +253,4 @@ class TestPestCoherenciaArchivados(TransactionCase):
         self.assertEqual(
             self.sede.trap_count, visibles + self.sede.trap_count_archivado,
             'el total de trampas no cuadra con lo visible más lo archivado',
-        )
-
-
-    def test_archivar_una_trampa_baja_el_contador(self):
-        """Archivar tiene que MOVER el número, no dejarlo rancio.
-
-        El fallo real: los contadores cuentan solo lo activo —correcto—, pero archivar una
-        trampa no disparaba el recálculo, porque Odoo no considera que el One2many «cambió»
-        si el registro sigue existiendo y solo se movió su `active`. La ficha decía 2 con
-        una sola activa, y lo seguía diciendo hasta que otra cosa forzara el recomputo.
-
-        Un número rancio es peor que uno mal calculado: el mal calculado se puede razonar;
-        el rancio parece correcto y contradice a la pantalla de al lado.
-        """
-        otra = self.env['pest.trap'].create({
-            'name': 'TRAP-ARCHIVABLE', 'sede_id': self.sede.id,
-            'blueprint_id': self.plano.id, 'trap_type_id': self.tipo.id,
-        })
-        self.env.flush_all()
-        antes = self.sede.trap_count
-        self.assertEqual(antes, 2, 'de partida hay dos trampas en la sede')
-
-        otra.active = False
-        self.env.invalidate_all()
-
-        self.assertEqual(
-            self.sede.trap_count, 1,
-            'al archivar una trampa el contador de la ficha tiene que bajar; si se queda '
-            'en %d, está mostrando un número viejo que contradice a la lista de trampas'
-            % self.sede.trap_count,
-        )
-
-    def test_desarchivarla_lo_devuelve(self):
-        """El caso contrario: si solo bajara, el contador tampoco seguiría a la realidad."""
-        otra = self.env['pest.trap'].create({
-            'name': 'TRAP-VUELVE', 'sede_id': self.sede.id,
-            'blueprint_id': self.plano.id, 'trap_type_id': self.tipo.id,
-        })
-        otra.active = False
-        self.env.invalidate_all()
-        con_archivada = self.sede.trap_count
-        otra.active = True
-        self.env.invalidate_all()
-        self.assertEqual(
-            self.sede.trap_count, con_archivada + 1,
-            'desarchivar una trampa tiene que volver a sumarla',
         )
