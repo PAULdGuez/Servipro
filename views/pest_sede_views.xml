@@ -92,8 +92,11 @@
                             <field name="country_id"/>
                         </group>
                         <group string="Estado">
+                            <!-- Solo `state`. El `active` nativo decía el MISMO hecho, en inglés y
+                                 con una casilla, justo debajo — y podía contradecirlo. Ahora se
+                                 deriva de él: archivar se hace desde Acciones o moviendo la barra
+                                 de estado de arriba, que archiva de verdad. -->
                             <field name="state"/>
-                            <field name="active"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
@@ -103,7 +106,10 @@
                                 <list>
                                     <field name="name"/>
                                     <field name="trap_count"/>
-                                    <field name="active"/>
+                                    <!-- `active` como columna salía «Active», en inglés y con una
+                                         casilla editable. Los archivados se ven con el filtro
+                                         nativo, que es donde el usuario los busca. -->
+                                    <field name="active" column_invisible="1"/>
                                 </list>
                             </field>
                         </page>
