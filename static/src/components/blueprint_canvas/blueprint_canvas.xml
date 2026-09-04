@@ -20,6 +20,12 @@
                     </button>
                     <span class="zoom-level" t-esc="Math.round(state.zoomLevel * 100) + '%'"/>
                     <span class="badge text-bg-secondary ms-2" t-if="state.data" t-esc="state.data.traps.length + '/' + state.data.total_trap_count + ' trampas'"/>
+                    <!-- Las que aun no tienen sitio en el plano. Se avisa en vez de
+                         dibujarlas en 0,0, donde se apilarian todas en la esquina. -->
+                    <span class="badge text-bg-warning ms-2"
+                          t-if="state.data and state.data.traps_sin_ubicar and state.data.traps_sin_ubicar.length"
+                          t-attf-title="Estas trampas existen y tienen su historial, pero todavia nadie las ha colocado sobre el plano. Arrastralas desde la lista de abajo."
+                          t-esc="state.data.traps_sin_ubicar.length + ' por ubicar'"/>
                     <button class="btn btn-sm btn-light" t-on-click="onZoomOut" title="Zoom Out">
                         <i class="fa fa-minus"/>
                     </button>

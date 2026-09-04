@@ -156,13 +156,30 @@ class PestBlueprint(models.Model):
             types_map = {t['id']: t for t in types_data}
 
         trap_list = []
+        sin_ubicar = []
         for t in traps_data:
             tt = types_map.get(t['trap_type_id'][0]) if t.get('trap_type_id') else {}
+            x = t.get('coord_x_pct') or 0.0
+            y = t.get('coord_y_pct') or 0.0
+
+            # Una trampa sin posicion NO se dibuja: en 0,0 se apilan todas en la esquina
+            # superior izquierda, que se ve peor que no mostrarlas y ademas tapa el plano.
+            # Van a una lista aparte para que el usuario sepa cuantas faltan por ubicar.
+            # (Pasa con las trampas importadas del sistema anterior: sus coordenadas no
+            #  eran migrables y se recolocan aqui — ver plan maestro B.4.)
+            if not x and not y:
+                sin_ubicar.append({
+                    'id': t['id'],
+                    'name': t.get('name') or '',
+                    'trap_type_name': tt.get('name', ''),
+                })
+                continue
+
             trap_list.append({
                 'id': t['id'],
                 'name': t.get('name') or '',
-                'coord_x_pct': t.get('coord_x_pct') or 0.0,
-                'coord_y_pct': t.get('coord_y_pct') or 0.0,
+                'coord_x_pct': x,
+                'coord_y_pct': y,
                 'current_state': t.get('current_state') or 'sin_registro',
                 'trap_type_id': t['trap_type_id'][0] if t.get('trap_type_id') else False,
                 'trap_type_name': tt.get('name', ''),
@@ -225,6 +242,9 @@ class PestBlueprint(models.Model):
                 })
 
         return {
+            # Las que aun no tienen sitio en el plano. El widget las lista aparte en vez
+            # de dibujarlas encimadas.
+            'traps_sin_ubicar': sin_ubicar,
             'image_url': f'/web/image/pest.blueprint/{self.id}/image_web',
             'traps': trap_list,
             'trap_types': list(type_counts.values()),
