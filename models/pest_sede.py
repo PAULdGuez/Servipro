@@ -76,6 +76,16 @@ class PestSede(models.Model):
         compute='_compute_counts',
         store=True,
     )
+    incident_count_archivado = fields.Integer(
+        string='En planos archivados',
+        # Método propio, no `_compute_counts`: los otros contadores son `store=True` y el ORM
+        # avisa —con razón— de que acceder a uno recomputaría los demás. Compartir método entre
+        # campos guardados y no guardados es la clase de acoplamiento que luego da recomputes
+        # fantasma que nadie relaciona con esto.
+        compute='_compute_incident_count_archivado',
+        help='Incidencias que pertenecen a esta sede pero cuelgan de un plano archivado, '
+             'y por eso no aparecen al sumar los planos de la lista.',
+    )
     incident_count = fields.Integer(
         string='Nº Incidencias',
         compute='_compute_counts',
@@ -105,6 +115,13 @@ class PestSede(models.Model):
             rec.trap_count = trap_counts.get(rec.id, 0)
             rec.blueprint_count = bp_counts.get(rec.id, 0)
             rec.incident_count = inc_map.get(rec.id, 0)
+
+    @api.depends('blueprint_ids.active', 'blueprint_ids.incident_ids')
+    def _compute_incident_count_archivado(self):
+        """Lo que cuenta el total pero el usuario no puede alcanzar desde la lista de planos."""
+        arch_map = helpers.contar_incidencias_archivadas(self)
+        for rec in self:
+            rec.incident_count_archivado = arch_map.get(rec.id, 0)
 
     # ── Actions ─────────────────────────────────────────────────────
     def action_view_traps(self):

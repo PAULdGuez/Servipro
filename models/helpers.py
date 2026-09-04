@@ -60,3 +60,34 @@ def contar_incidencias(registros):
         dominio_incidencias(registros), [campo], ['__count'],
     )
     return {agrupado.id: cuantas for agrupado, cuantas in datos}
+
+
+def contar_incidencias_archivadas(sedes):
+    """{id de sede: incidencias que cuelgan de un plano ARCHIVADO}.
+
+    POR QUÉ ES UN CONTEO APARTE Y NO SE RESTA DEL TOTAL
+    ---------------------------------------------------
+    Al archivar un plano, sus incidencias siguen existiendo y siguen siendo del histórico de esa
+    sede — pero **dejan de ser alcanzables desde la pantalla**, porque los planos archivados no se
+    listan. El resultado es que la sede dice 2,289 y los planos que el usuario tiene delante suman
+    2,278, sin nada que explique la diferencia.
+
+    Medido: 16 planos archivados, 45 incidencias y 342 trampas dentro. En Bimbo Azcapotzalco son
+    11; en Bimbo México Santa María, 34.
+
+    **Descontarlas del total sería esconder histórico real para que cuadre una suma** — y de paso,
+    archivar un plano por error haría desaparecer sus datos del total sin que nada avise. Se
+    cuentan aparte y se dicen en pantalla: *«2,289, de las cuales 11 en planos archivados»*.
+    Ningún dato se pierde y el número deja de parecer un error.
+    """
+    if not sedes.ids:
+        return {}
+    archivados = sedes.env['pest.blueprint'].with_context(active_test=False).search([
+        ('sede_id', 'in', sedes.ids), ('active', '=', False),
+    ])
+    if not archivados:
+        return {}
+    datos = sedes.env['pest.incident'].sudo()._read_group(
+        [('blueprint_id', 'in', archivados.ids)], ['sede_id'], ['__count'],
+    )
+    return {sede.id: cuantas for sede, cuantas in datos}

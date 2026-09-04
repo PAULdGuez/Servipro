@@ -89,3 +89,92 @@ class TestPestCoherencia(TransactionCase):
         from odoo.addons.pest_control.models import helpers
         with self.assertRaises(ValueError):
             helpers.dominio_incidencias(self.env['pest.trap.type'].search([], limit=1))
+
+
+class TestPestCoherenciaArchivados(TransactionCase):
+    """Vector c05 del banco de ataque: los archivados, ¿entran o no en los totales?
+
+    Lo cazó el banco, no la revisión. La primera versión del arreglo de coherencia hacía cuadrar
+    los números **preguntando a la base**, y en PANTALLA el usuario seguía viendo el desajuste:
+    abría la sede, leía 2,289, sumaba los planos que tenía delante y le daban 2,278. Los 16
+    planos archivados no se listan.
+
+    El test anterior pasaba porque en su escenario no había ni un plano archivado. **Un caso que
+    no está en la prueba es un caso que la prueba no protege.**
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.sede = cls.env['pest.sede'].create({'name': 'Sede con archivados'})
+        cls.vivo = cls.env['pest.blueprint'].create({
+            'name': 'Plano vivo', 'sede_id': cls.sede.id})
+        cls.archivado = cls.env['pest.blueprint'].create({
+            'name': 'Plano archivado', 'sede_id': cls.sede.id})
+
+    def _incidencia(self, plano):
+        return self.env['pest.incident'].create({
+            'sede_id': self.sede.id, 'blueprint_id': plano.id,
+            'incident_type': 'captura', 'organism_count': 1,
+            'date': '2026-05-05 10:00:00',
+        })
+
+    def test_b01_el_total_de_la_sede_NO_pierde_lo_archivado(self):
+        """Archivar un plano no puede hacer desaparecer histórico del total.
+
+        Si se descontara, archivar por error borraría datos de los informes sin avisar.
+        """
+        self._incidencia(self.vivo)
+        self._incidencia(self.archivado)
+        self.archivado.active = False
+        self.env.invalidate_all()
+        self.assertEqual(self.sede.incident_count, 2,
+                         'archivar un plano no puede restar del histórico de la sede')
+
+    def test_b02_la_diferencia_con_los_planos_visibles_queda_EXPLICADA(self):
+        """Lo que el usuario no puede alcanzar, se dice; no se esconde ni se resta.
+
+        total de la sede = suma de los planos que SÍ ve + los que están en archivados.
+        """
+        self._incidencia(self.vivo)
+        self._incidencia(self.archivado)
+        self._incidencia(self.archivado)
+        self.archivado.active = False
+        self.env.invalidate_all()
+
+        visibles = sum(
+            b.incident_count
+            for b in self.env['pest.blueprint'].search([('sede_id', '=', self.sede.id)])
+        )
+        self.assertEqual(visibles, 1, 'el plano archivado no debe listarse')
+        self.assertEqual(self.sede.incident_count_archivado, 2)
+        self.assertEqual(
+            self.sede.incident_count, visibles + self.sede.incident_count_archivado,
+            'la diferencia entre el total y lo visible tiene que quedar explicada',
+        )
+
+    def test_b03_sin_planos_archivados_el_aviso_NO_aparece(self):
+        """La prueba del caso contrario: un aviso que sale siempre deja de avisar."""
+        self._incidencia(self.vivo)
+        self.env.invalidate_all()
+        self.assertEqual(self.sede.incident_count_archivado, 0)
+
+    def test_b04_desarchivar_devuelve_el_conteo_a_su_sitio(self):
+        """Ida y vuelta: deshacer tiene que dejar el sistema exactamente como estaba.
+
+        Un dato derivado que sabe avanzar y no sabe retroceder miente en cuanto alguien se
+        arrepiente — y la gente se arrepiente todo el tiempo.
+        """
+        self._incidencia(self.vivo)
+        self._incidencia(self.archivado)
+        self.env.invalidate_all()
+        antes = (self.sede.incident_count, self.sede.incident_count_archivado)
+
+        self.archivado.active = False
+        self.env.invalidate_all()
+        self.assertEqual(self.sede.incident_count_archivado, 1)
+
+        self.archivado.active = True
+        self.env.invalidate_all()
+        self.assertEqual((self.sede.incident_count, self.sede.incident_count_archivado), antes,
+                         'desarchivar debe dejar los contadores como estaban')
