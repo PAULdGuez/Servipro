@@ -129,7 +129,10 @@ class PestTrap(models.Model):
                     })
                 vals['name'] = sequence.next_by_code(seq_code)
             elif not vals.get('name'):
-                vals['name'] = self.env['ir.sequence'].next_by_code('pest.trap.generic') or 'TRP-NEW'
+                # Sin 'or' de respaldo a proposito: si la secuencia no existiera, un literal
+                # fijo daria el MISMO nombre a todas las trampas sin tipo. Preferible que
+                # falle y se vea.
+                vals['name'] = self.env['ir.sequence'].next_by_code('pest.trap.generic')
         records = super().create(vals_list)
         # Create initial state records if provided and log to blueprint chatter
         for rec, initial in zip(records, initial_states):
