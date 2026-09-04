@@ -1,3 +1,4 @@
+from . import helpers
 from odoo import api, fields, models
 
 
@@ -95,17 +96,15 @@ class PestSede(models.Model):
             [('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
         bp_data = self.env['pest.blueprint']._read_group(
             [('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
-        inc_data = self.env['pest.incident']._read_group(
-            [('sede_id', 'in', self.ids)], ['sede_id'], ['__count'])
+        inc_map = helpers.contar_incidencias(self)
 
         trap_counts = {sede.id: count for sede, count in trap_data}
         bp_counts = {sede.id: count for sede, count in bp_data}
-        inc_counts = {sede.id: count for sede, count in inc_data}
 
         for rec in self:
             rec.trap_count = trap_counts.get(rec.id, 0)
             rec.blueprint_count = bp_counts.get(rec.id, 0)
-            rec.incident_count = inc_counts.get(rec.id, 0)
+            rec.incident_count = inc_map.get(rec.id, 0)
 
     # ── Actions ─────────────────────────────────────────────────────
     def action_view_traps(self):

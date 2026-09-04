@@ -1,5 +1,6 @@
 import json
 import logging
+from . import helpers
 from odoo import api, fields, models
 from odoo.tools.image import image_process
 
@@ -85,9 +86,16 @@ class PestBlueprint(models.Model):
         string='Nº Incidencias',
     )
 
+    @api.depends('trap_ids.incident_ids')
     def _compute_incident_count(self):
+        """Por `blueprint_id`, NO sumando el contador de las trampas.
+
+        Sumar las trampas dejaba fuera las incidencias del plano que no tienen trampa —los
+        hallazgos sueltos—, y por eso el total de la sede no cuadraba con la suma de sus planos.
+        """
+        cuenta = helpers.contar_incidencias(self)
         for rec in self:
-            rec.incident_count = sum(rec.trap_ids.mapped('incident_count'))
+            rec.incident_count = cuenta.get(rec.id, 0)
 
     # JSON payload for frontend rendering (zones, renderedWidth, etc.)
     state_data = fields.Text(string='Datos del Estado JSON')

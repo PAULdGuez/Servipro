@@ -1,5 +1,6 @@
 import logging
 
+from . import helpers
 from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
@@ -157,19 +158,9 @@ class PestTrap(models.Model):
 
     @api.depends('incident_ids')
     def _compute_incident_count(self):
-        if not self.ids:
-            for rec in self:
-                rec.incident_count = 0
-            return
-
-        incident_data = self.env['pest.incident']._read_group(
-            [('trap_id', 'in', self.ids)],
-            ['trap_id'],
-            ['__count'],
-        )
-        count_map = {trap.id: count for trap, count in incident_data}
+        cuenta = helpers.contar_incidencias(self)
         for rec in self:
-            rec.incident_count = count_map.get(rec.id, 0)
+            rec.incident_count = cuenta.get(rec.id, 0)
 
     @api.depends('state_ids.date', 'state_ids.state')
     def _compute_current_state(self):
