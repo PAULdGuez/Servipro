@@ -7,20 +7,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **ServiPro - Control de Plagas** is an Odoo 19 module for integrated pest control management. It depends on `base`, `mail`, and `sale`.
 
 Module technical name: `pest_control`
-Version: `19.0.1.0.0`
+
+⚠️ **La versión NO se documenta aquí** — se lee del `__manifest__.py`, que es la única fuente que
+no se desincroniza. Este archivo decía `19.0.1.0.0` cuando el módulo iba en la `.6`.
 
 ## Installation & Development Commands
 
+⚠️ **Los comandos de abajo son los genéricos de Odoo y NO funcionan en este entorno**: el
+contenedor ya ocupa el 8069 y revientan con *«Address already in use»*.
+
+**Los comandos que sí funcionan están en `Workspaces/servipro/README.md`.** En resumen:
+
 ```bash
-# Install the module
-python odoo-bin -i pest_control -d <database>
+# actualizar tras editar (ojo con los puertos, o falla)
+docker exec odoo19-enterprise-dev-odoo-1 odoo -d <base> -u pest_control \
+    --stop-after-init --http-port=8123 --gevent-port=8124
 
-# Update the module after changes
-python odoo-bin -u pest_control -d <database>
-
-# Run Odoo with dev mode (auto-reload assets)
-python odoo-bin -u pest_control -d <database> --dev=all
+# correr los tests
+docker exec odoo19-enterprise-dev-odoo-1 odoo -d <base> -u pest_control \
+    --test-enable --test-tags=/pest_control --stop-after-init \
+    --http-port=8123 --gevent-port=8124
 ```
+
+El contenedor se llama **`odoo19-enterprise-dev-odoo-1`** (y su base, `-db-1`). El nombre corto
+`odoo19-enterprise-dev` es el del proyecto de compose, **no el del contenedor**: usarlo da
+*No such container*.
 
 There are no standalone test, lint, or build commands — testing is done through Odoo's test runner:
 
