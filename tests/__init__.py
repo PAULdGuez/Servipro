@@ -6,3 +6,4 @@ from . import test_pest_coherencia
 from . import test_pest_banco_ataque
 from . import test_pest_corte_por_sede
 from . import test_pest_visor_docs
+from . import test_pest_arreglos_demo
