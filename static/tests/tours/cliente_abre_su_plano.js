@@ -1,13 +1,15 @@
 /** Un cliente entra, abre el plano de su planta y ve sus trampas.
  *
- * ⚠️ ESTADO: el tour corre y pasa, pero NO se ha podido demostrar que MUERDA.
- * Al quitar el permiso del Cliente sobre los catálogos —el fallo que este tour
- * debería detectar— los dos tests de modelo caen y este tour sigue en verde.
- * Se endureció el selector final (de `[class*=blueprint]`, que matchea hasta la
- * ficha vacía, a `.blueprint-container .blueprint-trap-marker`) y aun así pasa.
+ * ⚠️ ESTADO: en el entorno LOCAL este tour se SALTA — no hay navegador funcional
+ * dentro del contenedor. Odoo lo omite y el resumen sigue diciendo «0 failed»,
+ * así que parecía estar pasando cuando en realidad nunca se ejecutó. Se descubrió
+ * poniéndole un paso imposible y viendo que seguía en verde.
  *
- * Hasta entenderlo, **este tour NO cuenta como cobertura de ese flujo**. Queda
- * como esqueleto correcto del patrón, no como red de seguridad.
+ * En odoo.sh sí corre, porque su entorno trae Chrome. Aquí queda como protección
+ * para allá, no como red local.
+ *
+ * 🔑 Antes de confiar en cualquier tour: ponle un selector inexistente y comprueba
+ * que el test FALLA. Si no falla, no se está ejecutando.
  *
  * Es el flujo que estuvo roto: al Cliente le faltaba permiso sobre los catálogos
  * de tipo de trampa y de plaga, y el plano tronaba con un error de acceso.
