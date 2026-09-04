@@ -53,7 +53,13 @@
                                    domain="[('sede_id', '=', sede_id)]"/>
                         </group>
                         <group string="Ubicación">
-                            <field name="zone_id" string="Ubicación" required="1" placeholder="Seleccione una ubicación..."/>
+                            <!-- Sin `required`: las 2,219 trampas venidas del sistema anterior no traen zona
+                                 (allá vivía en el historial de movimientos, no en la trampa), y exigirla
+                                 impedía guardar cualquiera de ellas. El dato de ubicación en texto sí
+                                 está al 100% en `location`. -->
+                            <field name="zone_id" string="Ubicación"
+                                   domain="[('sede_id', '=', sede_id)]"
+                                   placeholder="Seleccione una ubicación..."/>
                             <field name="coord_x" invisible="1"/>
                             <field name="coord_y" invisible="1"/>
                             <field name="installation_date"/>

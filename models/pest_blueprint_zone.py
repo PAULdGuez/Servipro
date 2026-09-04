@@ -10,6 +10,14 @@ class PestBlueprintZone(models.Model):
 
     name = fields.Char(string='Nombre de Zona', required=True)
     blueprint_id = fields.Many2one('pest.blueprint', string='Plano', required=True, ondelete='cascade')
+    # 🔑 El polígono es el DIBUJO de una zona, no otra zona. Sin este enlace habría dos modelos
+    # contestando «¿en qué zona está esto?», y el día que alguien corrija uno el otro se queda
+    # viejo sin que nada avise. Opcional a propósito: se puede dibujar un contorno antes de
+    # decidir a qué zona operativa corresponde.
+    zone_id = fields.Many2one(
+        'pest.zone', string='Ubicación',
+        domain="[('sede_id', '=', parent.sede_id)]",
+        help='La zona operativa que este contorno representa.')
     points_data = fields.Text(string='Puntos del Polígono', required=True,
                               help='JSON array de objetos {x, y} en porcentaje (0.0 a 100.0)')
     color = fields.Char(string='Color', default='#3498db55')

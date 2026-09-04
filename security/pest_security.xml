@@ -62,6 +62,12 @@
             <field name="domain_force">['|', ('blueprint_id.company_id', '=', False), ('blueprint_id.company_id', 'in', company_ids)]</field>
             <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
         </record>
+        <record id="rule_pest_zone_company" model="ir.rule">
+            <field name="name">Ubicación: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_zone"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
         <record id="rule_pest_trap_company" model="ir.rule">
             <field name="name">Trampa: Solo empresa del usuario</field>
             <field name="model_id" ref="model_pest_trap"/>

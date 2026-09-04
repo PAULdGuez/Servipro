@@ -5,8 +5,10 @@
         <field name="model">pest.zone</field>
         <field name="arch" type="xml">
             <list editable="bottom">
+                <field name="sede_id"/>
                 <field name="name"/>
                 <field name="code"/>
+                <field name="company_id" column_invisible="1"/>
                 <field name="active"/>
             </list>
         </field>
@@ -20,10 +22,12 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="sede_id"/>
                             <field name="name"/>
                             <field name="code"/>
                         </group>
                         <group>
+                            <field name="company_id" readonly="1"/>
                             <field name="active"/>
                         </group>
                     </group>
@@ -40,7 +44,10 @@
             <p class="o_view_nocontent_smiling_face">
                 Crear una nueva ubicación
             </p>
-            <p>Las ubicaciones se usan para clasificar dónde están las trampas.</p>
+            <p>Las ubicaciones se usan para clasificar dónde están las trampas, y son el eje
+               por el que el tablero agrupa las incidencias.</p>
+            <p>Cada ubicación pertenece a una sede: dos plantas pueden tener su propio
+               «Almacén de materias primas» sin estorbarse.</p>
         </field>
     </record>
 </odoo>
