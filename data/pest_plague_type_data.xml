@@ -10,9 +10,9 @@
             <field name="category">volador</field>
         </record>
 
-        <!-- 2. Mosca Domestica -->
+        <!-- 2. Mosca Doméstica -->
         <record id="plague_type_mosca_domestica" model="pest.plague.type">
-            <field name="name">Mosca Domestica</field>
+            <field name="name">Mosca Doméstica</field>
             <field name="code">mosca_domestica</field>
             <field name="category">volador</field>
         </record>
@@ -31,23 +31,23 @@
             <field name="category">volador</field>
         </record>
 
-        <!-- 5. Mosca Metalica -->
+        <!-- 5. Mosca Metálica -->
         <record id="plague_type_mosca_metalica" model="pest.plague.type">
-            <field name="name">Mosca Metalica</field>
+            <field name="name">Mosca Metálica</field>
             <field name="code">mosca_metalica</field>
             <field name="category">volador</field>
         </record>
 
-        <!-- 6. Mosca Forida -->
+        <!-- 6. Mosca Fórida -->
         <record id="plague_type_mosca_forida" model="pest.plague.type">
-            <field name="name">Mosca Forida</field>
+            <field name="name">Mosca Fórida</field>
             <field name="code">mosca_forida</field>
             <field name="category">volador</field>
         </record>
 
-        <!-- 7. Palomilla de Almacen -->
+        <!-- 7. Palomilla de Almacén -->
         <record id="plague_type_palomilla_almacen" model="pest.plague.type">
-            <field name="name">Palomilla de Almacen</field>
+            <field name="name">Palomilla de Almacén</field>
             <field name="code">palomilla_almacen</field>
             <field name="category">volador</field>
         </record>
@@ -117,9 +117,9 @@
             <field name="category">rastrero</field>
         </record>
 
-        <!-- 17. Aranas -->
+        <!-- 17. Arañas -->
         <record id="plague_type_aranas" model="pest.plague.type">
-            <field name="name">Aranas</field>
+            <field name="name">Arañas</field>
             <field name="code">aranas</field>
             <field name="category">rastrero</field>
         </record>

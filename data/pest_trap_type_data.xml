@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- 1. EDC Quimicas -->
+        <!-- 1. EDC Químicas -->
         <record id="trap_type_edc_quimicas" model="pest.trap.type">
-            <field name="name">EDC Quimicas</field>
+            <field name="name">EDC Químicas</field>
             <field name="code">edc_quimicas</field>
             <field name="icon">fa-flask</field>
             <field name="description">Estacion de cebo con quimico para roedores</field>
@@ -41,9 +41,9 @@
             <field name="description">Trampa de feromona para monitoreo de palomillas de almacen</field>
         </record>
 
-        <!-- 6. Equipo Sonico -->
+        <!-- 6. Equipo Sónico -->
         <record id="trap_type_equipo_sonico" model="pest.trap.type">
-            <field name="name">Equipo Sonico</field>
+            <field name="name">Equipo Sónico</field>
             <field name="code">equipo_sonico</field>
             <field name="icon">fa-volume-up</field>
             <field name="description">Dispositivo sonico repelente de aves y roedores</field>
