@@ -12,6 +12,7 @@ prueba es el recorrido con navegador, anotado en el guion.
 from datetime import timedelta
 
 from odoo import fields
+from odoo.tools import file_open
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 
@@ -158,19 +159,51 @@ class TestTextosQueLeeElCliente(TransactionCase):
     """Siete textos nuestros salían sin acento en la leyenda de las gráficas.
 
     «Mosca Domestica» es la plaga número uno del sistema: la primera barra del tablero.
+
+    🔑 **Estas pruebas miran el ARCHIVO, no la base, y ese detalle es la prueba entera.**
+    La primera versión comprobaba los registros cargados, y una prueba de mutación la
+    delató: se quitó el acento del XML y **la suite siguió verde**. Los dos archivos van
+    con `noupdate="1"` —correcto, porque el cliente puede editar esos catálogos—, así que
+    una base ya cargada conserva su valor pase lo que pase en el código. La prueba daba
+    seguridad sobre algo que no estaba mirando: el día que alguien quitara un acento, las
+    instalaciones NUEVAS saldrían mal y nada avisaría.
     """
 
+    SIN_ACENTO = ('Domestica', 'Metalica', 'Forida', 'Quimicas',
+                  'Sonico', 'Aranas', 'de Almacen')
+
+    ARCHIVOS = ('pest_control/data/pest_plague_type_data.xml',
+                'pest_control/data/pest_trap_type_data.xml')
+
     def test_los_nombres_del_catalogo_llevan_sus_acentos(self):
+        """Lo que se instalará mañana en una base nueva."""
         malos = []
-        for modelo in ('pest.plague.type', 'pest.trap.type'):
-            for rec in self.env[modelo].with_context(active_test=False).search([]):
-                for palabra in ('Domestica', 'Metalica', 'Forida', 'Quimicas',
-                                'Sonico', 'Aranas', 'de Almacen'):
-                    if palabra in (rec.name or ''):
-                        malos.append('%s: %s' % (modelo, rec.name))
+        for archivo in self.ARCHIVOS:
+            with file_open(archivo, 'r') as f:
+                for numero, linea in enumerate(f, 1):
+                    if '<field name="name">' not in linea:
+                        continue
+                    for palabra in self.SIN_ACENTO:
+                        if palabra in linea:
+                            malos.append('%s:%d %s' % (archivo, numero, linea.strip()))
         self.assertFalse(
             malos,
             'estos textos los lee el cliente en la leyenda de las gráficas: %s' % malos)
+
+    def test_los_nombres_ya_cargados_tambien(self):
+        """Y lo que hay hoy en ESTA base, que es lo que el cliente está viendo.
+
+        Hacen falta las dos: el archivo manda en las instalaciones nuevas, y la base es lo
+        que se ve ahora. Corregir solo una de las dos deja la otra vieja — que es
+        exactamente lo que pasó al arreglarlo.
+        """
+        malos = []
+        for modelo in ('pest.plague.type', 'pest.trap.type'):
+            for rec in self.env[modelo].with_context(active_test=False).search([]):
+                for palabra in self.SIN_ACENTO:
+                    if palabra in (rec.name or ''):
+                        malos.append('%s: %s' % (modelo, rec.name))
+        self.assertFalse(malos, 'nombres sin acento cargados en la base: %s' % malos)
 
 
 def helpers_anios():
