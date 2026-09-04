@@ -10,7 +10,12 @@ from odoo.exceptions import ValidationError
 # 🔑 **El daño no es proporcional al número.** Son 19 de 6,983 —un 0.3%— y bastan para estirar
 # el eje de la gráfica de tendencia 1,800 años, dejando los datos reales aplastados en un
 # centímetro. La gráfica más útil que tienen queda ilegible por culpa de tres milésimas.
-ANIO_MINIMO_RAZONABLE = 2000
+# El umbral es RELATIVO al presente, no un año fijo. Estuvo en 2000 y el problema no fue que
+# fuese generoso: es que estaba calibrado contra lo IMPOSIBLE en vez de contra lo PLAUSIBLE. El
+# año 2005 no es imposible para un sistema, pero sí para unos datos que empiezan en 2025 — así
+# que tres registros con un dedazo de un dígito (2005 por 2025) pasaban el filtro y estiraban el
+# eje de la gráfica veinte años. Un umbral fijo además envejece: en 2035 seguiría diciendo 2000.
+ANIOS_DE_HISTORIA_RAZONABLE = 10
 MARGEN_AL_FUTURO = timedelta(days=365)
 
 
@@ -105,8 +110,10 @@ class PestIncident(models.Model):
     @api.model
     def _limites_de_fecha_razonable(self):
         """(desde, hasta) — el rango fuera del cual una fecha es, con seguridad, una errata."""
-        desde = fields.Datetime.to_datetime('%d-01-01 00:00:00' % ANIO_MINIMO_RAZONABLE)
-        hasta = fields.Datetime.now() + MARGEN_AL_FUTURO
+        ahora = fields.Datetime.now()
+        desde = fields.Datetime.to_datetime(
+            '%d-01-01 00:00:00' % (ahora.year - ANIOS_DE_HISTORIA_RAZONABLE))
+        hasta = ahora + MARGEN_AL_FUTURO
         return desde, hasta
 
     @api.model
