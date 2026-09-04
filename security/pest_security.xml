@@ -52,6 +52,16 @@
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
             <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
         </record>
+        <!-- La zona no tiene company_id propio: se filtra a traves de su plano, que si lo
+             tiene. Sin esta regla un cliente veia las zonas de las plantas de otros clientes
+             (comprobado en runtime el 2026-09-03). El ADR-003 la habia excluido diciendo que
+             el modelo "no existe aun"; si existe, y desde antes de aquel ADR. -->
+        <record id="rule_pest_blueprint_zone_company" model="ir.rule">
+            <field name="name">Zona del plano: Solo empresa del usuario</field>
+            <field name="model_id" ref="model_pest_blueprint_zone"/>
+            <field name="domain_force">['|', ('blueprint_id.company_id', '=', False), ('blueprint_id.company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_pest_client'))]"/>
+        </record>
         <record id="rule_pest_trap_company" model="ir.rule">
             <field name="name">Trampa: Solo empresa del usuario</field>
             <field name="model_id" ref="model_pest_trap"/>
