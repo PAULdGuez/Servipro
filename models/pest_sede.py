@@ -92,7 +92,6 @@ class PestSede(models.Model):
         store=True,
     )
 
-    @api.depends('blueprint_ids', 'trap_ids', 'incident_ids')
     @api.model
     def _etiqueta_de(self, modelo, campo, valor):
         """La etiqueta que el usuario lee, no el valor guardado.
@@ -109,6 +108,7 @@ class PestSede(models.Model):
         etiquetas = dict(self.env[modelo]._fields[campo]._description_selection(self.env))
         return etiquetas.get(valor, str(valor))
 
+    @api.depends('blueprint_ids', 'trap_ids', 'incident_ids')
     def _compute_counts(self):
         for rec in self:
             rec.trap_count = 0
