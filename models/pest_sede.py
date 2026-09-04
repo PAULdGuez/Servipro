@@ -31,10 +31,38 @@ class PestSede(models.Model):
             ('inactive', 'Inactiva'),
         ],
         string='Estado',
-        default='active',
-        required=True,
+        compute='_compute_state',
+        inverse='_inverse_state',
+        store=True,
+        readonly=False,
         tracking=True,
     )
+
+    @api.depends('active')
+    def _compute_state(self):
+        """El estado SE DERIVA de si la sede está archivada. No es un dato aparte.
+
+        Antes eran dos campos independientes que decían el mismo hecho, y por eso se
+        desincronizaron: al archivar una sede, `active` pasaba a falso y `state` seguía diciendo
+        «Activa». La ficha mostraba «Estado: Activa» en una planta archivada, y había 3 sedes así.
+
+        Un hecho, un sitio donde se decide. `active` es el campo nativo de Odoo para esto, así que
+        manda él; `state` queda como la forma legible de leerlo, que es lo que la barra de estado y
+        los distintivos de las listas necesitan.
+        """
+        for rec in self:
+            rec.state = 'active' if rec.active else 'inactive'
+
+    def _inverse_state(self):
+        """Y al revés: mover la barra de estado archiva o desarchiva de verdad.
+
+        Sin esto el usuario cambiaría el estado en pantalla, se guardaría, y la sede seguiría
+        activa — que es la misma mentira de antes vista desde el otro lado.
+        """
+        for rec in self:
+            activa = rec.state == 'active'
+            if rec.active != activa:
+                rec.active = activa
 
     heatmap_umbral_bajo = fields.Integer(string='Umbral Bajo (Heatmap)', default=5,
         help='Cantidad de organismos considerada nivel bajo')
@@ -97,22 +125,6 @@ class PestSede(models.Model):
         compute='_compute_counts',
         store=True,
     )
-
-    @api.model
-    def _etiqueta_de(self, modelo, campo, valor):
-        """La etiqueta que el usuario lee, no el valor guardado.
-
-        Un `Selection` guarda `captura` y muestra `Captura`. Al agrupar por él, el ORM devuelve el
-        VALOR, y si se manda tal cual a una gráfica la leyenda dice «captura» en minúscula, junto
-        a otras que sí vienen bien escritas. Se lee como sistema a medio terminar justo en la
-        pantalla que se le enseña al cliente.
-
-        Va aquí, en un solo sitio, porque el tablero agrupa por varios `Selection` distintos.
-        """
-        if not valor:
-            return 'Sin especificar'
-        etiquetas = dict(self.env[modelo]._fields[campo]._description_selection(self.env))
-        return etiquetas.get(valor, str(valor))
 
     @api.depends('blueprint_ids', 'trap_ids', 'incident_ids')
     def _compute_counts(self):
@@ -261,7 +273,7 @@ class PestSede(models.Model):
         # ── Chart 2: Tipo Incidencia Pie ──
         try:
             data = Incident._read_group(domain, ['incident_type'], ['__count'])
-            labels = [self._etiqueta_de('pest.incident', 'incident_type', d[0]) for d in data]
+            labels = [helpers.etiqueta_de(self.env, 'pest.incident', 'incident_type', d[0]) for d in data]
             counts = [d[1] for d in data]
             result['tipo_incidencia_pie'] = {
                 'labels': labels,
@@ -346,7 +358,7 @@ class PestSede(models.Model):
             for itype, month, count in data:
                 if not month:
                     continue
-                tname = self._etiqueta_de('pest.incident', 'incident_type', itype)
+                tname = helpers.etiqueta_de(self.env, 'pest.incident', 'incident_type', itype)
                 if tname not in types:
                     types[tname] = {}
                 types[tname][str(month)] = count

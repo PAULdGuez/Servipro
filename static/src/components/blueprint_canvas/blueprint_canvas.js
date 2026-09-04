@@ -898,11 +898,13 @@ export class BlueprintCanvas extends Component {
     getPopoverPosition(trap) {
         const x = trap.coord_x_pct;
         const y = trap.coord_y_pct;
-        // More aggressive thresholds
-        if (y < 35) return 'bottom';
-        if (y > 75) return 'top';
-        if (x < 30) return 'right';
+        // El borde HORIZONTAL se mira primero, y ese es el arreglo. Antes mandaba la Y, asi que
+        // una trampa arriba Y pegada a la derecha recibia un globo 'bottom' —centrado bajo el
+        // marcador— que se salia 28 px de la imagen y dejaba sus botones tapados por la leyenda.
+        // Arriba o abajo solo se decide cuando hay sitio a los dos lados.
         if (x > 70) return 'left';
+        if (x < 30) return 'right';
+        if (y < 35) return 'bottom';
         return 'top';
     }
 }

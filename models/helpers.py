@@ -148,3 +148,20 @@ def solo_si_puede(operacion='read'):
             return metodo(self, *args, **kwargs)
         return interior
     return envolver
+
+
+def etiqueta_de(env, modelo, campo, valor):
+    """La etiqueta que el usuario lee, no el valor que guarda la base.
+
+    Un `Selection` guarda `en_reparacion` y muestra «En Reparación». Si el valor crudo llega a la
+    pantalla, el cliente lee `en_reparacion` —con guion bajo y sin acento— y el sistema parece a
+    medio terminar justo donde se le está enseñando.
+
+    Vivía en `pest.sede`, que era el sitio equivocado: el hecho «cómo se lee este valor» no es de
+    las sedes, es de cualquier pantalla. Estando allí, el visor del plano no lo encontró y pintó el
+    valor crudo en tres sitios. Por eso ahora está aquí, que es donde se busca un helper.
+    """
+    if not valor:
+        return 'Sin especificar'
+    etiquetas = dict(env[modelo]._fields[campo]._description_selection(env))
+    return etiquetas.get(valor, str(valor))

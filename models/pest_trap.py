@@ -248,6 +248,10 @@ class PestTrap(models.Model):
             'trap_type': self.trap_type_id.name if self.trap_type_id else '',
             'location': self.location or '',
             'current_state': self.current_state or 'sin_registro',
+            # La etiqueta viaja YA resuelta: el front no tiene que saber que
+            # `en_reparacion` se lee «En Reparación», ni repetir esa tabla.
+            'current_state_label': helpers.etiqueta_de(
+                self.env, 'pest.trap', 'current_state', self.current_state or 'sin_registro'),
             'total_incidents': total_incidents,
             'total_organisms': total_organisms,
             'incidents': [{
@@ -260,6 +264,8 @@ class PestTrap(models.Model):
             'states': [{
                 'date': str(s.get('date') or ''),
                 'state': s.get('state', ''),
+                'state_label': helpers.etiqueta_de(
+                    self.env, 'pest.trap.state', 'state', s.get('state', '')),
                 'observations': s.get('observations', ''),
                 'user': s['user_id'][1] if s.get('user_id') else '',
             } for s in states],

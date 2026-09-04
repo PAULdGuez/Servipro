@@ -190,6 +190,11 @@ class PestBlueprint(models.Model):
                 'coord_x_pct': x,
                 'coord_y_pct': y,
                 'current_state': t.get('current_state') or 'sin_registro',
+                # La etiqueta legible viaja junto al valor: el front usa el valor para
+                # decidir el color y la etiqueta para MOSTRAR, sin repetir la tabla.
+                'current_state_label': helpers.etiqueta_de(
+                    self.env, 'pest.trap', 'current_state',
+                    t.get('current_state') or 'sin_registro'),
                 'trap_type_id': t['trap_type_id'][0] if t.get('trap_type_id') else False,
                 'trap_type_name': tt.get('name', ''),
                 'trap_type_icon': tt.get('icon', 'fa-crosshairs') or 'fa-crosshairs',

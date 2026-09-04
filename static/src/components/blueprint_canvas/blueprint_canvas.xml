@@ -148,7 +148,7 @@
                                 <div t-if="isTrapVisible(trap)"
                                      role="button"
                                      tabindex="0"
-                                     t-att-aria-label="'Trampa ' + trap.name + ', tipo ' + (trap.trap_type_name || 'sin tipo') + ', estado ' + trap.current_state"
+                                     t-att-aria-label="'Trampa ' + trap.name + ', tipo ' + (trap.trap_type_name || 'sin tipo') + ', estado ' + trap.current_state_label"
                                      t-att-class="'blueprint-trap-marker state-' + trap.current_state + (state.selectedTrapId === trap.id ? ' selected' : '') + (isTrapHighlighted(trap) ? ' highlighted' : '')"
                                      t-att-style="'left: ' + trap.coord_x_pct + '%; top: ' + trap.coord_y_pct + '%;'"
                                      t-att-draggable="state.isEditMode and state.data.can_edit and !props.readonly ? 'true' : 'false'"
@@ -176,7 +176,7 @@
                                                  trap.current_state === 'funciona' ? 'text-bg-success' : 
                                                  trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
                                                  trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
-                                             "><t t-esc="trap.current_state"/></span>
+                                             "><t t-esc="trap.current_state_label"/></span>
                                          </div>
                                          <t t-if="state.data.can_edit">
                                              <div class="popover-actions">
@@ -221,7 +221,7 @@
                                 'text-bg-warning': state.trapDetail.current_state === 'en_reparacion',
                                 'text-bg-danger': state.trapDetail.current_state === 'no_funciona',
                                 'text-bg-secondary': state.trapDetail.current_state === 'sin_registro' or !state.trapDetail.current_state
-                            }" t-esc="state.trapDetail.current_state"/>
+                            }" t-esc="state.trapDetail.current_state_label"/>
                             <small class="text-muted ms-2" t-if="state.trapDetail.location" t-esc="'📍 ' + state.trapDetail.location"/>
                             <div class="d-flex gap-3 mt-1">
                                 <small class="text-muted">
@@ -262,7 +262,7 @@
                                     <t t-foreach="state.trapDetail.states" t-as="st" t-key="st_index">
                                         <tr>
                                             <td t-esc="st.date"/>
-                                            <td t-esc="st.state"/>
+                                            <td t-esc="st.state_label or st.state"/>
                                             <td t-esc="st.user"/>
                                         </tr>
                                     </t>
@@ -321,7 +321,7 @@
                                         trap.current_state === 'en_reparacion' ? 'text-bg-warning' : 
                                         trap.current_state === 'no_funciona' ? 'text-bg-danger' : 'text-bg-secondary'
                                     ">
-                                        <t t-esc="trap.current_state"/>
+                                        <t t-esc="trap.current_state_label"/>
                                     </span>
                                 </div>
                                 <small class="text-muted" t-esc="trap.trap_type_name"/>
