@@ -128,4 +128,8 @@
               parent="pest_control_menu_config"
               action="pest_zone_action" sequence="30"/>
 
+    <menuitem id="pest_menu_fechas_invalidas" name="Fechas por corregir"
+              parent="pest_control_menu_config"
+              action="pest_incident_fechas_invalidas_action" sequence="40"/>
+
 </odoo>

@@ -1,4 +1,17 @@
+from datetime import timedelta
+
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
+
+# El sistema anterior no validaba NADA al capturar, y se colaron 19 incidencias con años
+# imposibles: 25, 205, 1010, 1015, 1025, 1969 y 2925. Son erratas de tecleo («25» por «2025»,
+# «1015» por «2015») y el 1969-12-31 del cero de los relojes, o sea una fecha vacía.
+#
+# 🔑 **El daño no es proporcional al número.** Son 19 de 6,983 —un 0.3%— y bastan para estirar
+# el eje de la gráfica de tendencia 1,800 años, dejando los datos reales aplastados en un
+# centímetro. La gráfica más útil que tienen queda ilegible por culpa de tres milésimas.
+ANIO_MINIMO_RAZONABLE = 2000
+MARGEN_AL_FUTURO = timedelta(days=365)
 
 
 class PestIncident(models.Model):
@@ -82,3 +95,40 @@ class PestIncident(models.Model):
                 rec.plague_display_name = rec.plague_type_custom
             else:
                 rec.plague_display_name = 'Sin especificar'
+
+    # ── Fechas defendibles ──────────────────────────────────────────
+    #
+    # UN SOLO SITIO define qué fecha es válida, y lo usan los tres: la validación al capturar,
+    # el filtro del tablero y la lista para corregirlas. Si el criterio vive en tres lados, el
+    # día que alguien lo ajuste va a dejar dos sin ajustar y nada va a avisar.
+
+    @api.model
+    def _limites_de_fecha_razonable(self):
+        """(desde, hasta) — el rango fuera del cual una fecha es, con seguridad, una errata."""
+        desde = fields.Datetime.to_datetime('%d-01-01 00:00:00' % ANIO_MINIMO_RAZONABLE)
+        hasta = fields.Datetime.now() + MARGEN_AL_FUTURO
+        return desde, hasta
+
+    @api.model
+    def _dominio_fecha_razonable(self):
+        """Para EXCLUIR las erratas de una consulta, sin borrarlas de la base."""
+        desde, hasta = self._limites_de_fecha_razonable()
+        return [('date', '>=', desde), ('date', '<=', hasta)]
+
+    @api.constrains('date')
+    def _check_date_razonable(self):
+        """Impide que entren MÁS. No toca las 19 que ya están.
+
+        Deliberadamente no se corrigen solas: no hay forma de saber si «1015-05-08» era 2015 o
+        2025, y adivinarlo sería inventar un dato de campo. Al editar una de ellas, esta guarda
+        obliga a poner la buena — que es quien sabe, no el sistema.
+        """
+        desde, hasta = self._limites_de_fecha_razonable()
+        for rec in self:
+            if rec.date and not (desde <= rec.date <= hasta):
+                raise ValidationError(
+                    'La fecha %s no puede ser: está fuera del rango razonable '
+                    '(del %s al %s). Revise el año, suele ser una errata al teclear.'
+                    % (rec.date.strftime('%d/%m/%Y'), desde.strftime('%d/%m/%Y'),
+                       hasta.strftime('%d/%m/%Y'))
+                )

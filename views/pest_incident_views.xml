@@ -150,4 +150,36 @@
         <field name="search_view_id" ref="pest_incident_view_search"/>
     </record>
 
+    <!-- ════════════════════════════════════════════════════════════════
+         FECHAS IMPOSIBLES — las que hay que corregir a mano
+         ════════════════════════════════════════════════════════════════
+         El sistema anterior no validaba nada al capturar y dejó 19 incidencias con años
+         imposibles (25, 205, 1010, 1015, 1025, 1969, 2925): erratas de tecleo y el cero de
+         los relojes. El tablero las excluye para que la gráfica de tendencia sea legible,
+         pero excluirlas sin poder verlas sería esconderlas: esta lista es la otra mitad.
+
+         El rango se toma de `pest.incident._limites_de_fecha_razonable`, que es donde vive la
+         única definición. Aquí se repite en el dominio porque una acción XML no puede llamar
+         al modelo; si algún día cambia el año mínimo, este número cambia con él.  -->
+    <record id="pest_incident_fechas_invalidas_action" model="ir.actions.act_window">
+        <field name="name">Incidencias con fecha imposible</field>
+        <field name="res_model">pest.incident</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">['|', ('date', '&lt;', '2000-01-01 00:00:00'), ('date', '&gt;', (context_today() + relativedelta(years=1)).strftime('%Y-%m-%d 23:59:59'))]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay ninguna fecha imposible
+            </p>
+            <p>
+                Aquí aparecen las incidencias cuya fecha no puede ser cierta —normalmente por
+                una errata al teclear el año, como 2015 escrito 1015—. El tablero las deja
+                fuera de las gráficas, así que mientras estén aquí no se están contando.
+            </p>
+            <p>
+                Ábrelas y corrige la fecha. Al guardar dejan de aparecer en esta lista y
+                vuelven a contar en los informes.
+            </p>
+        </field>
+    </record>
 </odoo>

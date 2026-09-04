@@ -150,19 +150,22 @@ class PestSede(models.Model):
         date_to = params.get('date_to')
         blueprint_id = params.get('blueprint_id')
 
-        # Base domain for incidents in this sede
+        # Base domain for incidents in this sede.
+        #
+        # 🔑 Se excluyen las fechas imposibles heredadas del sistema anterior. Son 19 de casi
+        # 7,000, pero estiran el eje de la gráfica de tendencia 1,800 años (del año 25 al 2925)
+        # y dejan los datos reales aplastados en un centímetro. **Excluir no es esconder**: no
+        # se borran, y hay una vista que las lista para corregirlas — ver `pest.incident`,
+        # donde vive la única definición de qué fecha es razonable.
         domain = [('sede_id', '=', self.id)]
+        domain += self.env['pest.incident']._dominio_fecha_razonable()
         if blueprint_id:
             domain.append(('blueprint_id', '=', blueprint_id))
-        import logging
-        _logger = logging.getLogger(__name__)
 
         if date_from:
             domain.append(('date', '>=', date_from + ' 00:00:00' if isinstance(date_from, str) and len(date_from) == 10 else date_from))
         if date_to:
             domain.append(('date', '<=', date_to + ' 23:59:59' if isinstance(date_to, str) and len(date_to) == 10 else date_to))
-
-        _logger.info('Dashboard params: date_from=%s, date_to=%s, blueprint_id=%s, domain=%s', date_from, date_to, blueprint_id, domain)
 
         Incident = self.env['pest.incident']
         Trap = self.env['pest.trap']
