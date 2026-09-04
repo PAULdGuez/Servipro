@@ -93,6 +93,22 @@ class PestSede(models.Model):
     )
 
     @api.depends('blueprint_ids', 'trap_ids', 'incident_ids')
+    @api.model
+    def _etiqueta_de(self, modelo, campo, valor):
+        """La etiqueta que el usuario lee, no el valor guardado.
+
+        Un `Selection` guarda `captura` y muestra `Captura`. Al agrupar por él, el ORM devuelve el
+        VALOR, y si se manda tal cual a una gráfica la leyenda dice «captura» en minúscula, junto
+        a otras que sí vienen bien escritas. Se lee como sistema a medio terminar justo en la
+        pantalla que se le enseña al cliente.
+
+        Va aquí, en un solo sitio, porque el tablero agrupa por varios `Selection` distintos.
+        """
+        if not valor:
+            return 'Sin especificar'
+        etiquetas = dict(self.env[modelo]._fields[campo]._description_selection(self.env))
+        return etiquetas.get(valor, str(valor))
+
     def _compute_counts(self):
         for rec in self:
             rec.trap_count = 0
@@ -231,7 +247,7 @@ class PestSede(models.Model):
         # ── Chart 2: Tipo Incidencia Pie ──
         try:
             data = Incident._read_group(domain, ['incident_type'], ['__count'])
-            labels = [str(d[0] or 'Sin tipo') for d in data]
+            labels = [self._etiqueta_de('pest.incident', 'incident_type', d[0]) for d in data]
             counts = [d[1] for d in data]
             result['tipo_incidencia_pie'] = {
                 'labels': labels,
@@ -316,7 +332,7 @@ class PestSede(models.Model):
             for itype, month, count in data:
                 if not month:
                     continue
-                tname = str(itype or 'Sin tipo')
+                tname = self._etiqueta_de('pest.incident', 'incident_type', itype)
                 if tname not in types:
                     types[tname] = {}
                 types[tname][str(month)] = count
