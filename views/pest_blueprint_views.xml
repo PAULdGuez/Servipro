@@ -109,7 +109,13 @@
                                     <field name="id" string="#" readonly="1"/>
                                     <field name="name"/>
                                      <field name="trap_type_id"/>
-                                    <field name="zone_id" string="Ubicación"/>
+                                    <field name="zone_id" string="Zona" optional="show"/>
+                                    <!-- El texto libre que viene del sistema anterior. La zona del
+                                         catalogo esta vacia mientras no se construya ese catalogo
+                                         (565 variantes que hay que agrupar a mano), asi que sin
+                                         esta columna la ubicacion se ve en blanco aunque el dato
+                                         SI existe en el registro. -->
+                                    <field name="location" string="Ubicación" optional="show"/>
                                     <field name="coord_x_pct" string="X (%)" optional="hide"/>
                                     <field name="coord_y_pct" string="Y (%)" optional="hide"/>
                                     <field name="coord_x" column_invisible="1"/>
