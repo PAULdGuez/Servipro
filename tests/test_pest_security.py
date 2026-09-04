@@ -39,6 +39,17 @@ class TestPestSeguridad(TransactionCase):
         cls.sede_a, cls.plano_a, cls.trampa_a, cls.zona_a = cls._escenario(cls.emp_a, 'A')
         cls.sede_b, cls.plano_b, cls.trampa_b, cls.zona_b = cls._escenario(cls.emp_b, 'B')
 
+        # 🔑 Desde el corte por sede (D9), un usuario de cliente necesita sus sedes asignadas: el
+        # corte es **fail-closed** y sin ellas no ve nada, ni de su propia empresa. Los usuarios
+        # se crean arriba, antes que las sedes, así que la asignación va aquí.
+        #
+        # No es adaptar la prueba para que pase: es que un cliente sin sedes asignadas **no es un
+        # escenario real**, es un alta a medias. Lo que estas pruebas comprueban —que A no vea lo
+        # de B— sigue intacto, y ahora sobre un usuario bien configurado.
+        cls.usr_a.pest_sede_ids = [(6, 0, cls.sede_a.ids)]
+        cls.tec_a.pest_sede_ids = [(6, 0, cls.sede_a.ids)]
+        cls.usr_b.pest_sede_ids = [(6, 0, cls.sede_b.ids)]
+
     @classmethod
     def _usuario(cls, login, empresa, grupo):
         return cls.env['res.users'].create({

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════
+         SEDES QUE PUEDE VER  ·  en la ficha del usuario, no en otra pantalla
+         ════════════════════════════════════════════════════════════════
+         Se hereda la vista nativa en vez de escribir una propia: `res.users` es una pantalla
+         donde el administrador YA vive, y quitarle lo que conoce para meter un campo sería
+         moverle el piso. Aquí se añade, no se reemplaza.  -->
+    <record id="res_users_view_form_pest" model="ir.ui.view">
+        <field name="name">res.users.form.pest</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <!-- Al personal de ServiPro no le aparece: a ellos no les aplica el corte, y una
+                     pestaña que no hace nada invita a marcar algo «por si acaso». -->
+                <!-- 🔴 `groups` va TAMBIÉN aquí, no solo en el campo. Con el `groups` solo en
+                     el campo, Odoo se lo oculta al administrador que no pertenece al módulo
+                     pero la vista lo sigue nombrando — y la pantalla revienta con un «Oops,
+                     algo salió mal» al abrir CUALQUIER usuario. Con el grupo en la página,
+                     Odoo elimina el bloque entero y no queda ninguna referencia colgando.
+
+                     Consecuencia asumida: para asignar sedes hay que pertenecer al módulo de
+                     control de plagas. Es coherente — quien no gestiona el servicio no reparte
+                     sus plantas — y evita que un administrador general rompa el reparto sin
+                     saber lo que hace. -->
+                <page string="Sedes de Control de Plagas"
+                      name="pest_sedes"
+                      groups="pest_control.group_pest_client"
+                      invisible="pest_es_personal">
+                    <field name="pest_es_personal" invisible="1"/>
+                    <!-- 🔴 `company_ids` hay que DECLARARLO aunque no se vea: el dominio de
+                         abajo lo usa, y un campo que la vista no trae vale `undefined` en el
+                         cliente. El dominio queda vacío y el desplegable dice «sin registros»
+                         **sin ningún error** — parece que no hay sedes, cuando lo que falta es
+                         el campo. Es la misma trampa de los kanban que usan un campo sin
+                         declararlo. -->
+                    <field name="company_ids" invisible="1"/>
+                    <div class="alert alert-info" role="status"
+                         invisible="pest_sede_ids">
+                        <strong>Esta persona no verá ninguna planta.</strong>
+                        Mientras no se marque al menos una sede, no verá trampas, incidencias ni
+                        gráficas &#8212; tampoco las de su propia empresa. Marque las plantas a
+                        las que debe tener acceso.
+                    </div>
+                    <!-- 🔴 `allowed_company_ids` en el contexto: sin esto el desplegable sale
+                         VACÍO y no dice por qué. Odoo filtra siempre por la empresa ACTIVA de
+                         quien usa la pantalla, además del dominio — así que un administrador
+                         parado en «ServiPro» pedía plantas de Bimbo y Odoo respondía «sin
+                         registros», con razón desde su punto de vista.
+                         Nadie relaciona «no me salen plantas» con «tengo mal el selector de
+                         empresa de arriba». Aquí se le dice que busque en las empresas DEL
+                         USUARIO QUE SE EDITA, que es lo que la pantalla quiere decir.
+
+                         🔴 `active_test: False` para que las sedes ARCHIVADAS también se vean
+                         aquí. Sin esto pasa algo peligroso y silencioso: una sede archivada
+                         asignada sigue dando acceso a sus trampas e incidencias, pero no
+                         aparece en la lista — así que quien "borra todas las sedes" del usuario
+                         en esta pantalla cree habérselo quitado todo y no es cierto.
+                         Medido: al dejar a un usuario con una sola planta, conservó 3 sedes
+                         archivadas y 139 trampas de más. -->
+                    <field name="pest_sede_ids"
+                           widget="many2many_tags"
+                           options="{'no_create': True}"
+                           context="{'active_test': False, 'allowed_company_ids': company_ids}"
+                           domain="[('company_id', 'in', company_ids)]"
+                           placeholder="Marque las plantas a las que esta persona debe tener acceso..."/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

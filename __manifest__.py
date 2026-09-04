@@ -1,6 +1,6 @@
 {
     'name': 'ServiPro - Control de Plagas',
-    'version': '19.0.1.0.16',
+    'version': '19.0.1.0.32',
     'category': 'Services',
     'summary': 'Sistema de gestion integral de control de plagas',
     'description': """
@@ -33,6 +33,7 @@
         # Dashboard action must load before sede_views (which references it)
         'views/pest_dashboard_views.xml',
         # 3) Views that define actions but don't reference others
+        'views/res_users_views.xml',
         'views/pest_sede_views.xml',
         'views/pest_incident_views.xml',
         'views/pest_evidence_views.xml',

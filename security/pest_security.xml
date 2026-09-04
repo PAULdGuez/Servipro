@@ -39,6 +39,170 @@
             <field name="comment">Acceso completo: gestion de sedes, planos, trampas, reportes y aprobaciones</field>
         </record>
 
+        <!-- 🔑 La marca que distingue al PERSONAL DE SERVIPRO de la gente del cliente.
+             Hace falta porque el rol NO alcanza: un técnico de ServiPro y un técnico de Bimbo
+             tienen exactamente el mismo grupo «Tecnico», y lo único que hoy los diferencia es
+             cuántas empresas tienen asignadas — un accidente de configuración, no una decisión.
+             Deducirlo de ahí es construir una regla de acceso sobre una casualidad.
+
+             Quien lleva esta marca ve TODAS las sedes de las empresas a las que pertenece.
+             Quien no la lleva, solo las que tenga asignadas una por una. -->
+        <record id="group_pest_staff" model="res.groups">
+            <field name="name">Personal de ServiPro</field>
+            <field name="privilege_id" ref="privilege_pest_control"/>
+            <field name="sequence">20</field>
+            <field name="comment">Trabaja para la empresa de servicio, no para un cliente: ve todas las sedes sin asignarlas una por una</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             CORTE POR SEDE  ·  decisión D9, fail-closed
+             ══════════════════════════════════════════════════════════════
+             Las reglas de arriba cortan por EMPRESA: que Bimbo no vea a Totis. Éstas cortan
+             DENTRO de una empresa: que el jefe de planta de Azcapotzalco no vea Villahermosa.
+             Con 16 sedes en Grupo Bimbo, es el corte que de verdad se pide.
+
+             🔑 Van sobre `group_pest_client`, que TODOS heredan (Técnico y Supervisor lo
+             implican), así que aplican a los tres roles. Al personal de ServiPro no le recortan
+             nada porque `_sedes_visibles_del_usuario` les devuelve None.
+
+             ⚠️ **Es fail-closed a propósito.** Cuando el método devuelve una lista vacía —un
+             cliente sin sedes marcadas— el dominio queda `('sede_id', 'in', [])`, que no case
+             con nada. Al revés, un alta a medias sería una fuga que nadie descubre.
+
+             Y el criterio vive en UN método del usuario, no repetido once veces aquí: el día que
+             cambie, el sitio que alguien olvide es por donde se escapa el dato. -->
+        <record id="rule_pest_sede_sede" model="ir.rule">
+            <field name="name">Sede: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_sede"/>
+            <field name="domain_force">[('id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_blueprint_sede" model="ir.rule">
+            <field name="name">Plano: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_blueprint"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_trap_sede" model="ir.rule">
+            <field name="name">Trampa: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_trap"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_incident_sede" model="ir.rule">
+            <field name="name">Incidencia: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_incident"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_zone_sede" model="ir.rule">
+            <field name="name">Ubicación: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_zone"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_trap_state_sede" model="ir.rule">
+            <field name="name">Estado de trampa: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_trap_state"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_inspection_sede" model="ir.rule">
+            <field name="name">Inspección: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_inspection"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_complaint_sede" model="ir.rule">
+            <field name="name">Queja: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_complaint"/>
+            <field name="domain_force">[('sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_blueprint_zone_sede" model="ir.rule">
+            <field name="name">Zona del plano: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_blueprint_zone"/>
+            <field name="domain_force">[('blueprint_id.sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_evidence_sede" model="ir.rule">
+            <field name="name">Evidencia: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_evidence"/>
+            <field name="domain_force">[('blueprint_id.sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <record id="rule_pest_trap_movement_sede" model="ir.rule">
+            <field name="name">Movimiento de trampa: solo las sedes asignadas</field>
+            <field name="model_id" ref="model_pest_trap_movement"/>
+            <field name="domain_force">[('blueprint_id.sede_id', 'in', user._sedes_visibles_del_usuario() or [])]</field>
+            <!-- 🔴 `(5, 0, 0)` VACÍA la lista de grupos, y hace falta escribirlo: quitar
+                 el campo del XML **no lo borra** —Odoo solo escribe lo que el XML declara—,
+                 así que la regla se quedaría con su grupo y seguiría siendo de grupo.
+                 Sin grupos es GLOBAL, y las globales se unen con AND a las de empresa. Como
+                 regla de grupo se uniría con OR y no recortaría nada. -->
+            <field name="groups" eval="[(5, 0, 0)]"/>
+        </record>
+
         <!-- Record Rules: Multi-Empresa -->
         <record id="rule_pest_sede_company" model="ir.rule">
             <field name="name">Sede: Solo empresa del usuario</field>
