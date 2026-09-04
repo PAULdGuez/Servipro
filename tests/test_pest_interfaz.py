@@ -32,6 +32,16 @@ class TestPestInterfaz(HttpCase):
             'group_ids': [(6, 0, [
                 self.env.ref('base.group_user').id,
                 self.env.ref('pest_control.group_pest_client').id])],
+            # 🔑 SIN ESTO EL TOUR FALLA, y no se notaba porque aquí se salta.
+            #
+            # El corte por sede hace que un usuario de cliente **sin plantas asignadas no
+            # vea nada** — a propósito: preferimos que se note el primer día a que alguien
+            # lo vea todo por olvido. Este usuario no tenía ninguna, así que la lista de
+            # planos le salía vacía y el paso «abrir el primer plano» no tenía qué abrir.
+            #
+            # Se descubrió reproduciendo el escenario a mano antes de subir a odoo.sh,
+            # donde el tour SÍ corre y habría dejado el build en rojo.
+            'pest_sede_ids': [(6, 0, [sede.id])],
         })
         self.env.flush_all()
 

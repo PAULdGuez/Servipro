@@ -1,19 +1,21 @@
 {
     'name': 'ServiPro - Control de Plagas',
-    'version': '19.0.1.0.52',
+    'version': '19.0.1.0.54',
     'category': 'Services',
-    'summary': 'Sistema de gestion integral de control de plagas',
+    'summary': 'Sistema de gestión integral de control de plagas',
+    # ⚠️ Este texto SE VE: es la ficha del módulo en Aplicaciones, la primera pantalla donde
+    # alguien lo encuentra. Por eso va con sus acentos y sin nada interno.
     'description': """
         ServiPro - Sistema de Control de Plagas
         ========================================
-        Modulo para gestionar:
+        Módulo para gestionar:
         * Sedes y plantas de clientes
-        * Planos con posicionamiento de trampas
+        * Planos con la ubicación de cada trampa
         * Registro de incidencias (capturas y hallazgos)
-        * Evidencias fotograficas con flujo de resolucion
-        * Inspecciones tecnicas
+        * Evidencias fotográficas con su flujo de resolución
+        * Inspecciones técnicas
         * Quejas de clientes
-        * Reportes y estadisticas
+        * Reportes y estadísticas
     """,
     'author': 'ServiPro / IT Green',
     'website': 'https://servipro.site',

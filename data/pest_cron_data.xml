@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Atiende la cola de imágenes de plano pendientes de procesar.
+
+         🔑 Corría CADA MINUTO, y se bajó a cinco por dos razones medidas:
+
+         1. La cola está prácticamente siempre vacía. En la base con los datos reales del
+            cliente, los 112 planos estaban ya procesados y ninguno pendiente: llevaba
+            corriendo cada minuto, todo el día, para no hacer nada.
+         2. En odoo.sh hay producción y varios staging vivos a la vez, y cada uno con su
+            cron por minuto es carga constante sobre la misma máquina. En local llegó a
+            tumbar tres corridas de pruebas por chocar con ellas.
+
+         Cinco minutos sigue siendo responsivo para quien acaba de subir un plano, que es
+         el único caso en que esta cola tiene algo dentro.
+
+         ⚠️ Lo que esta frecuencia NO arregla: cuando el procesado de un plano falla, queda
+         marcado `failed` y **no se reintenta nunca**. Correr más a menudo tampoco lo
+         recuperaba. Si hace falta reintento, es otro cambio y hay que pedirlo aparte. -->
     <record id="ir_cron_process_blueprint_images" model="ir.cron">
         <field name="name">Procesar imagenes de planos pendientes</field>
         <field name="model_id" ref="model_pest_blueprint"/>
         <field name="state">code</field>
         <field name="code">model._process_pending_images()</field>
-        <field name="interval_number">1</field>
+        <field name="interval_number">5</field>
         <field name="interval_type">minutes</field>
         <field name="active">True</field>
     </record>

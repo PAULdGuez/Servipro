@@ -175,6 +175,12 @@ class TestTextosQueLeeElCliente(TransactionCase):
     ARCHIVOS = ('pest_control/data/pest_plague_type_data.xml',
                 'pest_control/data/pest_trap_type_data.xml')
 
+    # Lo que se lee en la ficha del módulo, en Aplicaciones. Es la PRIMERA pantalla donde
+    # alguien se encuentra el módulo —se vio al instalarlo en odoo.sh— y es fácil olvidar
+    # que ese texto se muestra.
+    PALABRAS_DEL_MANIFEST = ('gestion ', 'Modulo ', 'fotografica', 'tecnica',
+                             'estadistica', 'resolucion', 'ubicacion')
+
     def test_los_nombres_del_catalogo_llevan_sus_acentos(self):
         """Lo que se instalará mañana en una base nueva."""
         malos = []
@@ -189,6 +195,25 @@ class TestTextosQueLeeElCliente(TransactionCase):
         self.assertFalse(
             malos,
             'estos textos los lee el cliente en la leyenda de las gráficas: %s' % malos)
+
+    def test_la_ficha_del_modulo_esta_bien_escrita(self):
+        """El `summary` y la `description` se ven en Aplicaciones, antes de instalar nada."""
+        malos = []
+        with file_open('pest_control/__manifest__.py', 'r') as f:
+            dentro = False
+            for numero, linea in enumerate(f, 1):
+                if any(k in linea for k in ("'summary'", "'description'")):
+                    dentro = True
+                if linea.strip().startswith('#'):
+                    continue          # los comentarios no los ve nadie más que quien mantiene
+                if dentro:
+                    for palabra in self.PALABRAS_DEL_MANIFEST:
+                        if palabra in linea:
+                            malos.append('__manifest__.py:%d %s' % (numero, linea.strip()))
+                if dentro and linea.rstrip().endswith('""",'):
+                    dentro = False
+        self.assertFalse(
+            malos, 'la ficha del módulo se lee en Aplicaciones: %s' % malos)
 
     def test_los_nombres_ya_cargados_tambien(self):
         """Y lo que hay hoy en ESTA base, que es lo que el cliente está viendo.
