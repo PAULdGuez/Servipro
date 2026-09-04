@@ -1,0 +1,18 @@
+# Qué NO viaja cuando este repo se exporta con `git archive` — que es como se publica el
+# módulo al repo de odoo.sh.
+#
+# 🔑 Está aquí, y no en un script de despliegue, a propósito: si la exclusión vive en un
+# comando que alguien tiene que recordar, tarde o temprano se publica sin ella. Declarado
+# en el repo, se aplica siempre y se ve en el diff cuando cambia.
+#
+# Lo que se excluye son artefactos de trabajo INTERNO. No tienen por qué acabar en el
+# repositorio de un cliente, y `AGENTS.md` además describe un sistema de tickets que ya no
+# se usa, así que confundiría a quien lo leyera allá.
+
+.beads/         export-ignore
+AGENTS.md       export-ignore
+CLAUDE.md       export-ignore
+.gitattributes  export-ignore
+
+# El README y `doc/` SÍ viajan: son la documentación del módulo (manual de usuario,
+# arquitectura, cómo contribuir) y sirven a quien lo mantenga.
