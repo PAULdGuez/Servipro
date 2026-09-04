@@ -70,3 +70,67 @@ Sequences are applied in `_default_name` or `create()` overrides in the respecti
 - State fields use `selection` type with string keys (e.g., `'pendiente'`, `'resuelta'`).
 - Traps store responsive percentage coordinates (`coord_x_pct`, `coord_y_pct`) on `pest_trap` from 0.0 to 100.0. The `pest_blueprint` widget uses OWL to intercept Save events transactionally.
 - Custom plague name logic: `pest_incident` has both a `plague_type_id` (FK) and a `custom_plague_name` field; a computed `plague_display_name` resolves which to show.
+
+
+---
+
+# Reglas de este repositorio
+
+> Añadido el 2026-09-03 al integrar el proyecto al stack. Lo de arriba describe la arquitectura del
+> módulo; esto es cómo se trabaja aquí.
+
+## Antes de tocar nada
+
+**El plan maestro está en el vault**, y hay que leerlo antes de construir:
+`~/Documents/OBSIDIAN/01 - Proyectos/pest_control/PLAN-MAESTRO.md`
+
+Trae el estado verificado, las decisiones tomadas con su porqué, lo que falta decidir y el orden de
+trabajo. **No re-litigar una decisión que ya está ahí sin leer primero por qué se tomó.**
+
+## Las tres ubicaciones
+
+| | |
+|---|---|
+| **Este repo** | Solo código. **Ojo: el repo ES el addon** — la raíz tiene el `__manifest__.py` |
+| **Workspace** | `~/Documents/Workspaces/servipro` — runbook, guiones, datos, entregables |
+| **Vault** | `OBSIDIAN/01 - Proyectos/pest_control` — plan maestro, decisiones, hallazgos |
+
+**Nada que no sea código va en este repo.** Los volcados de base y los respaldos del sistema PHP
+están bloqueados en `.gitignore` a propósito: llevan datos reales de clientes.
+
+## Entorno
+
+Odoo 19 Enterprise local, contenedor `odoo19-enterprise-dev`, **puerto 8079**, base `servipro`.
+El repo se monta como `/mnt/servipro-addons/pest_control`. Comandos exactos en el runbook del
+workspace — y **el contenedor ya ocupa el 8069**, así que todo comando extra necesita
+`--http-port=8123 --gevent-port=8124` o falla.
+
+🔑 **Antes de medir cualquier cosa contra una base, córrele `-u pest_control`.** Si la base quedó en
+una versión anterior, mides código viejo y concluyes sobre el nuevo. Ya pasó dos veces aquí.
+
+## Commits
+
+Convencionales, atómicos, y **el `__manifest__.py` se bumpea en el mismo commit** — sin bump,
+odoo.sh no carga los cambios. En `fix` y `feat`, el cuerpo explica **el porqué**, no el qué.
+
+## Cómo se verifica aquí
+
+Cuatro reglas que costaron caro y no se negocian:
+
+1. **Ejercer permisos con el usuario del rol**, nunca con el administrador — no ejerce permisos, y
+   ya escondió tres fallos reales de acceso.
+2. **`env.invalidate_all()` antes de leer** en cualquier prueba de permisos, o el valor sale del
+   caché de quien lo cargó y **la prueba dice lo contrario de la verdad**.
+3. **Probar toda guarda por los dos lados**: que impida lo que debe **y permita lo legítimo**.
+4. **Mirar la captura**, no solo los asertos. El tablero en blanco no da error, solo se ve.
+
+## Si construyes algo distinto a lo planeado
+
+Se anota en `Workspaces/servipro/planes/BITACORA-DESVIACIONES.md` **antes de commitear**: qué decía
+el plan, qué se hizo y por qué. Una desviación anotada es una decisión; sin anotar es un misterio.
+
+## Tracking
+
+El repo trae una carpeta `.beads/` con cuatro pendientes del desarrollo anterior. **Ese sistema no
+se usa en este setup** — está ahí como registro histórico. Antes de retomar esos pendientes,
+confirmar con Paul cuál es el sistema de tracking vigente.
