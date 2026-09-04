@@ -80,7 +80,12 @@
 
                     <notebook>
                         <page string="Incidencias" name="incidents" invisible="not id">
-                            <field name="incident_ids" context="{'default_sede_id': sede_id, 'default_blueprint_id': blueprint_id}">
+                            <!-- `default_trap_id` faltaba: se precargaban la sede y el plano
+                                 pero NO la trampa, así que el usuario tenía que elegir a mano,
+                                 de una lista de cientos, la misma trampa que ya tenía abierta
+                                 delante. Y elegir mal es silencioso: la incidencia queda en otra
+                                 trampa y nadie lo nota. -->
+                            <field name="incident_ids" context="{'default_sede_id': sede_id, 'default_blueprint_id': blueprint_id, 'default_trap_id': id}">
                                 <list>
                                     <field name="date"/>
                                     <field name="plague_type_id"/>

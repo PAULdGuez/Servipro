@@ -536,12 +536,39 @@ export class BlueprintCanvas extends Component {
         this.state.showIncidentBadges = !this.state.showIncidentBadges;
     }
 
+    /**
+     * Pregunta con el diálogo de Odoo y **espera la respuesta**, como haría `window.confirm`.
+     *
+     * Existe para no reescribir la lógica de cada sitio. `window.confirm` bloquea y devuelve un
+     * booleano, así que el código sigue leyéndose de arriba abajo; el diálogo nativo es
+     * asíncrono y obliga a meter todo lo que va después dentro de un callback. Envolviéndolo en
+     * una promesa, los métodos que lo usan siguen siendo lineales y se lee lo que hacen.
+     *
+     * Por qué se cambia `window.confirm`: es un aviso del NAVEGADOR. Se ve distinto en cada uno,
+     * se sale del estilo del sistema, y en algunos navegadores el usuario puede marcar «no
+     * volver a mostrar» y dejar de ver TODAS las confirmaciones — incluidas las que borran.
+     */
+    _preguntar(title, body, { confirmLabel = "Confirmar", cancelLabel = "Cancelar" } = {}) {
+        return new Promise((resolve) => {
+            this.dialog.add(ConfirmationDialog, {
+                title,
+                body,
+                confirmLabel,
+                cancelLabel,
+                confirm: () => resolve(true),
+                cancel: () => resolve(false),
+            });
+        });
+    }
+
     async onDeactivateTrap(trapId) {
         const trap = this.state.data.traps.find(t => t.id === trapId);
         if (!trap) return;
 
-        const confirmed = window.confirm(
-            `¿Desactivar trampa "${trap.name}"? La trampa no se eliminará, solo se archivará.`
+        const confirmed = await this._preguntar(
+            "Desactivar trampa",
+            `¿Desactivar la trampa "${trap.name}"? No se eliminará: queda archivada y su historial se conserva.`,
+            { confirmLabel: "Desactivar" },
         );
         if (!confirmed) return;
 
@@ -827,7 +854,11 @@ export class BlueprintCanvas extends Component {
         const zone = this.state.data.zones.find(z => z.id === this.state.selectedZoneId);
         if (!zone) return;
 
-        const confirmed = window.confirm(`¿Eliminar zona "${zone.name}"?`);
+        const confirmed = await this._preguntar(
+            "Eliminar zona",
+            `¿Eliminar la zona "${zone.name}"? Esto no se puede deshacer.`,
+            { confirmLabel: "Eliminar" },
+        );
         if (!confirmed) return;
 
         try {

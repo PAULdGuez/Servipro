@@ -1,6 +1,7 @@
 import os
 import logging
 from odoo import http
+from odoo.tools import html_sanitize
 from odoo.http import request
 from markupsafe import Markup
 
@@ -99,12 +100,31 @@ class PestDocsController(http.Controller):
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             
+        # 🔴 Las DOS ramas eran inyectables, y el `Markup(...)` de abajo es lo que las hacía
+        # peligrosas: le dice a la plantilla «esto ya viene seguro, píntalo tal cual».
+        #
+        # - Sin la librería, el contenido del archivo entraba crudo en un f-string dentro de
+        #   un `<pre>`: un `.md` con un `<script>` se ejecutaba en el navegador de quien lo
+        #   abriera.
+        # - Con la librería tampoco bastaba: `markdown.markdown()` **deja pasar el HTML crudo
+        #   del documento a propósito** — es una función de Markdown, no un fallo.
+        #
+        # Hoy los `.md` son del repo y la ruta pide sesión, así que el riesgo es bajo. Pero es
+        # una inyección esperando su entrada: el día que alguien permita subir documentación,
+        # o que un `.md` llegue de un cliente, ya está armada. Se cierra ahora, que cuesta dos
+        # líneas, y no el día que haga falta.
+        #
+        # `html_sanitize` es el sanitizador del propio Odoo: quita `<script>` y compañía y
+        # respeta el formato. Nada que instalar.
         if markdown:
             # Parse extensions like tables and fenced code blocks typical in technical docs
-            html_string = markdown.markdown(content, extensions=['fenced_code', 'tables'])
+            html_string = html_sanitize(
+                markdown.markdown(content, extensions=['fenced_code', 'tables']))
         else:
-            html_string = f"<pre style='white-space: pre-wrap; word-wrap: break-word;'>{content}</pre>"
-            
+            html_string = Markup(
+                "<pre style='white-space: pre-wrap; word-wrap: break-word;'>{}</pre>"
+            ).format(content)      # `.format` de Markup ESCAPA lo que se le mete
+
         return request.render('pest_control.doc_template', {
             'html_content': Markup(html_string),
             'filename': filename,
