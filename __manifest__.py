@@ -1,6 +1,6 @@
 {
     'name': 'ServiPro - Control de Plagas',
-    'version': '19.0.1.0.54',
+    'version': '19.0.1.0.55',
     'category': 'Services',
     'summary': 'Sistema de gestión integral de control de plagas',
     # ⚠️ Este texto SE VE: es la ficha del módulo en Aplicaciones, la primera pantalla donde

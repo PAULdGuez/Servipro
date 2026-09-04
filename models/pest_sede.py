@@ -126,7 +126,20 @@ class PestSede(models.Model):
         store=True,
     )
 
-    @api.depends('blueprint_ids', 'trap_ids', 'incident_ids')
+    # 🔑 El `.active` hace falta, y su ausencia costaba un descuadre silencioso.
+    #
+    # Los contadores cuentan SOLO lo activo —eso es lo correcto y lo que espera quien mira la
+    # ficha—, pero archivar una trampa NO disparaba el recálculo: Odoo no considera que el
+    # One2many «cambió» porque el registro sigue existiendo, solo cambió su `active`.
+    #
+    # Resultado: la ficha decía 2 trampas con una sola activa, y lo seguía diciendo hasta que
+    # cualquier otra cosa forzara el recomputo. **Un número rancio es peor que uno mal
+    # calculado:** el mal calculado se puede razonar; el rancio parece correcto y contradice a
+    # la pantalla de al lado, que es justo el descuadre que estos contadores existen para evitar.
+    #
+    # (`incident_ids.active` no va: las incidencias no se archivan, no tienen ese campo.)
+    @api.depends('blueprint_ids', 'trap_ids', 'incident_ids',
+                 'blueprint_ids.active', 'trap_ids.active')
     def _compute_counts(self):
         for rec in self:
             rec.trap_count = 0
