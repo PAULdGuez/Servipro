@@ -12,7 +12,13 @@
 .beads/         export-ignore
 AGENTS.md       export-ignore
 CLAUDE.md       export-ignore
+.claude/        export-ignore
 .gitattributes  export-ignore
+
+# `.claude/` son los permisos de la herramienta con la que se trabaja, y encima traen
+# rutas de OTRA máquina (`/c/Users/…`, de un equipo Windows). No pinta nada en el repo de
+# un cliente. Está versionado, pero su propio nombre —`settings.local.json`— dice que no
+# debería: vale la pena sacarlo del repo, no solo de la exportación.
 
 # El README y `doc/` SÍ viajan: son la documentación del módulo (manual de usuario,
 # arquitectura, cómo contribuir) y sirven a quien lo mantenga.
