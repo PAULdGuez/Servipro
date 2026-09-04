@@ -86,7 +86,14 @@ export class DashboardChart extends Component {
         return {
             ...datos,
             labels: Array.isArray(datos.labels) ? [...datos.labels] : datos.labels,
-            datasets: Array.isArray(datos.datasets) ? datos.datasets.map((d) => ({ ...d })) : [],
+            // Un dataset sin `label` sale en la leyenda como **«undefined»** en cuanto la gráfica
+            // es de barras (en las de dona no se nota, porque la leyenda usa `labels`). Siete de
+            // los catorce conjuntos que manda el backend vienen sin nombre. Se rellena aquí, con
+            // el título que el usuario ya está viendo arriba, en vez de en los siete sitios:
+            // así el octavo que alguien añada nace bien.
+            datasets: Array.isArray(datos.datasets)
+                ? datos.datasets.map((d) => ({ label: this.props.title, ...d }))
+                : [],
         };
     }
 

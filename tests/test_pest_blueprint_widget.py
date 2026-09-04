@@ -67,10 +67,31 @@ class TestPestBlueprintWidget(TransactionCase):
         self.assertEqual(movement.y_from_pct, 10.0)
         
     def test_04_get_widget_data(self):
-        """Test API method returns correct structure."""
+        """Una trampa SIN posicion no se dibuja: se separa aparte.
+
+        Antes se dibujaban en la esquina superior izquierda, todas encima de todas — con los
+        datos reales fueron 2,139 trampas amontonadas en un punto, y el plano no servia para
+        nada. Ahora las que no tienen posicion salen en `traps_sin_ubicar`, que la interfaz
+        muestra como un contador «N por ubicar».
+
+        Se comprueban LOS DOS LADOS: que la sin posicion no se cuele en el dibujo, y que la
+        que SI la tiene se siga dibujando. Probar solo el primero dejaria pasar un arreglo que
+        se lleva por delante tambien a las buenas.
+        """
         data = self.blueprint.get_widget_data()
         self.assertIn('image_url', data)
         self.assertIn('traps', data)
         self.assertIn('can_edit', data)
+
+        # la del setUp tiene coord_x/coord_y pero NO porcentaje: no se puede dibujar
+        self.assertEqual(self.trap1.coord_x_pct, 0.0)
+        self.assertEqual(len(data['traps']), 0)
+        self.assertEqual(len(data['traps_sin_ubicar']), 1)
+        self.assertEqual(data['traps_sin_ubicar'][0]['name'], 'TRAP-001')
+
+        # y con posicion de verdad, se dibuja
+        self.trap1.write({'coord_x_pct': 25.5, 'coord_y_pct': 75.0})
+        data = self.blueprint.get_widget_data()
         self.assertEqual(len(data['traps']), 1)
         self.assertEqual(data['traps'][0]['name'], 'TRAP-001')
+        self.assertEqual(len(data['traps_sin_ubicar']), 0)

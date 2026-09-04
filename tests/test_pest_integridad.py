@@ -61,11 +61,27 @@ class TestPestIntegridad(TransactionCase):
                 self.env['pest.trap.type'].create({'name': 'Tipo dos', 'code': 'otro_repetido'})
 
     @mute_logger('odoo.sql_db')
-    def test_c05_ubicaciones_sin_nombres_repetidos(self):
-        self.env['pest.zone'].create({'name': 'Zona repetida'})
+    def test_c05_ubicaciones_sin_nombres_repetidos_EN_LA_MISMA_SEDE(self):
+        """Dos «Comedor» en la misma planta corrompen los informes; en plantas distintas, no.
+
+        La unicidad era `UNIQUE(name)` a secas, y eso es un fallo de multi-cliente: el primer
+        cliente que registrara «Despacho» dejaba a todos los demas sin poder tener el suyo.
+        Por eso el test prueba las DOS cosas — que el duplicado dentro de una sede se rechace,
+        y que el mismo nombre en OTRA sede se acepte. Sin la segunda mitad, volver a la
+        restriccion vieja dejaria el test en verde.
+        """
+        planta_a = self.env['pest.sede'].create({'name': 'Planta A'})
+        planta_b = self.env['pest.sede'].create({'name': 'Planta B'})
+
+        self.env['pest.zone'].create({'name': 'Comedor', 'sede_id': planta_a.id})
         with self.assertRaises(IntegrityError):
             with self.cr.savepoint():
-                self.env['pest.zone'].create({'name': 'Zona repetida'})
+                self.env['pest.zone'].create({'name': 'Comedor', 'sede_id': planta_a.id})
+
+        otra = self.env['pest.zone'].create({'name': 'Comedor', 'sede_id': planta_b.id})
+        self.assertTrue(otra.id, 'cada planta tiene derecho a su propio Comedor')
+        self.assertEqual(otra.company_id, planta_b.company_id,
+                         'la empresa sale de la sede: es lo que engancha el aislamiento')
 
     # ------------------------------------------------------------------ nombres
 
