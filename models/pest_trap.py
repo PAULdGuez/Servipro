@@ -1,4 +1,8 @@
+import logging
+
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class PestTrap(models.Model):
@@ -99,13 +103,10 @@ class PestTrap(models.Model):
         store=False,
     )
 
-    _sql_constraints = [
-        (
-            'name_blueprint_unique',
-            'UNIQUE(name, blueprint_id)',
-            'El nombre de la trampa debe ser único por plano.',
-        ),
-    ]
+    _name_blueprint_unique = models.Constraint(
+        'UNIQUE(name, blueprint_id)',
+        'El nombre de la trampa debe ser único por plano.',
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -235,16 +236,16 @@ class PestTrap(models.Model):
         # Get totals
         total_incidents = self.env['pest.incident'].search_count([('trap_id', '=', self.id)])
         total_organisms = 0
-        try:
-            org_data = self.env['pest.incident']._read_group(
-                [('trap_id', '=', self.id)],
-                [],
-                ['organism_count:sum'],
-            )
-            if org_data:
-                total_organisms = org_data[0][0] or 0
-        except Exception:
-            pass
+        # Sin try/except a proposito: si esta consulta falla, es un fallo real
+        # (un permiso que falta, un campo mal escrito) y devolver 0 lo disfrazaria
+        # de "esta trampa no ha capturado nada", que es un dato distinto y falso.
+        org_data = self.env['pest.incident']._read_group(
+            [('trap_id', '=', self.id)],
+            [],
+            ['organism_count:sum'],
+        )
+        if org_data:
+            total_organisms = org_data[0][0] or 0
 
         return {
             'trap_name': self.name or '',

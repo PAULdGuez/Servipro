@@ -100,11 +100,10 @@ class PestBlueprint(models.Model):
         if not self.ids:
             return
             
-        try:
-            trap_data = self.env['pest.trap']._read_group([('blueprint_id', 'in', self.ids)], ['blueprint_id'], ['__count'])
-            trap_counts = {bp.id: count for bp, count in trap_data}
-        except Exception:
-            trap_counts = {g['blueprint_id'][0]: g['blueprint_id_count'] for g in self.env['pest.trap'].read_group([('blueprint_id', 'in', self.ids)], ['blueprint_id'], ['blueprint_id'])}
+        # El fallback anterior llamaba a read_group(), que no existe en Odoo 19:
+        # si el try fallaba, el except tronaba con otro error y enterraba el original.
+        trap_data = self.env['pest.trap']._read_group([('blueprint_id', 'in', self.ids)], ['blueprint_id'], ['__count'])
+        trap_counts = {bp.id: count for bp, count in trap_data}
             
         for rec in self:
             rec.trap_count = trap_counts.get(rec.id, 0)
@@ -135,13 +134,10 @@ class PestBlueprint(models.Model):
 
         # Batch incident counts (already using _read_group from previous fix)
         incident_counts = {}
-        try:
-            data = self.env['pest.incident']._read_group(
-                [('trap_id', 'in', self.trap_ids.ids)],
-                ['trap_id'], ['__count'])
-            incident_counts = {trap.id: count for trap, count in data}
-        except Exception:
-            pass
+        data = self.env['pest.incident']._read_group(
+            [('trap_id', 'in', self.trap_ids.ids)],
+            ['trap_id'], ['__count'])
+        incident_counts = {trap.id: count for trap, count in data}
 
         # Batch read all trap data in one query (paginated)
         traps_data = trap_ids_to_read.read([
@@ -194,10 +190,13 @@ class PestBlueprint(models.Model):
         # Build zone list
         zones = []
         for zone in self.zone_ids:
+            # Un JSON corrupto si es un caso legitimo (dato viejo o a medias),
+            # pero se registra: si pasa seguido, hay algo que arreglar.
             try:
                 import json as _json
                 points = _json.loads(zone.points_data)
-            except Exception:
+            except (ValueError, TypeError):
+                _logger.warning('Zona %s del plano %s: sus puntos no son un JSON valido', zone.id, self.id)
                 points = []
             zones.append({
                 'id': zone.id,
@@ -208,25 +207,22 @@ class PestBlueprint(models.Model):
 
         # Plagues with incidents in this blueprint (for heatmap filter)
         plague_incidents = []
-        try:
-            pi_data = self.env['pest.incident']._read_group(
-                [('trap_id', 'in', self.trap_ids.ids)],
-                ['plague_type_id'],
-                ['organism_count:sum', '__count'],
-            )
-            for plague, org_sum, inc_count in pi_data:
-                if plague:
-                    plague_incidents.append({
-                        'id': plague.id,
-                        'name': plague.name,
-                        'organism_sum': org_sum or 0,
-                        'incident_count': inc_count or 0,
-                        'umbral_bajo': plague.heatmap_umbral_bajo or 5,
-                        'umbral_medio': plague.heatmap_umbral_medio or 20,
-                        'umbral_alto': plague.heatmap_umbral_alto or 50,
-                    })
-        except Exception:
-            pass
+        pi_data = self.env['pest.incident']._read_group(
+            [('trap_id', 'in', self.trap_ids.ids)],
+            ['plague_type_id'],
+            ['organism_count:sum', '__count'],
+        )
+        for plague, org_sum, inc_count in pi_data:
+            if plague:
+                plague_incidents.append({
+                    'id': plague.id,
+                    'name': plague.name,
+                    'organism_sum': org_sum or 0,
+                    'incident_count': inc_count or 0,
+                    'umbral_bajo': plague.heatmap_umbral_bajo or 5,
+                    'umbral_medio': plague.heatmap_umbral_medio or 20,
+                    'umbral_alto': plague.heatmap_umbral_alto or 50,
+                })
 
         return {
             'image_url': f'/web/image/pest.blueprint/{self.id}/image_web',
@@ -345,8 +341,10 @@ class PestBlueprint(models.Model):
                         if 'renderedWidth' in state and 'renderedHeight' in state:
                             rendered_width = state.get('renderedWidth', width)
                             rendered_height = state.get('renderedHeight', height)
-                    except Exception:
-                        pass
+                    except (ValueError, TypeError):
+                        _logger.warning(
+                            'Plano %s: state_data no es un JSON valido, se usan las medidas de la imagen',
+                            blueprint.id)
                 
                 for trap in blueprint.trap_ids:
                     if not trap.coord_x_pct and trap.coord_x and rendered_width:
@@ -354,4 +352,6 @@ class PestBlueprint(models.Model):
                     if not trap.coord_y_pct and trap.coord_y and rendered_height:
                         trap.coord_y_pct = (trap.coord_y / rendered_height) * 100.0
             except Exception:
-                pass
+                # Se sigue con los demas planos, pero queda el rastro completo:
+                # un plano que no migra es un plano cuyas trampas quedan sin posicion.
+                _logger.exception('No se pudieron migrar las coordenadas del plano %s', blueprint.id)
