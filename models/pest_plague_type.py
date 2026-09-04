@@ -30,10 +30,7 @@ class PestPlagueType(models.Model):
     heatmap_umbral_alto = fields.Integer(string='Umbral Alto', default=50,
         help='Cantidad de organismos considerada nivel alto/critico para esta plaga')
 
-    _sql_constraints = [
-        (
-            'code_unique',
-            'UNIQUE(code)',
-            'El código del tipo de plaga debe ser único.',
-        ),
-    ]
+    _code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'El código del tipo de plaga debe ser único.',
+    )

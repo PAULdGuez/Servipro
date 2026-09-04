@@ -21,10 +21,7 @@ class PestTrapType(models.Model):
     description = fields.Text(string='Descripción')
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        (
-            'code_unique',
-            'UNIQUE(code)',
-            'El código del tipo de trampa debe ser único.',
-        ),
-    ]
+    _code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'El código del tipo de trampa debe ser único.',
+    )

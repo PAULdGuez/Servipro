@@ -10,6 +10,7 @@ class PestZone(models.Model):
     code = fields.Char(string='Código')
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('name_unique', 'UNIQUE(name)', 'El nombre de zona debe ser único.'),
-    ]
+    _name_unique = models.Constraint(
+        'UNIQUE(name)',
+        'El nombre de zona debe ser único.',
+    )
