@@ -40,3 +40,11 @@ pest_control-gv4/
 .worktrees/pest_control-doh.5/
 # bd worktree
 .worktrees/pest_control-doh.6/
+
+# Respaldos y datos del sistema PHP anterior — NUNCA al repo del modulo.
+# Las imagenes ya viven en el repo servipro_plagas_php; el volcado, en el workspace.
+*.zip
+*.sql
+*.tar.gz
+uploads/
+servipro_php_*
